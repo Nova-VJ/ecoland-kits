@@ -13,7 +13,7 @@ const Tienda = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
-  const { addItem } = useCart();
+  const { addProduct } = useCart();
 
   const filteredProducts = useMemo(() => {
     return products.filter(product => {
@@ -197,13 +197,7 @@ const Tienda = () => {
                   </span>
                   <Button
                     size="sm"
-                    onClick={() => addItem({
-                      id: product.id,
-                      name: product.name,
-                      price: product.price,
-                      image: product.image,
-                      type: 'product',
-                    })}
+                    onClick={() => addProduct(product)}
                     disabled={!product.inStock}
                   >
                     {product.inStock ? 'Añadir' : 'Agotado'}
