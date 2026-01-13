@@ -65,9 +65,11 @@ export const Header = () => {
                 </span>
               )}
             </Button>
-            <Button variant="ghost" size="icon" className="hidden md:flex">
-              <User className="h-5 w-5" />
-            </Button>
+            <Link to="/cuenta">
+              <Button variant="ghost" size="icon" className="hidden md:flex">
+                <User className="h-5 w-5" />
+              </Button>
+            </Link>
             <Button
               variant="ghost"
               size="icon"
