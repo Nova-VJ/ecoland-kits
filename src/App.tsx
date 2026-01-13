@@ -17,6 +17,9 @@ import Suscripcion from "./pages/Suscripcion";
 import Club from "./pages/Club";
 import Tienda from "./pages/Tienda";
 import ProductDetail from "./pages/ProductDetail";
+import Login from "./pages/auth/Login";
+import Registro from "./pages/auth/Registro";
+import Cuenta from "./pages/auth/Cuenta";
 import AvisoLegal from "./pages/legal/AvisoLegal";
 import Privacidad from "./pages/legal/Privacidad";
 import Cookies from "./pages/legal/Cookies";
@@ -67,6 +70,9 @@ const App = () => {
                 <Route path="/club" element={<Club />} />
                 <Route path="/tienda" element={<Tienda />} />
                 <Route path="/tienda/:slug" element={<ProductDetail />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/registro" element={<Registro />} />
+                <Route path="/cuenta" element={<Cuenta />} />
                 <Route path="/aviso-legal" element={<AvisoLegal />} />
                 <Route path="/privacidad" element={<Privacidad />} />
                 <Route path="/cookies" element={<Cookies />} />
