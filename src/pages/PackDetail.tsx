@@ -12,7 +12,7 @@ const PackDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const pack = getPackBySlug(slug || '');
   const recipes = getRecipesByPackSlug(slug || '');
-  const { addItem } = useCart();
+  const { addPack } = useCart();
   
   const [selectedSize, setSelectedSize] = useState<PackSize>('M');
   const [isSubscription, setIsSubscription] = useState(false);
@@ -33,7 +33,7 @@ const PackDetail = () => {
   const finalPrice = isSubscription ? price * 0.9 : price;
 
   const handleAdd = () => {
-    addItem(pack, selectedSize, isSubscription);
+    addPack(pack, selectedSize, isSubscription);
     setIsAdded(true);
     setTimeout(() => setIsAdded(false), 2000);
   };

@@ -14,12 +14,12 @@ interface PackCardProps {
 export const PackCard = ({ pack, index = 0 }: PackCardProps) => {
   const [selectedSize, setSelectedSize] = useState<PackSize>('M');
   const [isAdded, setIsAdded] = useState(false);
-  const { addItem } = useCart();
+  const { addPack } = useCart();
 
   const handleAdd = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    addItem(pack, selectedSize);
+    addPack(pack, selectedSize);
     setIsAdded(true);
     setTimeout(() => setIsAdded(false), 1500);
   };

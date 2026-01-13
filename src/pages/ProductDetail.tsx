@@ -9,7 +9,7 @@ import { useCart } from '@/context/CartContext';
 const ProductDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const product = getProductBySlug(slug || '');
-  const { addItem } = useCart();
+  const { addProduct } = useCart();
 
   if (!product) {
     return (
@@ -114,13 +114,7 @@ const ProductDetail = () => {
             <Button
               size="lg"
               className="w-full md:w-auto btn-primary"
-              onClick={() => addItem({
-                id: product.id,
-                name: product.name,
-                price: product.price,
-                image: product.image,
-                type: 'product',
-              })}
+              onClick={() => addProduct(product)}
               disabled={!product.inStock}
             >
               <ShoppingCart className="h-5 w-5 mr-2" />

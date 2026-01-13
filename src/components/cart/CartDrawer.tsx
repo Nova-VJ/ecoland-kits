@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Plus, Minus, Trash2, ShoppingBag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useCart } from '@/context/CartContext';
+import { useCart, PackCartItem, ProductCartItem } from '@/context/CartContext';
 import { Link } from 'react-router-dom';
 
 export const CartDrawer = () => {
@@ -53,66 +53,124 @@ export const CartDrawer = () => {
                 </div>
               ) : (
                 items.map((item) => {
-                  const price = item.pack.prices[item.size];
-                  const finalPrice = item.isSubscription ? price * 0.9 : price;
-                  
-                  return (
-                    <div 
-                      key={`${item.pack.id}-${item.size}`} 
-                      className="flex gap-4 p-3 rounded-xl bg-muted/50"
-                    >
-                      <div className="w-20 h-20 rounded-lg overflow-hidden bg-muted flex-shrink-0">
-                        <img 
-                          src={item.pack.image} 
-                          alt={item.pack.name}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-medium truncate">{item.pack.name}</h3>
-                        <p className="text-sm text-muted-foreground">
-                          Talla {item.size}
-                          {item.isSubscription && (
-                            <span className="ml-2 text-primary">• Suscripción</span>
-                          )}
-                        </p>
-                        <div className="flex items-center justify-between mt-2">
-                          <div className="flex items-center gap-2">
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              className="h-7 w-7"
-                              onClick={() => updateQuantity(item.pack.id, item.size, item.quantity - 1)}
-                            >
-                              <Minus className="h-3 w-3" />
-                            </Button>
-                            <span className="w-6 text-center text-sm">{item.quantity}</span>
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              className="h-7 w-7"
-                              onClick={() => updateQuantity(item.pack.id, item.size, item.quantity + 1)}
-                            >
-                              <Plus className="h-3 w-3" />
-                            </Button>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <span className="font-semibold">
-                              {(finalPrice * item.quantity).toFixed(2)}€
-                            </span>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-7 w-7 text-muted-foreground hover:text-destructive"
-                              onClick={() => removeItem(item.pack.id, item.size)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
+                  if (item.type === 'pack') {
+                    const packItem = item as PackCartItem;
+                    const price = packItem.pack.prices[packItem.size];
+                    const finalPrice = packItem.isSubscription ? price * 0.9 : price;
+                    
+                    return (
+                      <div 
+                        key={`pack-${packItem.pack.id}-${packItem.size}`} 
+                        className="flex gap-4 p-3 rounded-xl bg-muted/50"
+                      >
+                        <div className="w-20 h-20 rounded-lg overflow-hidden bg-muted flex-shrink-0">
+                          <img 
+                            src={packItem.pack.image} 
+                            alt={packItem.pack.name}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-medium truncate">{packItem.pack.name}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            Talla {packItem.size}
+                            {packItem.isSubscription && (
+                              <span className="ml-2 text-primary">• Suscripción</span>
+                            )}
+                          </p>
+                          <div className="flex items-center justify-between mt-2">
+                            <div className="flex items-center gap-2">
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                className="h-7 w-7"
+                                onClick={() => updateQuantity(packItem.pack.id, packItem.quantity - 1, packItem.size)}
+                              >
+                                <Minus className="h-3 w-3" />
+                              </Button>
+                              <span className="w-6 text-center text-sm">{packItem.quantity}</span>
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                className="h-7 w-7"
+                                onClick={() => updateQuantity(packItem.pack.id, packItem.quantity + 1, packItem.size)}
+                              >
+                                <Plus className="h-3 w-3" />
+                              </Button>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <span className="font-semibold">
+                                {(finalPrice * packItem.quantity).toFixed(2)}€
+                              </span>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                                onClick={() => removeItem(packItem.pack.id, packItem.size)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  );
+                    );
+                  } else {
+                    const productItem = item as ProductCartItem;
+                    
+                    return (
+                      <div 
+                        key={`product-${productItem.product.id}`} 
+                        className="flex gap-4 p-3 rounded-xl bg-muted/50"
+                      >
+                        <div className="w-20 h-20 rounded-lg overflow-hidden bg-muted flex-shrink-0">
+                          <img 
+                            src={productItem.product.image} 
+                            alt={productItem.product.name}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-medium truncate">{productItem.product.name}</h3>
+                          <p className="text-sm text-muted-foreground">Producto individual</p>
+                          <div className="flex items-center justify-between mt-2">
+                            <div className="flex items-center gap-2">
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                className="h-7 w-7"
+                                onClick={() => updateQuantity(productItem.product.id, productItem.quantity - 1)}
+                              >
+                                <Minus className="h-3 w-3" />
+                              </Button>
+                              <span className="w-6 text-center text-sm">{productItem.quantity}</span>
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                className="h-7 w-7"
+                                onClick={() => updateQuantity(productItem.product.id, productItem.quantity + 1)}
+                              >
+                                <Plus className="h-3 w-3" />
+                              </Button>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <span className="font-semibold">
+                                {(productItem.product.price * productItem.quantity).toFixed(2)}€
+                              </span>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                                onClick={() => removeItem(productItem.product.id)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
                 })
               )}
             </div>

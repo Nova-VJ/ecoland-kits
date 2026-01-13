@@ -75,10 +75,10 @@ export const Footer = () => {
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-primary-foreground/60">
             <p>© 2024 Ecoland. Todos los derechos reservados.</p>
             <div className="flex gap-6">
-              <Link to="/legal/aviso" className="hover:text-primary-foreground transition-colors">Aviso legal</Link>
-              <Link to="/legal/privacidad" className="hover:text-primary-foreground transition-colors">Privacidad</Link>
-              <Link to="/legal/cookies" className="hover:text-primary-foreground transition-colors">Cookies</Link>
-              <Link to="/legal/terminos" className="hover:text-primary-foreground transition-colors">Términos</Link>
+              <Link to="/aviso-legal" className="hover:text-primary-foreground transition-colors">Aviso legal</Link>
+              <Link to="/privacidad" className="hover:text-primary-foreground transition-colors">Privacidad</Link>
+              <Link to="/cookies" className="hover:text-primary-foreground transition-colors">Cookies</Link>
+              <Link to="/terminos" className="hover:text-primary-foreground transition-colors">Términos</Link>
             </div>
           </div>
         </div>
