@@ -17,6 +17,7 @@ import Suscripcion from "./pages/Suscripcion";
 import Club from "./pages/Club";
 import Tienda from "./pages/Tienda";
 import ProductDetail from "./pages/ProductDetail";
+import DondeEstamos from "./pages/DondeEstamos";
 import Login from "./pages/auth/Login";
 import Registro from "./pages/auth/Registro";
 import Cuenta from "./pages/auth/Cuenta";
@@ -70,6 +71,7 @@ const App = () => {
                 <Route path="/club" element={<Club />} />
                 <Route path="/tienda" element={<Tienda />} />
                 <Route path="/tienda/:slug" element={<ProductDetail />} />
+                <Route path="/donde-estamos" element={<DondeEstamos />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/registro" element={<Registro />} />
                 <Route path="/cuenta" element={<Cuenta />} />

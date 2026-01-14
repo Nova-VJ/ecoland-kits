@@ -44,9 +44,8 @@ export const Footer = () => {
           <div>
             <h4 className="font-display text-lg mb-4">Ecoland</h4>
             <ul className="space-y-2 text-sm text-primary-foreground/80">
-              <li><Link to="/sobre" className="hover:text-primary-foreground transition-colors">Sobre nosotros</Link></li>
+              <li><Link to="/donde-estamos" className="hover:text-primary-foreground transition-colors">Dónde estamos</Link></li>
               <li><Link to="/blog" className="hover:text-primary-foreground transition-colors">Blog & Recetas</Link></li>
-              <li><Link to="/contacto" className="hover:text-primary-foreground transition-colors">Contacto</Link></li>
             </ul>
           </div>
 
@@ -60,11 +59,21 @@ export const Footer = () => {
               </li>
               <li className="flex items-center gap-2">
                 <Phone className="h-4 w-4" />
-                +34 900 123 456
+                <a href="tel:+34983456789" className="hover:text-primary-foreground transition-colors">
+                  +34 983 45 67 89
+                </a>
               </li>
               <li className="flex items-start gap-2">
                 <MapPin className="h-4 w-4 mt-0.5" />
-                <span>Madrid, España</span>
+                <a 
+                  href="https://www.google.com/maps/place/Ecoland+-+Productos+Ecol%C3%B3gicos/@41.6434236,-4.7212234,17z"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-primary-foreground transition-colors"
+                >
+                  C. Paulina Harriet, 4<br />
+                  47006 Valladolid
+                </a>
               </li>
             </ul>
           </div>

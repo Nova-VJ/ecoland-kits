@@ -4,12 +4,14 @@ import { HowItWorks } from '@/components/home/HowItWorks';
 import { Trust } from '@/components/home/Trust';
 import { Testimonials } from '@/components/home/Testimonials';
 import { QuizCTA } from '@/components/home/QuizCTA';
+import { CertificationBadge } from '@/components/home/CertificationBadge';
 
 const Index = () => {
   return (
     <>
       <Hero />
       <Trust />
+      <CertificationBadge />
       <FeaturedPacks />
       <HowItWorks />
       <Testimonials />
