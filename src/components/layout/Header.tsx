@@ -13,6 +13,7 @@ const navLinks = [
   { to: '/suscripcion', label: 'Suscripción' },
   { to: '/blog', label: 'Recetas' },
   { to: '/club', label: 'Club' },
+  { to: '/donde-estamos', label: 'Dónde estamos' },
 ];
 
 export const Header = () => {
