@@ -1,19 +1,13 @@
 import { Link } from 'react-router-dom';
 import { Leaf, Mail, Phone, MapPin, Instagram, Facebook } from 'lucide-react';
 import logoEcoland from '@/assets/logo-ecoland.jpg';
-
 export const Footer = () => {
-  return (
-    <footer className="bg-eco-dark text-primary-foreground">
+  return <footer className="bg-eco-dark text-primary-foreground">
       <div className="container-eco section-padding">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Brand */}
           <div className="space-y-4">
-            <img 
-              src={logoEcoland} 
-              alt="Ecoland" 
-              className="h-16 w-auto brightness-110"
-            />
+            <img alt="Ecoland" className="h-16 w-auto brightness-110" src="/lovable-uploads/b139a0b4-df8f-4943-9f9e-13a41f2dc4e9.png" />
             <p className="text-primary-foreground/80 text-sm leading-relaxed">
               Productos ecológicos seleccionados para tu bienestar y el del planeta. 
               Packs listos para cada objetivo.
@@ -65,12 +59,7 @@ export const Footer = () => {
               </li>
               <li className="flex items-start gap-2">
                 <MapPin className="h-4 w-4 mt-0.5" />
-                <a 
-                  href="https://www.google.com/maps/place/Ecoland+-+Productos+Ecol%C3%B3gicos/@41.6434236,-4.7212234,17z"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-primary-foreground transition-colors"
-                >
+                <a href="https://www.google.com/maps/place/Ecoland+-+Productos+Ecol%C3%B3gicos/@41.6434236,-4.7212234,17z" target="_blank" rel="noopener noreferrer" className="hover:text-primary-foreground transition-colors">
                   C. Paulina Harriet, 4<br />
                   47006 Valladolid
                 </a>
@@ -92,6 +81,5 @@ export const Footer = () => {
           </div>
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 };
