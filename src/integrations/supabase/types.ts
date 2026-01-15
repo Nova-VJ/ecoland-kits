@@ -53,6 +53,13 @@ export type Database = {
             foreignKeyName: "order_items_order_id_fkey"
             columns: ["order_id"]
             isOneToOne: false
+            referencedRelation: "admin_orders_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
             referencedRelation: "orders"
             referencedColumns: ["id"]
           },
@@ -114,8 +121,10 @@ export type Database = {
           address: string | null
           city: string | null
           created_at: string
+          eco_points: number | null
           full_name: string | null
           id: string
+          is_admin: boolean | null
           is_club_member: boolean | null
           phone: string | null
           postal_code: string | null
@@ -127,8 +136,10 @@ export type Database = {
           address?: string | null
           city?: string | null
           created_at?: string
+          eco_points?: number | null
           full_name?: string | null
           id?: string
+          is_admin?: boolean | null
           is_club_member?: boolean | null
           phone?: string | null
           postal_code?: string | null
@@ -140,8 +151,10 @@ export type Database = {
           address?: string | null
           city?: string | null
           created_at?: string
+          eco_points?: number | null
           full_name?: string | null
           id?: string
+          is_admin?: boolean | null
           is_club_member?: boolean | null
           phone?: string | null
           postal_code?: string | null
@@ -153,7 +166,22 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      admin_orders_view: {
+        Row: {
+          created_at: string | null
+          eco_points: number | null
+          full_name: string | null
+          id: string | null
+          order_number: string | null
+          phone: string | null
+          points_awarded: number | null
+          status: string | null
+          subtotal: number | null
+          total: number | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never
