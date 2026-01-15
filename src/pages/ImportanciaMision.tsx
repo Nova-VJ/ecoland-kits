@@ -88,7 +88,8 @@ const ImportanciaMision = () => {
           opacity: 1,
           y: 0
         }} className="max-w-4xl mx-auto text-center">
-            <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-eco-dark">🌿 Importancia de lo ecológico nuestra misión.</h1>
+            <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-eco-dark">Importancia de lo ecológico 
+y nuestra misión.</h1>
             <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
               No es una moda. Es una forma más limpia, consciente y práctica de cuidarte. 
               Y una manera real de proteger el planeta, compra a compra.
