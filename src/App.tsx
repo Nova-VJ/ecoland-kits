@@ -18,9 +18,11 @@ import Club from "./pages/Club";
 import Tienda from "./pages/Tienda";
 import ProductDetail from "./pages/ProductDetail";
 import DondeEstamos from "./pages/DondeEstamos";
+import ImportanciaMision from "./pages/ImportanciaMision";
 import Login from "./pages/auth/Login";
 import Registro from "./pages/auth/Registro";
 import Cuenta from "./pages/auth/Cuenta";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 import AvisoLegal from "./pages/legal/AvisoLegal";
 import Privacidad from "./pages/legal/Privacidad";
 import Cookies from "./pages/legal/Cookies";
@@ -72,9 +74,11 @@ const App = () => {
                 <Route path="/tienda" element={<Tienda />} />
                 <Route path="/tienda/:slug" element={<ProductDetail />} />
                 <Route path="/donde-estamos" element={<DondeEstamos />} />
+                <Route path="/importancia-y-mision" element={<ImportanciaMision />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/registro" element={<Registro />} />
                 <Route path="/cuenta" element={<Cuenta />} />
+                <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="/aviso-legal" element={<AvisoLegal />} />
                 <Route path="/privacidad" element={<Privacidad />} />
                 <Route path="/cookies" element={<Cookies />} />
