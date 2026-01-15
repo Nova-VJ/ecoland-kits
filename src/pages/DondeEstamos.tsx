@@ -19,7 +19,7 @@ import castillaLeonLogo from '@/assets/logos/castilla-leon.png';
 
 // Configurable URLs
 const REVIEW_URL = 'https://share.google/s1dwIZTxDyqccqRca';
-const GOOGLE_MAPS_URL = 'https://www.google.com/maps/place/Eco+Land/@41.6434236,-4.7212234,17z';
+const GOOGLE_MAPS_URL = 'https://www.google.com/maps/place/Eco+Land/@41.6434236,-4.7186485,19z';
 
 const storeInfo = {
   name: 'Eco Land',
@@ -212,7 +212,7 @@ const DondeEstamos = () => {
           {/* Interactive Map */}
           <div className="relative rounded-2xl overflow-hidden bg-muted aspect-[16/9] md:aspect-[21/9] mb-6 shadow-lg">
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2979.058!2d-4.7212234!3d41.6434236!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd4712de76e55555%3A0x6b0d8e45b63d53e4!2sEco%20Land!5e0!3m2!1ses!2ses!4v1699000000000!5m2!1ses!2ses"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d500!2d-4.7186485!3d41.6434236!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd4712de76e55555%3A0x6b0d8e45b63d53e4!2sEco%20Land!5e0!3m2!1ses!2ses!4v1699000000000!5m2!1ses!2ses&z=19"
               className="absolute inset-0 w-full h-full border-0"
               allowFullScreen
               loading="lazy"

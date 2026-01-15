@@ -1,31 +1,42 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ShoppingBag, User } from 'lucide-react';
+import { Menu, X, ShoppingBag, User, Package, Store, ClipboardList, Repeat, BookOpen, Crown, MapPin, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/CartContext';
 import logoEcoland from '@/assets/logo-ecoland.jpg';
 const navLinks = [{
   to: '/packs',
-  label: 'Packs'
+  label: 'Packs',
+  icon: Package
 }, {
   to: '/tienda',
-  label: 'Tienda'
+  label: 'Tienda',
+  icon: Store
 }, {
   to: '/quiz',
-  label: 'Test'
+  label: 'Test',
+  icon: ClipboardList
 }, {
   to: '/suscripcion',
-  label: 'Suscripción'
+  label: 'Suscripción',
+  icon: Repeat
 }, {
   to: '/blog',
-  label: 'Recetas'
+  label: 'Recetas',
+  icon: BookOpen
 }, {
   to: '/club',
-  label: 'Club'
+  label: 'Club',
+  icon: Crown
 }, {
   to: '/donde-estamos',
-  label: 'Dónde estamos'
+  label: 'Dónde estamos',
+  icon: MapPin
+}, {
+  to: '/importancia-y-mision',
+  label: 'Misión',
+  icon: Heart
 }];
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -43,8 +54,9 @@ export const Header = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-8">
-            {navLinks.map(link => <Link key={link.to} to={link.to} className={`text-sm font-medium transition-colors hover:text-primary ${location.pathname === link.to ? 'text-primary' : 'text-foreground/70'}`}>
+          <nav className="hidden lg:flex items-center gap-6">
+            {navLinks.map(link => <Link key={link.to} to={link.to} className={`flex items-center gap-1.5 text-sm font-medium transition-colors hover:text-primary ${location.pathname === link.to ? 'text-primary' : 'text-foreground/70'}`}>
+                <link.icon className="h-4 w-4" />
                 {link.label}
               </Link>)}
           </nav>
