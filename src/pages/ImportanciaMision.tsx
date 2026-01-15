@@ -441,9 +441,7 @@ const ImportanciaMision = () => {
       {/* First Kit Carousel */}
       <section className="py-16 bg-eco-cream/30">
         <div className="container-eco">
-          <h2 className="font-display text-2xl md:text-3xl font-bold mb-10 text-center text-eco-dark">
-            ✅ Tu primer kit ecológico
-          </h2>
+          <h2 className="font-display text-2xl md:text-3xl font-bold mb-10 text-center text-eco-dark"> Tu primer kit ecológico</h2>
           <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide">
             {firstKitItems.map((item, i) => <motion.div key={i} initial={{
             opacity: 0,
