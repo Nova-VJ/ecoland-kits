@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { User, Mail, Phone, MapPin, Package, Repeat, Crown, LogOut, Loader2, Save } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Package, Repeat, Crown, LogOut, Loader2, Save, Leaf, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { OrderHistory } from '@/components/account/OrderHistory';
 
 interface Profile {
   full_name: string | null;
@@ -17,6 +18,8 @@ interface Profile {
   postal_code: string | null;
   is_club_member: boolean;
   subscription_active: boolean;
+  eco_points: number;
+  is_admin: boolean;
 }
 
 const Cuenta = () => {
@@ -53,7 +56,13 @@ const Cuenta = () => {
         .single();
       
       if (profileData) {
-        setProfile(profileData);
+        setProfile({
+          ...profileData,
+          eco_points: profileData.eco_points || 0,
+          is_admin: profileData.is_admin || false,
+          is_club_member: profileData.is_club_member || false,
+          subscription_active: profileData.subscription_active || false,
+        });
         setFormData({
           full_name: profileData.full_name || '',
           phone: profileData.phone || '',
@@ -125,7 +134,7 @@ const Cuenta = () => {
 
   return (
     <div className="min-h-screen bg-background py-12">
-      <div className="container-eco max-w-4xl">
+      <div className="container-eco max-w-5xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -136,11 +145,45 @@ const Cuenta = () => {
               <h1 className="font-display text-3xl font-bold">Mi cuenta</h1>
               <p className="text-muted-foreground mt-1">{user?.email}</p>
             </div>
-            <Button variant="outline" onClick={handleLogout}>
-              <LogOut className="h-4 w-4 mr-2" />
-              Cerrar sesión
-            </Button>
+            <div className="flex items-center gap-3">
+              {profile?.is_admin && (
+                <Button asChild variant="outline" className="border-eco-green text-eco-green hover:bg-eco-green hover:text-white">
+                  <Link to="/admin">
+                    <Shield className="h-4 w-4 mr-2" />
+                    Panel Admin
+                  </Link>
+                </Button>
+              )}
+              <Button variant="outline" onClick={handleLogout}>
+                <LogOut className="h-4 w-4 mr-2" />
+                Cerrar sesión
+              </Button>
+            </div>
           </div>
+
+          {/* Eco Points Banner */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.1 }}
+            className="mb-8 bg-gradient-to-r from-eco-green to-eco-dark rounded-2xl p-6 text-white"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 rounded-full bg-white/20 flex items-center justify-center">
+                  <Leaf className="h-7 w-7 text-eco-cream" />
+                </div>
+                <div>
+                  <p className="text-eco-cream/90 font-medium">Tus Eco Puntos</p>
+                  <p className="text-4xl font-display font-bold">{profile?.eco_points || 0}</p>
+                </div>
+              </div>
+              <div className="text-right hidden sm:block">
+                <p className="text-eco-cream/80 text-sm">Ganas 1 punto por cada € de compra</p>
+                <p className="text-eco-cream/80 text-sm">¡Canjéalos por descuentos!</p>
+              </div>
+            </div>
+          </motion.div>
 
           <div className="grid lg:grid-cols-3 gap-8">
             {/* Status Cards */}
@@ -184,22 +227,11 @@ const Cuenta = () => {
                   </>
                 )}
               </div>
-
-              {/* Orders */}
-              <div className="rounded-2xl p-6 border bg-muted/30">
-                <div className="flex items-center gap-3 mb-3">
-                  <Package className="h-6 w-6 text-muted-foreground" />
-                  <h3 className="font-semibold">Mis pedidos</h3>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  Aún no tienes pedidos
-                </p>
-              </div>
             </div>
 
             {/* Profile Form */}
             <div className="lg:col-span-2">
-              <div className="bg-card rounded-2xl border p-6">
+              <div className="bg-card rounded-2xl border p-6 mb-6">
                 <h2 className="font-display text-xl font-semibold mb-6">Datos personales</h2>
                 
                 <div className="space-y-4">
@@ -285,6 +317,15 @@ const Cuenta = () => {
                     </Button>
                   </div>
                 </div>
+              </div>
+
+              {/* Order History */}
+              <div className="bg-card rounded-2xl border p-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <Package className="h-6 w-6 text-eco-green" />
+                  <h2 className="font-display text-xl font-semibold">Historial de pedidos</h2>
+                </div>
+                {user && <OrderHistory userId={user.id} />}
               </div>
             </div>
           </div>
