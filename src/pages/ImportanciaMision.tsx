@@ -161,8 +161,8 @@ y nuestra misión.</h1>
               desc: 'Elegir ecológico es apoyar prácticas más responsables.'
             }].map((item, i) => <div key={i} className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center">
                   <item.icon className="h-10 w-10 mx-auto mb-4 text-eco-cream" />
-                  <h3 className="font-semibold text-lg mb-2">{item.title}</h3>
-                  <p className="text-white/80 text-sm">{item.desc}</p>
+                  <h3 className="font-body font-bold text-lg mb-2">{item.title}</h3>
+                  <p className="font-body text-white/90 text-sm">{item.desc}</p>
                 </div>)}
             </div>
 
@@ -177,7 +177,7 @@ y nuestra misión.</h1>
                   Eco-Coach: recomiéndame
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="border-white text-white hover:bg-white/10">
+              <Button asChild variant="outline" size="lg" className="border-eco-cream text-eco-cream hover:bg-eco-cream hover:text-eco-green">
                 <Link to="/packs">
                   <ShoppingBag className="h-5 w-5 mr-2" />
                   Ver Packs Ecoland
@@ -301,7 +301,7 @@ y nuestra misión.</h1>
         </div>
       </section>
 
-      {/* Is it More Expensive */}
+      {/* Ecoland te lo hace fácil */}
       <section className="py-16 bg-eco-cream/30">
         <div className="container-eco max-w-3xl">
           <motion.div initial={{
@@ -313,7 +313,12 @@ y nuestra misión.</h1>
         }} viewport={{
           once: true
         }}>
-            
+            <h2 className="font-body text-2xl md:text-3xl font-bold mb-4 text-center text-eco-dark">
+              🌿 Pequeños cambios, grandes resultados
+            </h2>
+            <p className="text-muted-foreground mb-8 text-center">
+              No hace falta revolucionar tu despensa. Con pequeños cambios, notas la diferencia.
+            </p>
             
             <div className="grid sm:grid-cols-3 gap-4">
               {[{
@@ -330,12 +335,13 @@ y nuestra misión.</h1>
               desc: 'Lo que más consumes primero'
             }].map((item, i) => <div key={i} className="bg-white rounded-xl p-5 border border-eco-green/10">
                   <item.icon className="h-6 w-6 text-eco-green mb-3" />
-                  
-                  
+                  <h3 className="font-semibold text-eco-dark mb-1">{item.title}</h3>
+                  <p className="text-sm text-muted-foreground">{item.desc}</p>
                 </div>)}
             </div>
-            <p className="mt-8 text-center font-medium text-eco-dark">
-          </p>
+            <p className="mt-8 text-center font-medium text-eco-dark italic">
+              "Lo ecológico no va de perfección. Va de progreso."
+            </p>
           </motion.div>
         </div>
       </section>
@@ -523,13 +529,13 @@ y nuestra misión.</h1>
                   Hablar con Eco-Coach
                 </Link>
               </Button>
-              <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+              <Button asChild size="lg" variant="outline" className="border-eco-cream text-eco-cream hover:bg-eco-cream hover:text-eco-green">
                 <Link to="/packs">
                   <ShoppingBag className="h-5 w-5 mr-2" />
                   Ver Packs
                 </Link>
               </Button>
-              <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+              <Button asChild size="lg" variant="outline" className="border-eco-cream text-eco-cream hover:bg-eco-cream hover:text-eco-green">
                 <Link to="/tienda">
                   <ShoppingBasket className="h-5 w-5 mr-2" />
                   Explorar básicos
