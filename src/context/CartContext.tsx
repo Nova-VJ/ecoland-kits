@@ -1,8 +1,9 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Pack, PackSize } from '@/data/packs';
 import { Product } from '@/data/products';
+import { CatalogProduct, CatalogPack } from '@/data/catalog';
 
-// Pack item in cart
+// Pack item in cart (original packs)
 export interface PackCartItem {
   type: 'pack';
   pack: Pack;
@@ -11,21 +12,37 @@ export interface PackCartItem {
   isSubscription: boolean;
 }
 
-// Product item in cart
+// Product item in cart (original products)
 export interface ProductCartItem {
   type: 'product';
   product: Product;
   quantity: number;
 }
 
-export type CartItem = PackCartItem | ProductCartItem;
+// Catalog product item in cart (new individual products)
+export interface CatalogProductCartItem {
+  type: 'catalog-product';
+  product: CatalogProduct;
+  quantity: number;
+}
+
+// Catalog pack item in cart (new packs)
+export interface CatalogPackCartItem {
+  type: 'catalog-pack';
+  pack: CatalogPack;
+  quantity: number;
+}
+
+export type CartItem = PackCartItem | ProductCartItem | CatalogProductCartItem | CatalogPackCartItem;
 
 interface CartContextType {
   items: CartItem[];
   addPack: (pack: Pack, size: PackSize, isSubscription?: boolean) => void;
   addProduct: (product: Product) => void;
-  removeItem: (itemId: string, size?: PackSize) => void;
-  updateQuantity: (itemId: string, quantity: number, size?: PackSize) => void;
+  addCatalogProduct: (product: CatalogProduct) => void;
+  addCatalogPack: (pack: CatalogPack) => void;
+  removeItem: (itemId: string, size?: PackSize, type?: CartItem['type']) => void;
+  updateQuantity: (itemId: string, quantity: number, size?: PackSize, type?: CartItem['type']) => void;
   clearCart: () => void;
   totalItems: number;
   totalPrice: number;
@@ -90,18 +107,61 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     setIsOpen(true);
   };
 
-  const removeItem = (itemId: string, size?: PackSize) => {
+  const addCatalogProduct = (product: CatalogProduct) => {
+    setItems(prev => {
+      const existingIndex = prev.findIndex(
+        item => item.type === 'catalog-product' && item.product.id === product.id
+      );
+
+      if (existingIndex >= 0) {
+        const updated = [...prev];
+        (updated[existingIndex] as CatalogProductCartItem).quantity += 1;
+        return updated;
+      }
+
+      return [...prev, { type: 'catalog-product', product, quantity: 1 } as CatalogProductCartItem];
+    });
+    setIsOpen(true);
+  };
+
+  const addCatalogPack = (pack: CatalogPack) => {
+    setItems(prev => {
+      const existingIndex = prev.findIndex(
+        item => item.type === 'catalog-pack' && item.pack.id === pack.id
+      );
+
+      if (existingIndex >= 0) {
+        const updated = [...prev];
+        (updated[existingIndex] as CatalogPackCartItem).quantity += 1;
+        return updated;
+      }
+
+      return [...prev, { type: 'catalog-pack', pack, quantity: 1 } as CatalogPackCartItem];
+    });
+    setIsOpen(true);
+  };
+
+  const removeItem = (itemId: string, size?: PackSize, type?: CartItem['type']) => {
     setItems(prev => prev.filter(item => {
       if (item.type === 'pack') {
         return !(item.pack.id === itemId && item.size === size);
       }
-      return item.product.id !== itemId;
+      if (item.type === 'product') {
+        return item.product.id !== itemId;
+      }
+      if (item.type === 'catalog-product') {
+        return item.product.id !== itemId;
+      }
+      if (item.type === 'catalog-pack') {
+        return item.pack.id !== itemId;
+      }
+      return true;
     }));
   };
 
-  const updateQuantity = (itemId: string, quantity: number, size?: PackSize) => {
+  const updateQuantity = (itemId: string, quantity: number, size?: PackSize, type?: CartItem['type']) => {
     if (quantity <= 0) {
-      removeItem(itemId, size);
+      removeItem(itemId, size, type);
       return;
     }
     setItems(prev =>
@@ -110,6 +170,12 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           return { ...item, quantity };
         }
         if (item.type === 'product' && item.product.id === itemId) {
+          return { ...item, quantity };
+        }
+        if (item.type === 'catalog-product' && item.product.id === itemId) {
+          return { ...item, quantity };
+        }
+        if (item.type === 'catalog-pack' && item.pack.id === itemId) {
           return { ...item, quantity };
         }
         return item;
@@ -127,7 +193,16 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       const discount = item.isSubscription ? 0.9 : 1;
       return sum + price * discount * item.quantity;
     }
-    return sum + item.product.price * item.quantity;
+    if (item.type === 'product') {
+      return sum + item.product.price * item.quantity;
+    }
+    if (item.type === 'catalog-product') {
+      return sum + item.product.price * item.quantity;
+    }
+    if (item.type === 'catalog-pack') {
+      return sum + item.pack.price * item.quantity;
+    }
+    return sum;
   }, 0);
 
   return (
@@ -136,6 +211,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         items,
         addPack,
         addProduct,
+        addCatalogProduct,
+        addCatalogPack,
         removeItem,
         updateQuantity,
         clearCart,
