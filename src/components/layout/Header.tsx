@@ -45,7 +45,8 @@ export const Header = () => {
     totalItems,
     setIsOpen
   } = useCart();
-  return <header className="sticky top-0 z-50 glass border-b border-border/50">
+  return <>
+    <header className="sticky top-0 z-50 glass border-b border-border/50">
       <div className="container-eco">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
@@ -80,46 +81,47 @@ export const Header = () => {
           </div>
         </div>
       </div>
+    </header>
 
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {isMenuOpen && <>
-            <motion.div initial={{
-          opacity: 0
-        }} animate={{
-          opacity: 1
-        }} exit={{
-          opacity: 0
-        }} className="fixed inset-0 bg-foreground/20 z-50 lg:hidden" onClick={() => setIsMenuOpen(false)} />
-            <motion.div initial={{
-          x: '100%'
-        }} animate={{
-          x: 0
-        }} exit={{
-          x: '100%'
-        }} transition={{
-          type: 'spring',
-          damping: 25,
-          stiffness: 200
-        }} className="fixed top-0 right-0 bottom-0 w-80 z-50 lg:hidden shadow-xl border-l border-border" style={{ backgroundColor: 'hsl(var(--card))' }}>
-              <div className="p-4 flex justify-end">
-                <Button variant="ghost" size="icon" onClick={() => setIsMenuOpen(false)}>
-                  <X className="h-6 w-6" />
-                </Button>
+    {/* Mobile Menu - outside header to avoid glass transparency */}
+    <AnimatePresence>
+      {isMenuOpen && <>
+          <motion.div initial={{
+        opacity: 0
+      }} animate={{
+        opacity: 1
+      }} exit={{
+        opacity: 0
+      }} className="fixed inset-0 bg-foreground/20 z-50 lg:hidden" onClick={() => setIsMenuOpen(false)} />
+          <motion.div initial={{
+        x: '100%'
+      }} animate={{
+        x: 0
+      }} exit={{
+        x: '100%'
+      }} transition={{
+        type: 'spring',
+        damping: 25,
+        stiffness: 200
+      }} className="fixed top-0 right-0 bottom-0 w-80 z-50 lg:hidden shadow-xl border-l border-border" style={{ backgroundColor: 'hsl(var(--card))' }}>
+            <div className="p-4 flex justify-end">
+              <Button variant="ghost" size="icon" onClick={() => setIsMenuOpen(false)}>
+                <X className="h-6 w-6" />
+              </Button>
+            </div>
+            <nav className="px-6 py-4 space-y-4">
+              {navLinks.map(link => <Link key={link.to} to={link.to} onClick={() => setIsMenuOpen(false)} className={`block text-lg font-medium py-2 transition-colors ${location.pathname === link.to ? 'text-primary' : 'text-foreground/70'}`}>
+                  {link.label}
+                </Link>)}
+              <div className="pt-4 border-t">
+                <Link to="/cuenta" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-2 text-lg font-medium py-2">
+                  <User className="h-5 w-5" />
+                  Mi cuenta
+                </Link>
               </div>
-              <nav className="px-6 py-4 space-y-4">
-                {navLinks.map(link => <Link key={link.to} to={link.to} onClick={() => setIsMenuOpen(false)} className={`block text-lg font-medium py-2 transition-colors ${location.pathname === link.to ? 'text-primary' : 'text-foreground/70'}`}>
-                    {link.label}
-                  </Link>)}
-                <div className="pt-4 border-t">
-                  <Link to="/cuenta" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-2 text-lg font-medium py-2">
-                    <User className="h-5 w-5" />
-                    Mi cuenta
-                  </Link>
-                </div>
-              </nav>
-            </motion.div>
-          </>}
-      </AnimatePresence>
-    </header>;
+            </nav>
+          </motion.div>
+        </>}
+    </AnimatePresence>
+  </>;
 };
