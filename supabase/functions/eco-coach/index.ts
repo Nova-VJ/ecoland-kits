@@ -126,6 +126,8 @@ REGLAS:
 - Sugiere packs cuando sean más económicos que productos individuales
 - NUNCA inventes direcciones, teléfonos ni datos del negocio. Usa SOLO los de arriba.
 - SIEMPRE usa el formato [[product:slug]] o [[pack:slug]] al mencionar productos para que el usuario pueda añadirlos al carrito
+- Cuando termines de crear una dieta completa, dile al usuario que puede pulsar el botón "Aceptar dieta, guardar y añadir al carrito" que aparecerá debajo para guardar la dieta en su perfil y añadir todos los productos al carrito automáticamente.
+- Recuerda al usuario que para guardar sus dietas y el historial de conversación necesita crear una cuenta en Ecoland si no la tiene.
 
 ${CATALOG_SUMMARY}
 

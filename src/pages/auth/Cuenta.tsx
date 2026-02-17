@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { User, Phone, MapPin, Package, Repeat, Crown, LogOut, Loader2, Save, Leaf, Shield, Eye, ShoppingCart, Sparkles } from 'lucide-react';
+import { User, Phone, MapPin, Package, Repeat, Crown, LogOut, Loader2, Save, Leaf, Shield, Eye, ShoppingCart, Sparkles, MessageSquare, UtensilsCrossed } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -13,6 +13,8 @@ import { OrderHistory } from '@/components/account/OrderHistory';
 import { RecentlyViewed } from '@/components/account/RecentlyViewed';
 import { AbandonedCarts } from '@/components/account/AbandonedCarts';
 import { PersonalizedOffers } from '@/components/account/PersonalizedOffers';
+import { SavedDiets } from '@/components/account/SavedDiets';
+import { ConversationHistory } from '@/components/account/ConversationHistory';
 
 interface Profile {
   full_name: string | null;
@@ -162,7 +164,7 @@ const Cuenta = () => {
           </motion.div>
 
           <div className="grid lg:grid-cols-3 gap-8">
-            {/* Sidebar: Status Cards */}
+            {/* Sidebar */}
             <div className="lg:col-span-1 space-y-4">
               <div className={`rounded-2xl p-6 border ${profile?.is_club_member ? 'bg-eco-soft/20 border-eco-green' : 'bg-muted/30'}`}>
                 <div className="flex items-center gap-3 mb-3">
@@ -198,25 +200,33 @@ const Cuenta = () => {
             {/* Main Content with Tabs */}
             <div className="lg:col-span-2">
               <Tabs defaultValue="perfil" className="w-full">
-                <TabsList className="grid w-full grid-cols-5 mb-6">
-                  <TabsTrigger value="perfil" className="text-xs sm:text-sm gap-1">
-                    <User className="h-3.5 w-3.5 hidden sm:block" />
+                <TabsList className="grid w-full grid-cols-7 mb-6">
+                  <TabsTrigger value="perfil" className="text-[10px] sm:text-xs gap-0.5">
+                    <User className="h-3 w-3 hidden sm:block" />
                     Perfil
                   </TabsTrigger>
-                  <TabsTrigger value="pedidos" className="text-xs sm:text-sm gap-1">
-                    <Package className="h-3.5 w-3.5 hidden sm:block" />
+                  <TabsTrigger value="pedidos" className="text-[10px] sm:text-xs gap-0.5">
+                    <Package className="h-3 w-3 hidden sm:block" />
                     Pedidos
                   </TabsTrigger>
-                  <TabsTrigger value="visitados" className="text-xs sm:text-sm gap-1">
-                    <Eye className="h-3.5 w-3.5 hidden sm:block" />
+                  <TabsTrigger value="dietas" className="text-[10px] sm:text-xs gap-0.5">
+                    <UtensilsCrossed className="h-3 w-3 hidden sm:block" />
+                    Dietas
+                  </TabsTrigger>
+                  <TabsTrigger value="chats" className="text-[10px] sm:text-xs gap-0.5">
+                    <MessageSquare className="h-3 w-3 hidden sm:block" />
+                    Chats
+                  </TabsTrigger>
+                  <TabsTrigger value="visitados" className="text-[10px] sm:text-xs gap-0.5">
+                    <Eye className="h-3 w-3 hidden sm:block" />
                     Visitados
                   </TabsTrigger>
-                  <TabsTrigger value="carritos" className="text-xs sm:text-sm gap-1">
-                    <ShoppingCart className="h-3.5 w-3.5 hidden sm:block" />
+                  <TabsTrigger value="carritos" className="text-[10px] sm:text-xs gap-0.5">
+                    <ShoppingCart className="h-3 w-3 hidden sm:block" />
                     Carritos
                   </TabsTrigger>
-                  <TabsTrigger value="ofertas" className="text-xs sm:text-sm gap-1">
-                    <Sparkles className="h-3.5 w-3.5 hidden sm:block" />
+                  <TabsTrigger value="ofertas" className="text-[10px] sm:text-xs gap-0.5">
+                    <Sparkles className="h-3 w-3 hidden sm:block" />
                     Para ti
                   </TabsTrigger>
                 </TabsList>
@@ -274,6 +284,26 @@ const Cuenta = () => {
                       <h2 className="font-display text-xl font-semibold">Historial de pedidos</h2>
                     </div>
                     {user && <OrderHistory userId={user.id} />}
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="dietas">
+                  <div className="bg-card rounded-2xl border p-6">
+                    <div className="flex items-center gap-3 mb-6">
+                      <UtensilsCrossed className="h-6 w-6 text-primary" />
+                      <h2 className="font-display text-xl font-semibold">Mis dietas guardadas</h2>
+                    </div>
+                    <SavedDiets />
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="chats">
+                  <div className="bg-card rounded-2xl border p-6">
+                    <div className="flex items-center gap-3 mb-6">
+                      <MessageSquare className="h-6 w-6 text-primary" />
+                      <h2 className="font-display text-xl font-semibold">Historial de conversaciones</h2>
+                    </div>
+                    <ConversationHistory />
                   </div>
                 </TabsContent>
 
