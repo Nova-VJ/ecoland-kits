@@ -73,9 +73,13 @@ export const EcoCoach = () => {
   }, [messages]);
 
   useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUserId(session?.user?.id ?? null);
+    });
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) setUserId(user.id);
     });
+    return () => subscription.unsubscribe();
   }, []);
 
   const handleAcceptTerms = () => {
