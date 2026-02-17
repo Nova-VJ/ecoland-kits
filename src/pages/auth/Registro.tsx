@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import ecolandSymbol from '@/assets/ecoland-symbol.svg';
+import { OnboardingTutorial } from '@/components/OnboardingTutorial';
 
 const Registro = () => {
   const [fullName, setFullName] = useState('');
@@ -16,6 +17,7 @@ const Registro = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -60,7 +62,8 @@ const Registro = () => {
         title: '¡Cuenta creada!',
         description: 'Tu cuenta ha sido creada correctamente.',
       });
-      navigate('/cuenta');
+      // Show onboarding tutorial for new users
+      setShowOnboarding(true);
     } catch (error: any) {
       toast({
         title: 'Error al crear cuenta',
@@ -73,6 +76,10 @@ const Registro = () => {
   };
 
   return (
+    <>
+    {showOnboarding && (
+      <OnboardingTutorial onComplete={() => { setShowOnboarding(false); navigate('/cuenta'); }} />
+    )}
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-eco-cream/30 to-background py-12 px-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -187,6 +194,7 @@ const Registro = () => {
         </div>
       </motion.div>
     </div>
+    </>
   );
 };
 
