@@ -115,7 +115,7 @@ export const EcoCoach = () => {
     if (!userId) {
       toast({
         title: 'Crea una cuenta',
-        description: 'Para guardar dietas y el historial de conversación, necesitas crear una cuenta en Ecoland.',
+        description: 'Para guardar dietas necesitas crear una cuenta en Ecoland.',
         variant: 'destructive',
       });
       return;
@@ -130,7 +130,6 @@ export const EcoCoach = () => {
         await saveMessage(convId, msg.role, msg.content);
       }
 
-      // Update conversation title
       const firstUserMsg = messages.find(m => m.role === 'user');
       if (firstUserMsg) {
         await supabase.from('eco_coach_conversations' as any)
@@ -139,10 +138,17 @@ export const EcoCoach = () => {
       }
     }
 
+    // Extract diet name from content (look for "# 🥗 ..." pattern)
+    let dietTitle = `Dieta - ${new Date().toLocaleDateString('es-ES')}`;
+    const titleMatch = dietContent.match(/^#\s*🥗?\s*(.+)$/m);
+    if (titleMatch) {
+      dietTitle = titleMatch[1].trim();
+    }
+
     await supabase.from('saved_diets' as any).insert({
       user_id: userId,
       conversation_id: convId,
-      title: `Dieta - ${new Date().toLocaleDateString('es-ES')}`,
+      title: dietTitle,
       diet_content: dietContent.replace(/\[\[(product|pack):[a-z0-9-]+\]\]/g, ''),
       product_slugs: slugs,
     });
@@ -158,7 +164,7 @@ export const EcoCoach = () => {
 
     toast({
       title: '✅ Dieta guardada',
-      description: `Se guardó tu dieta y se añadieron ${added} productos al carrito. Consulta tus dietas en tu perfil.`,
+      description: `"${dietTitle}" guardada. ${added} productos añadidos al carrito.`,
     });
   };
 
