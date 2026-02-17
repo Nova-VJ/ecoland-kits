@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, ShoppingBag, User, Package, Store, ClipboardList, Repeat, BookOpen, Crown, MapPin, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/CartContext';
-import logoEcoland from '@/assets/logo-ecoland.jpg';
+import logoEcoland from '@/assets/logo-ecoland-2.jpg';
 const navLinks = [{
   to: '/packs',
   label: 'Packs',
@@ -50,7 +50,7 @@ export const Header = () => {
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
-            <img alt="Ecoland" className="h-10 md:h-12 w-auto" src="/lovable-uploads/50f16c2e-82fb-4cbb-ac5c-49c57a2d7563.png" />
+            <img alt="Ecoland" className="h-10 md:h-12 w-auto rounded-lg" src={logoEcoland} />
           </Link>
 
           {/* Desktop Navigation */}
@@ -101,7 +101,7 @@ export const Header = () => {
           type: 'spring',
           damping: 25,
           stiffness: 200
-        }} className="fixed top-0 right-0 bottom-0 w-80 bg-background z-50 lg:hidden shadow-xl">
+        }} className="fixed top-0 right-0 bottom-0 w-80 bg-card z-50 lg:hidden shadow-xl border-l border-border">
               <div className="p-4 flex justify-end">
                 <Button variant="ghost" size="icon" onClick={() => setIsMenuOpen(false)}>
                   <X className="h-6 w-6" />
