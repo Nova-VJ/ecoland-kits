@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      abandoned_carts: {
+        Row: {
+          abandoned_at: string
+          cart_items: Json
+          id: string
+          item_count: number
+          recovered: boolean
+          total_price: number
+          user_id: string
+        }
+        Insert: {
+          abandoned_at?: string
+          cart_items?: Json
+          id?: string
+          item_count?: number
+          recovered?: boolean
+          total_price?: number
+          user_id: string
+        }
+        Update: {
+          abandoned_at?: string
+          cart_items?: Json
+          id?: string
+          item_count?: number
+          recovered?: boolean
+          total_price?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       order_items: {
         Row: {
           created_at: string
@@ -113,6 +143,39 @@ export type Database = {
           total?: number
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      product_views: {
+        Row: {
+          id: string
+          product_id: string
+          product_image: string | null
+          product_name: string
+          product_price: number | null
+          product_type: string
+          user_id: string
+          viewed_at: string
+        }
+        Insert: {
+          id?: string
+          product_id: string
+          product_image?: string | null
+          product_name: string
+          product_price?: number | null
+          product_type?: string
+          user_id: string
+          viewed_at?: string
+        }
+        Update: {
+          id?: string
+          product_id?: string
+          product_image?: string | null
+          product_name?: string
+          product_price?: number | null
+          product_type?: string
+          user_id?: string
+          viewed_at?: string
         }
         Relationships: []
       }
