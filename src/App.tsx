@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CartProvider } from "@/context/CartContext";
 import { Layout } from "@/components/layout/Layout";
 import { IntroSplash } from "@/components/IntroSplash";
+import { CookieConsent } from "@/components/CookieConsent";
 import Index from "./pages/Index";
 import Packs from "./pages/Packs";
 import PackDetail from "./pages/PackDetail";
@@ -17,6 +18,8 @@ import Suscripcion from "./pages/Suscripcion";
 import Club from "./pages/Club";
 import Tienda from "./pages/Tienda";
 import ProductDetail from "./pages/ProductDetail";
+import CatalogProductDetail from "./pages/CatalogProductDetail";
+import CatalogPackDetail from "./pages/CatalogPackDetail";
 import DondeEstamos from "./pages/DondeEstamos";
 import ImportanciaMision from "./pages/ImportanciaMision";
 import Login from "./pages/auth/Login";
@@ -36,7 +39,6 @@ const App = () => {
   const [introComplete, setIntroComplete] = useState(false);
 
   useEffect(() => {
-    // Check if intro was already shown
     const introShown = sessionStorage.getItem('ecoland-intro-shown');
     if (introShown) {
       setShowIntro(false);
@@ -73,6 +75,8 @@ const App = () => {
                 <Route path="/club" element={<Club />} />
                 <Route path="/tienda" element={<Tienda />} />
                 <Route path="/tienda/:slug" element={<ProductDetail />} />
+                <Route path="/tienda/producto/:slug" element={<CatalogProductDetail />} />
+                <Route path="/tienda/pack/:slug" element={<CatalogPackDetail />} />
                 <Route path="/donde-estamos" element={<DondeEstamos />} />
                 <Route path="/importancia-y-mision" element={<ImportanciaMision />} />
                 <Route path="/login" element={<Login />} />
@@ -86,6 +90,7 @@ const App = () => {
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Layout>
+            <CookieConsent />
           </BrowserRouter>
         </TooltipProvider>
       </CartProvider>

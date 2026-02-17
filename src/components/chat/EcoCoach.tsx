@@ -1,318 +1,145 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Send, Leaf, Sparkles, ShoppingBag, Package } from 'lucide-react';
+import { X, Send, Sparkles, Leaf } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import ecoCoachIcon from '@/assets/eco-coach-icon.svg';
+import ReactMarkdown from 'react-markdown';
 
 interface Message {
   id: string;
-  type: 'user' | 'bot';
+  role: 'user' | 'assistant';
   content: string;
-  actions?: { label: string; href?: string; action?: string }[];
-  packRecommendation?: { name: string; slug: string; price: string };
-}
-
-interface OrderHistory {
-  items: string[];
-  categories: string[];
-  totalSpent: number;
-  orderCount: number;
 }
 
 const quickActions = [
-  { label: 'Recomiéndame', query: 'recomienda' },
-  { label: 'Pack según mi frigo', query: 'frigo' },
-  { label: 'Proteína', query: 'proteina' },
-  { label: 'Sin gluten', query: 'gluten' },
-  { label: 'Para oficina', query: 'oficina' },
+  { label: '🎯 Crear mi dieta', query: 'Quiero que me crees una dieta personalizada' },
+  { label: '💪 Ganar masa', query: 'Quiero ganar masa muscular, ¿qué me recomiendas?' },
+  { label: '⚖️ Perder peso', query: 'Quiero perder peso de forma saludable' },
+  { label: '🌱 Vegano', query: 'Soy vegano y necesito una dieta equilibrada' },
+  { label: '🚫 Sin gluten', query: 'Necesito opciones sin gluten' },
 ];
-
-const getPersonalizedGreeting = (orderHistory: OrderHistory | null, userName?: string): Message => {
-  if (!orderHistory || orderHistory.orderCount === 0) {
-    return {
-      id: 'default',
-      type: 'bot',
-      content: `¡Hola${userName ? `, ${userName}` : ''}! 🌿 Soy tu Eco-Coach. ¿En qué puedo ayudarte hoy? Puedo recomendarte el pack perfecto según tu objetivo, o crear un pack personalizado según lo que necesitas en tu nevera.`,
-      actions: [
-        { label: 'Ver packs', href: '/packs' },
-        { label: 'Hacer el test', href: '/quiz' },
-      ],
-    };
-  }
-
-  const favoriteCategories = orderHistory.categories.slice(0, 2).join(' y ');
-  return {
-    id: 'personalized',
-    type: 'bot',
-    content: `¡Hola${userName ? `, ${userName}` : ''}! 🌿 Veo que te gustan los productos de ${favoriteCategories}. ¿Quieres que te recomiende algo similar o probamos algo nuevo? También puedo crear un pack personalizado según lo que te falta en casa.`,
-    actions: [
-      { label: 'Repite mi favorito', href: '/packs' },
-      { label: 'Pack según mi frigo', action: 'frigo' },
-      { label: 'Algo nuevo', action: 'nuevo' },
-    ],
-  };
-};
-
-const responses: Record<string, (orderHistory: OrderHistory | null) => Message> = {
-  recomienda: (orderHistory) => ({
-    id: 'recomienda',
-    type: 'bot',
-    content: orderHistory?.orderCount 
-      ? `Basándome en tus compras anteriores de ${orderHistory.categories[0] || 'productos eco'}, te recomendaría explorar packs similares. ¿Cuál es tu objetivo principal?`
-      : '¡Genial! Para recomendarte el pack ideal, ¿me cuentas cuál es tu objetivo principal? Por ejemplo: energía, digestión, proteína, sin gluten...',
-    actions: [
-      { label: 'Hacer el test completo', href: '/quiz' },
-    ],
-  }),
-  frigo: () => ({
-    id: 'frigo',
-    type: 'bot',
-    content: '🧊 ¡Perfecto! Cuéntame qué te falta en la nevera o despensa. Por ejemplo: "me falta desayuno saludable", "necesito snacks para la oficina", "quiero proteína vegetal". Crearé un pack personalizado para ti.',
-    actions: [],
-  }),
-  proteina: (orderHistory) => ({
-    id: 'proteina',
-    type: 'bot',
-    content: orderHistory?.items.some(i => i.toLowerCase().includes('proteina'))
-      ? '¡Veo que ya has probado nuestros productos proteicos! Te gustó. El Pack Proteico Natural tiene más opciones que te encantarán.'
-      : '¡Perfecto para deportistas! Te recomiendo el Pack Proteico Natural. Incluye proteína vegetal de alta calidad, frutos secos y alimentos energéticos.',
-    packRecommendation: { name: 'Proteico Natural', slug: 'proteico-natural', price: 'Desde 29,90€' },
-    actions: [
-      { label: 'Ver pack', href: '/packs/proteico-natural' },
-    ],
-  }),
-  gluten: () => ({
-    id: 'gluten',
-    type: 'bot',
-    content: 'Entiendo, la seguridad es lo primero. El Pack Sin Gluten Seguro tiene productos 100% certificados. ¡Puedes comprar tranquilo!',
-    packRecommendation: { name: 'Sin Gluten Seguro', slug: 'sin-gluten-seguro', price: 'Desde 26,90€' },
-    actions: [
-      { label: 'Ver pack', href: '/packs/sin-gluten-seguro' },
-    ],
-  }),
-  oficina: () => ({
-    id: 'oficina',
-    type: 'bot',
-    content: 'Para la oficina tenemos el pack perfecto: snacks saludables, bebidas y comidas rápidas que no comprometen tu salud. ¡Ideal para la semana!',
-    packRecommendation: { name: 'Oficina Saludable', slug: 'oficina-saludable', price: 'Desde 21,90€' },
-    actions: [
-      { label: 'Ver pack', href: '/packs/oficina-saludable' },
-    ],
-  }),
-  alergias: () => ({
-    id: 'alergias',
-    type: 'bot',
-    content: 'Las alergias son importantes. Te recomiendo hacer el test para indicar tus restricciones específicas. Cada pack tiene la información de alérgenos bien detallada.',
-    actions: [
-      { label: 'Hacer el test', href: '/quiz' },
-      { label: 'Ver packs', href: '/packs' },
-    ],
-  }),
-  energia: (orderHistory) => ({
-    id: 'energia',
-    type: 'bot',
-    content: orderHistory?.categories.includes('energia')
-      ? '¡Ya conoces nuestros productos energéticos! Te han gustado. El Pack Energía Mañanas tiene todo para empezar cada día con fuerza.'
-      : '¡Energía natural! El Pack Energía Mañanas es perfecto: avena, superalimentos, semillas... Todo para empezar el día con fuerza.',
-    packRecommendation: { name: 'Energía Mañanas', slug: 'energia-mananas', price: 'Desde 22,90€' },
-    actions: [
-      { label: 'Ver pack', href: '/packs/energia-mananas' },
-    ],
-  }),
-  nuevo: () => ({
-    id: 'nuevo',
-    type: 'bot',
-    content: '¡Me encanta tu espíritu aventurero! 🌱 Te sugiero probar algo diferente. ¿Qué te parece explorar nuestros packs de digestión o el pack vegano fácil?',
-    actions: [
-      { label: 'Pack Digestión', href: '/packs/digestion-bienestar' },
-      { label: 'Pack Vegano', href: '/packs/vegano-facil' },
-      { label: 'Ver todos', href: '/packs' },
-    ],
-  }),
-};
-
-const handleFrigoRequest = (input: string): Message => {
-  const keywords = input.toLowerCase();
-  
-  if (keywords.includes('desayuno') || keywords.includes('mañana')) {
-    return {
-      id: 'frigo-desayuno',
-      type: 'bot',
-      content: '🥣 ¡Entendido! Para desayunos saludables te prepararía un pack con: avena ecológica, miel pura, semillas de chía, frutos rojos deshidratados y granola artesanal. ¿Te parece bien?',
-      packRecommendation: { name: 'Energía Mañanas', slug: 'energia-mananas', price: 'Desde 22,90€' },
-      actions: [
-        { label: 'Ver este pack', href: '/packs/energia-mananas' },
-        { label: 'Personalizar más', action: 'personalizar' },
-      ],
-    };
-  }
-  
-  if (keywords.includes('snack') || keywords.includes('oficina') || keywords.includes('pica')) {
-    return {
-      id: 'frigo-snacks',
-      type: 'bot',
-      content: '🥜 ¡Snacks eco para picar sin remordimientos! Te sugiero: mix de frutos secos, barritas energéticas, chips de verduras, crackers integrales y chocolate negro 85%.',
-      packRecommendation: { name: 'Oficina Saludable', slug: 'oficina-saludable', price: 'Desde 21,90€' },
-      actions: [
-        { label: 'Ver este pack', href: '/packs/oficina-saludable' },
-      ],
-    };
-  }
-  
-  if (keywords.includes('proteina') || keywords.includes('musculo') || keywords.includes('gym') || keywords.includes('deporte')) {
-    return {
-      id: 'frigo-proteina',
-      type: 'bot',
-      content: '💪 ¡Para ganar músculo de forma natural! Pack con: proteína de guisante, tempeh, tofu, legumbres secas, semillas de cáñamo y mantequilla de almendras.',
-      packRecommendation: { name: 'Proteico Natural', slug: 'proteico-natural', price: 'Desde 29,90€' },
-      actions: [
-        { label: 'Ver este pack', href: '/packs/proteico-natural' },
-      ],
-    };
-  }
-  
-  if (keywords.includes('verdura') || keywords.includes('fresca') || keywords.includes('ensalada')) {
-    return {
-      id: 'frigo-verduras',
-      type: 'bot',
-      content: '🥗 ¡Fresquito y saludable! Aunque no vendemos verduras frescas online, sí tenemos: conservas de verduras eco, cremas de verduras, y en nuestra tienda física encontrarás verduras frescas certificadas.',
-      actions: [
-        { label: 'Ver dónde estamos', href: '/donde-estamos' },
-        { label: 'Conservas eco', href: '/tienda' },
-      ],
-    };
-  }
-  
-  return {
-    id: 'frigo-general',
-    type: 'bot',
-    content: '🧺 Basándome en lo que necesitas, te recomiendo empezar con nuestro Pack Inicio Eco. Tiene los básicos esenciales para una despensa saludable: aceite AOVE, pasta integral, legumbres, arroz y más.',
-    packRecommendation: { name: 'Inicio Eco', slug: 'inicio-eco', price: 'Desde 24,90€' },
-    actions: [
-      { label: 'Ver pack básicos', href: '/packs/inicio-eco' },
-      { label: 'Cuéntame más', action: 'mas-detalle' },
-    ],
-  };
-};
 
 export const EcoCoach = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: 'welcome',
+      role: 'assistant',
+      content: '¡Hola! 🌿 Soy tu **Eco-Coach**. Puedo crear una dieta personalizada con productos ecológicos de nuestra tienda.\n\n¿Cuál es tu objetivo principal? Por ejemplo: ganar masa muscular, perder peso, mejorar la digestión, más energía...',
+    },
+  ]);
   const [input, setInput] = useState('');
-  const [orderHistory, setOrderHistory] = useState<OrderHistory | null>(null);
-  const [userName, setUserName] = useState<string | undefined>();
-  const [isFrigoMode, setIsFrigoMode] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/eco-coach`;
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (user) {
-        // Fetch profile name
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('full_name')
-          .eq('user_id', user.id)
-          .single();
-        
-        if (profile?.full_name) {
-          setUserName(profile.full_name.split(' ')[0]);
-        }
+  const sendMessage = async (messageText?: string) => {
+    const text = messageText || input.trim();
+    if (!text || isLoading) return;
 
-        // Fetch order history
-        const { data: orders } = await supabase
-          .from('orders')
-          .select('id, total')
-          .eq('user_id', user.id);
-
-        if (orders && orders.length > 0) {
-          const orderIds = orders.map(o => o.id);
-          const { data: items } = await supabase
-            .from('order_items')
-            .select('item_name, item_type')
-            .in('order_id', orderIds);
-
-          const categories = [...new Set((items || []).map(i => i.item_type))];
-          const itemNames = (items || []).map(i => i.item_name);
-
-          setOrderHistory({
-            items: itemNames,
-            categories,
-            totalSpent: orders.reduce((sum, o) => sum + Number(o.total), 0),
-            orderCount: orders.length,
-          });
-        }
-      }
-    };
-
-    fetchUserData();
-  }, []);
-
-  useEffect(() => {
-    // Set initial greeting when component mounts or when user data is loaded
-    setMessages([getPersonalizedGreeting(orderHistory, userName)]);
-  }, [orderHistory, userName]);
-
-  const handleSend = (query?: string) => {
-    const userQuery = query || input.toLowerCase().trim();
-    if (!userQuery) return;
-
-    // Add user message
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      type: 'user',
-      content: query || input,
-    };
-    setMessages(prev => [...prev, userMessage]);
+    const userMsg: Message = { id: Date.now().toString(), role: 'user', content: text };
+    setMessages(prev => [...prev, userMsg]);
     setInput('');
+    setIsLoading(true);
 
-    // Handle response
-    setTimeout(() => {
-      let response: Message;
+    let assistantContent = '';
+
+    const upsertAssistant = (chunk: string) => {
+      assistantContent += chunk;
+      setMessages(prev => {
+        const last = prev[prev.length - 1];
+        if (last?.role === 'assistant' && last.id.startsWith('stream-')) {
+          return prev.map((m, i) => (i === prev.length - 1 ? { ...m, content: assistantContent } : m));
+        }
+        return [...prev, { id: `stream-${Date.now()}`, role: 'assistant', content: assistantContent }];
+      });
+    };
+
+    try {
+      const apiMessages = messages
+        .filter(m => m.id !== 'welcome')
+        .concat(userMsg)
+        .map(m => ({ role: m.role, content: m.content }));
       
-      // Check if we're in frigo mode
-      if (isFrigoMode) {
-        response = handleFrigoRequest(userQuery);
-        setIsFrigoMode(false);
-      } else if (userQuery.includes('frigo') || userQuery.includes('nevera') || userQuery.includes('falta')) {
-        response = responses.frigo(orderHistory);
-        setIsFrigoMode(true);
-      } else if (userQuery.includes('proteina') || userQuery.includes('proteína') || userQuery.includes('fitness') || userQuery.includes('deporte')) {
-        response = responses.proteina(orderHistory);
-      } else if (userQuery.includes('gluten') || userQuery.includes('celiaco') || userQuery.includes('celíaco')) {
-        response = responses.gluten(orderHistory);
-      } else if (userQuery.includes('oficina') || userQuery.includes('trabajo') || userQuery.includes('snack')) {
-        response = responses.oficina(orderHistory);
-      } else if (userQuery.includes('alergia') || userQuery.includes('intolerancia')) {
-        response = responses.alergias(orderHistory);
-      } else if (userQuery.includes('energia') || userQuery.includes('energía') || userQuery.includes('mañana') || userQuery.includes('desayuno')) {
-        response = responses.energia(orderHistory);
-      } else if (userQuery.includes('nuevo') || userQuery.includes('diferente') || userQuery.includes('probar')) {
-        response = responses.nuevo(orderHistory);
-      } else if (userQuery.includes('recomienda') || userQuery.includes('ayuda') || userQuery.includes('pack')) {
-        response = responses.recomienda(orderHistory);
-      } else {
-        response = {
-          id: 'fallback',
-          type: 'bot',
-          content: 'Entiendo lo que necesitas. ¿Te gustaría que te recomiende un pack específico o prefieres hacer el test para una recomendación más personalizada?',
-          actions: [
-            { label: 'Hacer el test', href: '/quiz' },
-            { label: 'Ver todos los packs', href: '/packs' },
-          ],
-        };
+      // Include welcome context
+      if (messages.length <= 1) {
+        // First message, include the assistant greeting in context
       }
 
-      setMessages(prev => [...prev, { ...response, id: Date.now().toString() }]);
-    }, 500);
+      const resp = await fetch(CHAT_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({ messages: apiMessages }),
+      });
+
+      if (!resp.ok || !resp.body) {
+        const errorData = await resp.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Error al conectar con Eco-Coach');
+      }
+
+      const reader = resp.body.getReader();
+      const decoder = new TextDecoder();
+      let textBuffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        textBuffer += decoder.decode(value, { stream: true });
+
+        let newlineIndex: number;
+        while ((newlineIndex = textBuffer.indexOf('\n')) !== -1) {
+          let line = textBuffer.slice(0, newlineIndex);
+          textBuffer = textBuffer.slice(newlineIndex + 1);
+
+          if (line.endsWith('\r')) line = line.slice(0, -1);
+          if (line.startsWith(':') || line.trim() === '') continue;
+          if (!line.startsWith('data: ')) continue;
+
+          const jsonStr = line.slice(6).trim();
+          if (jsonStr === '[DONE]') break;
+
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const content = parsed.choices?.[0]?.delta?.content;
+            if (content) upsertAssistant(content);
+          } catch {
+            textBuffer = line + '\n' + textBuffer;
+            break;
+          }
+        }
+      }
+
+      // Final flush
+      if (textBuffer.trim()) {
+        for (let raw of textBuffer.split('\n')) {
+          if (!raw || raw.startsWith(':') || raw.trim() === '') continue;
+          if (!raw.startsWith('data: ')) continue;
+          const jsonStr = raw.slice(6).trim();
+          if (jsonStr === '[DONE]') continue;
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const content = parsed.choices?.[0]?.delta?.content;
+            if (content) upsertAssistant(content);
+          } catch {}
+        }
+      }
+    } catch (e: any) {
+      setMessages(prev => [
+        ...prev,
+        { id: `err-${Date.now()}`, role: 'assistant', content: `❌ ${e.message || 'Error al conectar. Inténtalo de nuevo.'}` },
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -327,11 +154,7 @@ export const EcoCoach = () => {
         className="fixed bottom-6 right-6 z-40 w-16 h-16 rounded-full shadow-lg overflow-hidden animate-pulse-eco"
         style={{ background: 'linear-gradient(135deg, hsl(113 39% 49%) 0%, hsl(120 31% 32%) 100%)' }}
       >
-        <img 
-          src={ecoCoachIcon} 
-          alt="Eco-Coach" 
-          className="w-full h-full object-cover"
-        />
+        <img src={ecoCoachIcon} alt="Eco-Coach" className="w-full h-full object-cover" />
       </motion.button>
 
       {/* Chat Window */}
@@ -341,7 +164,7 @@ export const EcoCoach = () => {
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="fixed bottom-6 right-6 z-50 w-[380px] max-w-[calc(100vw-48px)] h-[600px] max-h-[calc(100vh-120px)] bg-background rounded-2xl shadow-2xl flex flex-col overflow-hidden border"
+            className="fixed bottom-6 right-6 z-50 w-[400px] max-w-[calc(100vw-48px)] h-[600px] max-h-[calc(100vh-120px)] bg-background rounded-2xl shadow-2xl flex flex-col overflow-hidden border"
           >
             {/* Header */}
             <div className="p-4 bg-gradient-to-r from-primary to-eco-dark text-primary-foreground flex items-center gap-3">
@@ -349,9 +172,9 @@ export const EcoCoach = () => {
                 <img src={ecoCoachIcon} alt="Eco-Coach" className="w-full h-full object-cover" />
               </div>
               <div className="flex-1">
-                <h3 className="font-display font-semibold">Eco-Coach</h3>
-                <p className="text-sm text-primary-foreground/80">
-                  {orderHistory?.orderCount ? 'Te conozco 💚' : 'Tu asistente eco personal'}
+                <h3 className="font-display font-semibold">Eco-Coach IA</h3>
+                <p className="text-sm text-primary-foreground/80 flex items-center gap-1">
+                  <Sparkles className="h-3 w-3" /> Dietas personalizadas con IA
                 </p>
               </div>
               <Button
@@ -364,106 +187,75 @@ export const EcoCoach = () => {
               </Button>
             </div>
 
-            {/* Eco Points indicator if user has history */}
-            {orderHistory && orderHistory.orderCount > 0 && (
-              <div className="px-4 py-2 bg-eco-cream/50 flex items-center gap-2 text-sm">
-                <Sparkles className="h-4 w-4 text-eco-green" />
-                <span className="text-eco-dark">
-                  {orderHistory.orderCount} pedidos • Cliente habitual
-                </span>
-              </div>
-            )}
-
             {/* Messages */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
               {messages.map((message) => (
                 <div
                   key={message.id}
-                  className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
+                  className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
                     className={`max-w-[85%] rounded-2xl px-4 py-3 ${
-                      message.type === 'user'
+                      message.role === 'user'
                         ? 'bg-primary text-primary-foreground rounded-br-sm'
                         : 'bg-muted rounded-bl-sm'
                     }`}
                   >
-                    <p className="text-sm">{message.content}</p>
-                    
-                    {/* Pack Recommendation */}
-                    {message.packRecommendation && (
-                      <Link
-                        to={`/packs/${message.packRecommendation.slug}`}
-                        onClick={() => setIsOpen(false)}
-                        className="mt-3 block p-3 rounded-xl bg-background/50 hover:bg-background transition-colors"
-                      >
-                        <div className="flex items-center gap-2">
-                          <Package className="h-4 w-4 text-primary" />
-                          <span className="font-medium text-foreground">{message.packRecommendation.name}</span>
-                        </div>
-                        <p className="text-xs text-muted-foreground mt-1">{message.packRecommendation.price}</p>
-                      </Link>
-                    )}
-                    
-                    {/* Actions */}
-                    {message.actions && message.actions.length > 0 && (
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        {message.actions.map((action, i) => (
-                          action.href ? (
-                            <Link
-                              key={i}
-                              to={action.href}
-                              onClick={() => setIsOpen(false)}
-                              className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
-                            >
-                              {action.label}
-                            </Link>
-                          ) : (
-                            <button
-                              key={i}
-                              onClick={() => handleSend(action.action || action.label)}
-                              className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
-                            >
-                              {action.label}
-                            </button>
-                          )
-                        ))}
+                    {message.role === 'assistant' ? (
+                      <div className="text-sm prose prose-sm max-w-none prose-p:my-1 prose-li:my-0 prose-ul:my-1 prose-ol:my-1 prose-headings:my-2 prose-strong:text-foreground">
+                        <ReactMarkdown>{message.content}</ReactMarkdown>
                       </div>
+                    ) : (
+                      <p className="text-sm">{message.content}</p>
                     )}
                   </div>
                 </div>
               ))}
+              {isLoading && messages[messages.length - 1]?.role === 'user' && (
+                <div className="flex justify-start">
+                  <div className="bg-muted rounded-2xl rounded-bl-sm px-4 py-3">
+                    <div className="flex gap-1">
+                      <span className="w-2 h-2 bg-primary/50 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                      <span className="w-2 h-2 bg-primary/50 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                      <span className="w-2 h-2 bg-primary/50 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                    </div>
+                  </div>
+                </div>
+              )}
               <div ref={messagesEndRef} />
             </div>
 
             {/* Quick Actions */}
-            <div className="px-4 py-2 border-t overflow-x-auto">
-              <div className="flex gap-2">
-                {quickActions.map((action) => (
-                  <button
-                    key={action.query}
-                    onClick={() => handleSend(action.query)}
-                    className="flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors"
-                  >
-                    {action.label}
-                  </button>
-                ))}
+            {messages.length <= 2 && (
+              <div className="px-4 py-2 border-t overflow-x-auto">
+                <div className="flex gap-2">
+                  {quickActions.map((action) => (
+                    <button
+                      key={action.label}
+                      onClick={() => sendMessage(action.query)}
+                      className="flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors"
+                    >
+                      {action.label}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Input */}
             <div className="p-4 border-t">
-              <form 
-                onSubmit={(e) => { e.preventDefault(); handleSend(); }}
+              <form
+                onSubmit={(e) => { e.preventDefault(); sendMessage(); }}
                 className="flex gap-2"
               >
                 <Input
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  placeholder={isFrigoMode ? "¿Qué te falta en casa?" : "Escribe tu mensaje..."}
+                  placeholder="Cuéntame tu objetivo..."
                   className="flex-1"
+                  disabled={isLoading}
                 />
-                <Button type="submit" size="icon">
+                <Button type="submit" size="icon" disabled={isLoading || !input.trim()}>
                   <Send className="h-4 w-4" />
                 </Button>
               </form>
