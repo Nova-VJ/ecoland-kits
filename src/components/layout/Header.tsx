@@ -101,7 +101,7 @@ export const Header = () => {
           type: 'spring',
           damping: 25,
           stiffness: 200
-        }} className="fixed top-0 right-0 bottom-0 w-80 bg-card z-50 lg:hidden shadow-xl border-l border-border">
+        }} className="fixed top-0 right-0 bottom-0 w-80 z-50 lg:hidden shadow-xl border-l border-border" style={{ backgroundColor: 'hsl(var(--card))' }}>
               <div className="p-4 flex justify-end">
                 <Button variant="ghost" size="icon" onClick={() => setIsMenuOpen(false)}>
                   <X className="h-6 w-6" />
