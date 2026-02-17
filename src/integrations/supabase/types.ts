@@ -290,6 +290,11 @@ export type Database = {
           diet_content: string
           id: string
           product_slugs: Json
+          subscription_active: boolean
+          subscription_interval: string | null
+          subscription_next_order: string | null
+          subscription_plan: string | null
+          subscription_start: string | null
           title: string
           user_id: string
         }
@@ -299,6 +304,11 @@ export type Database = {
           diet_content: string
           id?: string
           product_slugs?: Json
+          subscription_active?: boolean
+          subscription_interval?: string | null
+          subscription_next_order?: string | null
+          subscription_plan?: string | null
+          subscription_start?: string | null
           title: string
           user_id: string
         }
@@ -308,6 +318,11 @@ export type Database = {
           diet_content?: string
           id?: string
           product_slugs?: Json
+          subscription_active?: boolean
+          subscription_interval?: string | null
+          subscription_next_order?: string | null
+          subscription_plan?: string | null
+          subscription_start?: string | null
           title?: string
           user_id?: string
         }
