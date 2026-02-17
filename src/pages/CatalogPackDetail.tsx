@@ -1,17 +1,31 @@
 import { useParams, Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ShoppingBag, Check, AlertTriangle, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { getCatalogPackBySlug, CatalogPack } from '@/data/catalog';
 import { useCart } from '@/context/CartContext';
+import { useProductViews } from '@/hooks/useProductViews';
 
 const CatalogPackDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const pack = getCatalogPackBySlug(slug || '');
   const { addCatalogPack } = useCart();
   const [isAdded, setIsAdded] = useState(false);
+  const { trackView } = useProductViews();
+
+  useEffect(() => {
+    if (pack) {
+      trackView({
+        id: pack.slug,
+        type: 'catalog-pack',
+        name: pack.name,
+        image: pack.image,
+        price: pack.price,
+      });
+    }
+  }, [pack, trackView]);
 
   if (!pack) {
     return (

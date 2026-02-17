@@ -1,7 +1,8 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { Pack, PackSize } from '@/data/packs';
 import { Product } from '@/data/products';
 import { CatalogProduct, CatalogPack } from '@/data/catalog';
+import { supabase } from '@/integrations/supabase/client';
 
 // Pack item in cart (original packs)
 export interface PackCartItem {
@@ -183,8 +184,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     );
   };
 
-  const clearCart = () => setItems([]);
-
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
 
   const totalPrice = items.reduce((sum, item) => {
@@ -204,6 +203,25 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
     return sum;
   }, 0);
+
+  const clearCart = useCallback(async () => {
+    if (items.length > 0) {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          await supabase.from('abandoned_carts').insert({
+            user_id: user.id,
+            cart_items: items as any,
+            total_price: totalPrice,
+            item_count: totalItems,
+          });
+        }
+      } catch (e) {
+        console.error('Error saving abandoned cart:', e);
+      }
+    }
+    setItems([]);
+  }, [items, totalPrice, totalItems]);
 
   return (
     <CartContext.Provider

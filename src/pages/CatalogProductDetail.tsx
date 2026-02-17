@@ -1,11 +1,12 @@
 import { useParams, Link } from 'react-router-dom';
+import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ShoppingCart, Check, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { getCatalogProductBySlug, catalogCategories } from '@/data/catalog';
 import { useCart } from '@/context/CartContext';
-
+import { useProductViews } from '@/hooks/useProductViews';
 const productTags = [
   { id: 'bio', label: 'Bio' },
   { id: 'vegano', label: 'Vegano' },
@@ -29,6 +30,19 @@ const CatalogProductDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const product = getCatalogProductBySlug(slug || '');
   const { addCatalogProduct } = useCart();
+  const { trackView } = useProductViews();
+
+  useEffect(() => {
+    if (product) {
+      trackView({
+        id: product.slug,
+        type: 'catalog-product',
+        name: product.name,
+        image: product.image,
+        price: product.price,
+      });
+    }
+  }, [product, trackView]);
 
   if (!product) {
     return (
