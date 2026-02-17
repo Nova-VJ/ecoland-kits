@@ -53,15 +53,15 @@ export const Footer = () => {
               </li>
               <li className="flex items-center gap-2">
                 <Phone className="h-4 w-4" />
-                <a href="tel:+34983456789" className="hover:text-primary-foreground transition-colors">
-                  +34 983 45 67 89
+                <a href="tel:+34983084539" className="hover:text-primary-foreground transition-colors">
+                  +34 983 08 45 39
                 </a>
               </li>
               <li className="flex items-start gap-2">
                 <MapPin className="h-4 w-4 mt-0.5" />
-                <a href="https://www.google.com/maps/place/Ecoland+-+Productos+Ecol%C3%B3gicos/@41.6434236,-4.7212234,17z" target="_blank" rel="noopener noreferrer" className="hover:text-primary-foreground transition-colors">
-                  C. Paulina Harriet, 4<br />
-                  47006 Valladolid
+                <a href="https://www.google.com/maps/place/Eco+Land/@41.6413866,-4.7308815,18z" target="_blank" rel="noopener noreferrer" className="hover:text-primary-foreground transition-colors">
+                  C. de Recondo, 7<br />
+                  47007 Valladolid
                 </a>
               </li>
             </ul>

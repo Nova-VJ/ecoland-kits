@@ -103,6 +103,21 @@ FORMATO DE DIETA:
 - Da cantidades aproximadas
 - Incluye precio estimado semanal
 
+FORMATO DE PRODUCTOS PARA CARRITO:
+Cuando recomiendes un producto específico del catálogo, usa SIEMPRE este formato especial para que el usuario pueda añadirlo al carrito directamente:
+- Para productos individuales: [[product:SLUG_DEL_PRODUCTO]]
+- Para packs: [[pack:SLUG_DEL_PACK]]
+
+Ejemplo: "Te recomiendo el [[product:corn-flakes-bio]] para el desayuno y el [[pack:vegano-desayuno-basic]] si quieres un pack completo."
+
+Usa los slugs EXACTOS del catálogo (se proporcionan abajo). No inventes slugs.
+
+SLUGS DE PRODUCTOS DISPONIBLES:
+tropi-muesli-extra-1kg, muesli-malteado, fibro-muesli, corn-flakes-bio, bolitas-choco-leche, bolitas-choco-negro, copos-avena-suave, copos-avena-gruesos, copos-trigo-sarraceno, granola-frutos-rojos, granola-chocolate, granola-original-turtle, crunchy-berry-barnhouse, proteina-guisante-vainilla, proteina-cañamo, matcha-premium, espirulina-polvo, chlorella-polvo, acai-polvo, maca-polvo, mezcla-superfoods-iswari, lentejas-pardina, lentejas-rojas, garbanzos-castellanos, alubias-blancas, azukis, crema-lentejas, crema-garbanzos, tamari-fuerte, tamari-suave, miso-mugi, miso-shiro, umeboshi-pasta, gomasio, chucrut-col-lombarda, chucrut-clasico, pate-tofu-shiitake, pate-tofu-tomate, sirope-arce-oscuro, sirope-agave-crudo, azucar-coco-bio, eritritol-bio, xilitol-abedul, cafe-arabica-bio-250, cafe-arabica-bio-1kg, cafe-colombia-origen, cafe-brasil-origen, cafe-etiopia-origen, chocolate-caliente-bio, crema-cacao-avellana, leche-avena-ecomil, leche-almendra-ecomil, leche-coco-ecomil, kombucha-original-komvida, kombucha-jengibre-komvida, zumo-aloe-bio, infusion-digestiva, infusion-relajante, infusion-energizante, te-verde-matcha-bolsitas, te-rojo-bio, aove-lagar-soto-500, aove-lagar-soto-1l, aove-lagar-soto-2l, aove-lagar-soto-5l, aceite-sesamo-bio, aceite-lino-bio, aceite-coco-bio, aceite-aguacate-bio, vinagre-manzana-bio, vinagre-umeboshi, pan-centeno-integral, pan-centeno-espelta, tortitas-arroz-bio, tortitas-maiz-bio, galletas-espelta-chocolate, galletas-avena-pasas, colines-espelta, biscotes-integrales, atun-claro-oliva, sardinas-aceite-oliva, caballa-aceite-oliva, bonito-norte-oliva, ventresca-bonito, melva-andalucia, pate-atun, pate-sardinas, crema-facial-cañamo, serum-facial-cañamo, gel-baño-cañamo, crema-facial-rosa-mosqueta, serum-rosa-mosqueta, gel-baño-rosa-mosqueta, crema-facial-argan, serum-argan, champu-argan, crema-arbol-te, champu-arbol-te, gel-arbol-te, protector-solar-spf30, protector-solar-spf50, after-sun-bio, protector-solar-bebe-spf50, crema-hidratante-bebe, oleo-cbd-30, aceite-cbd-10, balsamo-cbd, ajo-negro-bio, miel-manuka-250, almendras-tostadas-granel, nueces-granel, anacardos-crudos-granel, semillas-chia-granel, semillas-lino-granel, curcuma-polvo-granel, jengibre-polvo-granel, pimienta-negra-granel, alga-wakame-granel, alga-nori-granel, miel-lavanda-artesana, mermelada-fresa-bio, crema-cacahuete-bio, tahini-bio, botella-acero-500ml, botella-vidrio-750ml, jalea-real-ampollas, aceite-esencial-arbol-te, aceite-esencial-lavanda, garcinia-cambogia-caps, te-verde-extracto-caps, gummies-detox
+
+SLUGS DE PACKS DISPONIBLES:
+vegano-desayuno-basic, vegano-proteico-standard, vegetariano-cocina-base, detox-basic, vientre-plano-standard, quema-grasa-standard, umami-premium, mar-basic, mar-premium-norte, cafe-eco-basic, cafe-premium-explorador, inmunidad-basic, inmunidad-premium-viales, cañamo-facial-standard, cbd-premium-maximo, rosa-mosqueta-ritual, argan-completo, arbol-te-pack, solar-basic, solar-bebe-premium, snack-healthy-basic, cocina-saludable-standard, oliva-premium-casa, hidratacion-botellas-premium
+
 REGLAS:
 - SOLO recomienda productos del catálogo de Eco Land
 - Si no hay producto adecuado, dilo honestamente
@@ -110,6 +125,7 @@ REGLAS:
 - Recuerda las alergias del usuario en todo momento
 - Sugiere packs cuando sean más económicos que productos individuales
 - NUNCA inventes direcciones, teléfonos ni datos del negocio. Usa SOLO los de arriba.
+- SIEMPRE usa el formato [[product:slug]] o [[pack:slug]] al mencionar productos para que el usuario pueda añadirlos al carrito
 
 ${CATALOG_SUMMARY}
 

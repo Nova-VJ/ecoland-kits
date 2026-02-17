@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Send, Sparkles, Leaf } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
 import ecoCoachIcon from '@/assets/eco-coach-icon.svg';
 import ReactMarkdown from 'react-markdown';
+import { EcoCoachProductCard } from './EcoCoachProductCard';
 
 interface Message {
   id: string;
@@ -20,6 +21,26 @@ const quickActions = [
   { label: '🌱 Vegano', query: 'Soy vegano y necesito una dieta equilibrada' },
   { label: '🚫 Sin gluten', query: 'Necesito opciones sin gluten' },
 ];
+
+// Parse [[product:slug]] and [[pack:slug]] markers in AI responses
+const AssistantMessage = ({ content }: { content: string }) => {
+  const parts = content.split(/(\[\[(?:product|pack):[a-z0-9-]+\]\])/g);
+
+  return (
+    <>
+      {parts.map((part, i) => {
+        const productMatch = part.match(/^\[\[product:([a-z0-9-]+)\]\]$/);
+        if (productMatch) return <EcoCoachProductCard key={i} type="product" slug={productMatch[1]} />;
+
+        const packMatch = part.match(/^\[\[pack:([a-z0-9-]+)\]\]$/);
+        if (packMatch) return <EcoCoachProductCard key={i} type="pack" slug={packMatch[1]} />;
+
+        if (!part) return null;
+        return <ReactMarkdown key={i}>{part}</ReactMarkdown>;
+      })}
+    </>
+  );
+};
 
 export const EcoCoach = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -203,7 +224,7 @@ export const EcoCoach = () => {
                   >
                     {message.role === 'assistant' ? (
                       <div className="text-sm prose prose-sm max-w-none prose-p:my-1 prose-li:my-0 prose-ul:my-1 prose-ol:my-1 prose-headings:my-2 prose-strong:text-foreground">
-                        <ReactMarkdown>{message.content}</ReactMarkdown>
+                        <AssistantMessage content={message.content} />
                       </div>
                     ) : (
                       <p className="text-sm">{message.content}</p>
