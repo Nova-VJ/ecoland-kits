@@ -91,7 +91,7 @@ export const OnboardingTutorial = ({ onComplete }: OnboardingTutorialProps) => {
             <X className="h-5 w-5" />
           </button>
           <div className="flex items-center gap-4">
-            <div className="flex-shrink-0 w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center overflow-hidden">
+            <div className="flex-shrink-0 w-16 h-16 rounded-2xl bg-white/25 backdrop-blur-sm flex items-center justify-center overflow-hidden shadow-lg border border-white/20">
               {current.icon}
             </div>
             <div>
