@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Package, ChevronDown, ChevronUp, Calendar, MapPin, CreditCard } from 'lucide-react';
+import { Package, ChevronDown, ChevronUp, Calendar, MapPin, CreditCard, Download } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
+import { generateInvoicePdf } from '@/lib/invoicePdfGenerator';
 
 interface OrderItem {
   id: string;
@@ -42,7 +44,7 @@ const statusLabels: Record<string, string> = {
   cancelled: 'Cancelado',
 };
 
-export const OrderHistory = ({ userId }: { userId: string }) => {
+export const OrderHistory = ({ userId, userEmail, userName }: { userId: string; userEmail?: string; userName?: string }) => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -194,13 +196,36 @@ export const OrderHistory = ({ userId }: { userId: string }) => {
                 </div>
               </div>
 
-              {/* Eco Points earned */}
-              <div className="mt-4 p-3 bg-eco-soft/20 rounded-lg flex items-center gap-2">
-                <span className="text-lg">🌿</span>
-                <p className="text-sm">
-                  <span className="font-semibold text-eco-dark">+{Math.floor(order.total)} Eco Puntos</span>
-                  {' '}ganados con este pedido
-                </p>
+              {/* Actions */}
+              <div className="mt-4 flex items-center justify-between">
+                <div className="p-3 bg-eco-soft/20 rounded-lg flex items-center gap-2">
+                  <span className="text-lg">🌿</span>
+                  <p className="text-sm">
+                    <span className="font-semibold text-eco-dark">+{Math.floor(order.total)} Eco Puntos</span>
+                    {' '}ganados con este pedido
+                  </p>
+                </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="gap-1.5"
+                  onClick={() => generateInvoicePdf({
+                    order_number: order.order_number,
+                    created_at: order.created_at,
+                    status: order.status,
+                    subtotal: order.subtotal,
+                    shipping_cost: order.shipping_cost,
+                    total: order.total,
+                    shipping_address: order.shipping_address,
+                    shipping_city: order.shipping_city,
+                    items: order.items || [],
+                    customer_name: userName,
+                    customer_email: userEmail,
+                  })}
+                >
+                  <Download className="h-3.5 w-3.5" />
+                  Factura PDF
+                </Button>
               </div>
             </motion.div>
           )}

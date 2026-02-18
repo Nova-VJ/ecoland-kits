@@ -118,21 +118,21 @@ const Cuenta = () => {
       <div className="container-eco max-w-5xl">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
           {/* Header */}
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
             <div>
-              <h1 className="font-display text-3xl font-bold">Mi cuenta</h1>
-              <p className="text-muted-foreground mt-1">{user?.email}</p>
+              <h1 className="font-display text-2xl sm:text-3xl font-bold">Mi cuenta</h1>
+              <p className="text-muted-foreground mt-1 text-sm sm:text-base break-all">{user?.email}</p>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
               {profile?.is_admin && (
-                <Button asChild variant="outline" className="border-eco-green text-eco-green hover:bg-eco-green hover:text-white">
+                <Button asChild variant="outline" size="sm" className="border-eco-green text-eco-green hover:bg-eco-green hover:text-white">
                   <Link to="/admin">
                     <Shield className="h-4 w-4 mr-2" />
-                    Panel Admin
+                    Admin
                   </Link>
                 </Button>
               )}
-              <Button variant="outline" onClick={handleLogout}>
+              <Button variant="outline" size="sm" onClick={handleLogout} className="whitespace-nowrap">
                 <LogOut className="h-4 w-4 mr-2" />
                 Cerrar sesión
               </Button>
@@ -200,33 +200,33 @@ const Cuenta = () => {
             {/* Main Content with Tabs */}
             <div className="lg:col-span-2">
               <Tabs defaultValue="perfil" className="w-full">
-                <TabsList className="grid w-full grid-cols-7 mb-6">
-                  <TabsTrigger value="perfil" className="text-[10px] sm:text-xs gap-0.5">
-                    <User className="h-3 w-3 hidden sm:block" />
+                <TabsList className="flex w-full overflow-x-auto mb-6 h-auto p-1 gap-1">
+                  <TabsTrigger value="perfil" className="text-xs sm:text-sm px-3 py-2 gap-1.5 flex-shrink-0">
+                    <User className="h-3.5 w-3.5" />
                     Perfil
                   </TabsTrigger>
-                  <TabsTrigger value="pedidos" className="text-[10px] sm:text-xs gap-0.5">
-                    <Package className="h-3 w-3 hidden sm:block" />
+                  <TabsTrigger value="pedidos" className="text-xs sm:text-sm px-3 py-2 gap-1.5 flex-shrink-0">
+                    <Package className="h-3.5 w-3.5" />
                     Pedidos
                   </TabsTrigger>
-                  <TabsTrigger value="dietas" className="text-[10px] sm:text-xs gap-0.5">
-                    <UtensilsCrossed className="h-3 w-3 hidden sm:block" />
+                  <TabsTrigger value="dietas" className="text-xs sm:text-sm px-3 py-2 gap-1.5 flex-shrink-0">
+                    <UtensilsCrossed className="h-3.5 w-3.5" />
                     Dietas
                   </TabsTrigger>
-                  <TabsTrigger value="chats" className="text-[10px] sm:text-xs gap-0.5">
-                    <MessageSquare className="h-3 w-3 hidden sm:block" />
+                  <TabsTrigger value="chats" className="text-xs sm:text-sm px-3 py-2 gap-1.5 flex-shrink-0">
+                    <MessageSquare className="h-3.5 w-3.5" />
                     Chats
                   </TabsTrigger>
-                  <TabsTrigger value="visitados" className="text-[10px] sm:text-xs gap-0.5">
-                    <Eye className="h-3 w-3 hidden sm:block" />
+                  <TabsTrigger value="visitados" className="text-xs sm:text-sm px-3 py-2 gap-1.5 flex-shrink-0">
+                    <Eye className="h-3.5 w-3.5" />
                     Visitados
                   </TabsTrigger>
-                  <TabsTrigger value="carritos" className="text-[10px] sm:text-xs gap-0.5">
-                    <ShoppingCart className="h-3 w-3 hidden sm:block" />
+                  <TabsTrigger value="carritos" className="text-xs sm:text-sm px-3 py-2 gap-1.5 flex-shrink-0">
+                    <ShoppingCart className="h-3.5 w-3.5" />
                     Carritos
                   </TabsTrigger>
-                  <TabsTrigger value="ofertas" className="text-[10px] sm:text-xs gap-0.5">
-                    <Sparkles className="h-3 w-3 hidden sm:block" />
+                  <TabsTrigger value="ofertas" className="text-xs sm:text-sm px-3 py-2 gap-1.5 flex-shrink-0">
+                    <Sparkles className="h-3.5 w-3.5" />
                     Para ti
                   </TabsTrigger>
                 </TabsList>
@@ -283,7 +283,7 @@ const Cuenta = () => {
                       <Package className="h-6 w-6 text-eco-green" />
                       <h2 className="font-display text-xl font-semibold">Historial de pedidos</h2>
                     </div>
-                    {user && <OrderHistory userId={user.id} />}
+                    {user && <OrderHistory userId={user.id} userEmail={user.email} userName={formData.full_name} />}
                   </div>
                 </TabsContent>
 

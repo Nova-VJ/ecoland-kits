@@ -9,13 +9,13 @@
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/lovable-uploads/b139a0b4-df8f-4943-9f9e-13a41f2dc4e9.png",
+      "src": "/icons/ecoland-icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/lovable-uploads/b139a0b4-df8f-4943-9f9e-13a41f2dc4e9.png",
+      "src": "/icons/ecoland-icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
