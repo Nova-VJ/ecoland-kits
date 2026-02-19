@@ -159,7 +159,7 @@ Haz una pregunta a la vez. No abrumes al usuario. Empieza preguntando su objetiv
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: "openai/gpt-5-mini",
         messages: [
           { role: "system", content: systemPrompt },
           ...messages,
@@ -181,7 +181,9 @@ Haz una pregunta a la vez. No abrumes al usuario. Empieza preguntando su objetiv
       }
       const t = await response.text();
       console.error("AI gateway error:", response.status, t);
-      return new Response(JSON.stringify({ error: "Error del servicio AI" }), {
+      console.error("Request model:", "google/gemini-2.5-flash");
+      console.error("Messages count:", messages.length);
+      return new Response(JSON.stringify({ error: "Error del servicio AI", details: t }), {
         status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
