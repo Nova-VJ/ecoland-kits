@@ -14,6 +14,8 @@ import {
   CatalogPack 
 } from '@/data/catalog';
 import { useCart } from '@/context/CartContext';
+import { useCatalog } from '@/context/CatalogContext';
+import { RefreshCw, Radio } from 'lucide-react';
 
 const productTags = [
   { id: 'bio', label: 'Bio' },
@@ -40,6 +42,7 @@ const packCategories = [
 ];
 
 const Tienda = () => {
+  const { products, isLiveSync, isSyncing, refreshCatalog } = useCatalog();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -48,7 +51,7 @@ const Tienda = () => {
   const { addCatalogProduct, addCatalogPack } = useCart();
 
   const filteredProducts = useMemo(() => {
-    return allCatalogProducts.filter(product => {
+    return products.filter(product => {
       const matchesSearch = searchQuery === '' || 
         product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         product.description.toLowerCase().includes(searchQuery.toLowerCase()) ||

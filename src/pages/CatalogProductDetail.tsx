@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { getCatalogProductBySlug, catalogCategories } from '@/data/catalog';
 import { useCart } from '@/context/CartContext';
+import { useCatalog } from '@/context/CatalogContext';
 import { useProductViews } from '@/hooks/useProductViews';
 
 const productTags = [
@@ -136,7 +137,8 @@ function getNutritionalValues(product: any) {
 
 const CatalogProductDetail = () => {
   const { slug } = useParams<{ slug: string }>();
-  const product = getCatalogProductBySlug(slug || '');
+  const { getProductBySlug } = useCatalog();
+  const product = getProductBySlug(slug || '');
   const { addCatalogProduct } = useCart();
   const { trackView } = useProductViews();
   const [quantity, setQuantity] = useState(1);

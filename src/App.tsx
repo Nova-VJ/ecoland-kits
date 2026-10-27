@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CartProvider } from "@/context/CartContext";
+import { CatalogProvider } from "@/context/CatalogContext";
 import { Layout } from "@/components/layout/Layout";
 import { IntroSplash } from "@/components/IntroSplash";
 import { CookieConsent } from "@/components/CookieConsent";
@@ -53,6 +54,7 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <CatalogProvider>
       <CartProvider>
         <TooltipProvider>
           <Toaster />
@@ -94,6 +96,7 @@ const App = () => {
           </BrowserRouter>
         </TooltipProvider>
       </CartProvider>
+    </CatalogProvider>
     </QueryClientProvider>
   );
 };
