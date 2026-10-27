@@ -18,77 +18,8 @@ export interface CatalogProduct {
   inStock: boolean;
 }
 
-// Categoría: DESAYUNOS (29 productos)
+// Categoría: DESAYUNOS (24 productos)
 export const desayunosProducts: CatalogProduct[] = [
-  {
-    "id": "erp-4189",
-    "slug": "drasanvi-copos-de-avena-1k",
-    "name": "Drasanvi – COPOS DE AVENA 1K Formato estándar – Cereales y Copos Integrales Ecológicos – Fuente de Energía Sostenida y Fibra Prebiótica – Desayuno Saludable",
-    "brand": "Drasanvi",
-    "description": "El COPOS DE AVENA 1K de Drasanvi (Formato estándar) es una propuesta nutritiva y equilibrada para iniciar la jornada con la mejor energía de la naturaleza. Elaborado exclusivamente a base de granos enteros y copos de cultivo ecológico certificado, este desayuno preserva la integridad del salvado y el germen del cereal, aportando carbohidratos complejos de absorción lenta que nutren tu cuerpo de manera constante y sin provocar picos bruscos de glucosa.\n\n**Granos enteros seleccionados y riqueza en betaglucanos**  \nLos cereales integrales ecológicos destacan por su contenido natural en fibra soluble, especialmente betaglucanos, reconocidos por su capacidad para regular el tránsito intestinal, favorecer el equilibrio del colesterol y prolongar la sensación de plenitud y saciedad durante toda la mañana.\n\n**Tostado suave artesanal sin grasas hidrogenadas ni aditivos**  \nA diferencia de los cereales de desayuno convencionales cargados de jarabes de glucosa y aceites refinados de palma, este producto mantiene un perfil transparente y limpio. No contiene conservantes, aromas sintéticos ni colorantes artificiales, permitiendo saborear el matiz tostado auténtico del cereal recién prensado.\n\n**Cultivo biológico que protege los suelos y la biodiversidad**  \nLos cereales proceden de tierras agrícolas trabajadas sin herbicidas químicos ni fertilizantes de síntesis, garantizando un alimento limpio, saludable y profundamente respetuoso con el medio ambiente.",
-    "price": 2.95,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/p-IMG_0044.jpg",
-    "category": "desayunos",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Contiene gluten de origen natural (cereal integral).",
-      "Puede contener trazas de frutos de cáscara y sésamo."
-    ],
-    "ingredients": "Cereales y copos integrales de agricultura ecológica certificada (100% bio).",
-    "usage": "✔ Porridge y gachas tradicionales: Cocinar a fuego suave 5 minutos con leche vegetal de avena o almendra, añadiendo una ramita de canela y piel de limón.\n✔ Boles matutinos con fruta fresca: Verter directamente sobre yogur natural bio o kéfir, complementando con arándanos, semillas de chía y un hilo de miel cruda.\n✔ Topping crujiente para postres: Espolvorear sobre compotas de manzana tibia, ensaladas de frutas de temporada o helados saludables de plátano.\n✔ Repostería casera nutritiva: Incorporar en masas de galletas de avena, barritas de cereales al horno o bizcochos rústicos integrales.\n✔ Batidos densos y saciantes: Añadir dos cucharadas a batidos verdes o de frutas para conferirles cuerpo, fibra y energía duradera.\n\n*Envasado en paquete protector de Formato estándar que mantiene la textura crujiente y la fragancia natural del grano recién procesado.*",
-    "inStock": true
-  },
-  {
-    "id": "erp-4114",
-    "slug": "ecosana-copos-de-avena-1k",
-    "name": "Ecosana – COPOS DE AVENA 1K Formato estándar – Cereales y Copos Integrales Ecológicos – Fuente de Energía Sostenida y Fibra Prebiótica – Desayuno Saludable",
-    "brand": "Ecosana",
-    "description": "El COPOS DE AVENA 1K de Ecosana (Formato estándar) es una propuesta nutritiva y equilibrada para iniciar la jornada con la mejor energía de la naturaleza. Elaborado exclusivamente a base de granos enteros y copos de cultivo ecológico certificado, este desayuno preserva la integridad del salvado y el germen del cereal, aportando carbohidratos complejos de absorción lenta que nutren tu cuerpo de manera constante y sin provocar picos bruscos de glucosa.\n\n**Granos enteros seleccionados y riqueza en betaglucanos**  \nLos cereales integrales ecológicos destacan por su contenido natural en fibra soluble, especialmente betaglucanos, reconocidos por su capacidad para regular el tránsito intestinal, favorecer el equilibrio del colesterol y prolongar la sensación de plenitud y saciedad durante toda la mañana.\n\n**Tostado suave artesanal sin grasas hidrogenadas ni aditivos**  \nA diferencia de los cereales de desayuno convencionales cargados de jarabes de glucosa y aceites refinados de palma, este producto mantiene un perfil transparente y limpio. No contiene conservantes, aromas sintéticos ni colorantes artificiales, permitiendo saborear el matiz tostado auténtico del cereal recién prensado.\n\n**Cultivo biológico que protege los suelos y la biodiversidad**  \nLos cereales proceden de tierras agrícolas trabajadas sin herbicidas químicos ni fertilizantes de síntesis, garantizando un alimento limpio, saludable y profundamente respetuoso con el medio ambiente.",
-    "price": 3.25,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/p-IMG_0040.jpg",
-    "category": "desayunos",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Contiene gluten de origen natural (cereal integral).",
-      "Puede contener trazas de frutos de cáscara y sésamo."
-    ],
-    "ingredients": "Cereales y copos integrales de agricultura ecológica certificada (100% bio).",
-    "usage": "✔ Porridge y gachas tradicionales: Cocinar a fuego suave 5 minutos con leche vegetal de avena o almendra, añadiendo una ramita de canela y piel de limón.\n✔ Boles matutinos con fruta fresca: Verter directamente sobre yogur natural bio o kéfir, complementando con arándanos, semillas de chía y un hilo de miel cruda.\n✔ Topping crujiente para postres: Espolvorear sobre compotas de manzana tibia, ensaladas de frutas de temporada o helados saludables de plátano.\n✔ Repostería casera nutritiva: Incorporar en masas de galletas de avena, barritas de cereales al horno o bizcochos rústicos integrales.\n✔ Batidos densos y saciantes: Añadir dos cucharadas a batidos verdes o de frutas para conferirles cuerpo, fibra y energía duradera.\n\n*Envasado en paquete protector de Formato estándar que mantiene la textura crujiente y la fragancia natural del grano recién procesado.*",
-    "inStock": true
-  },
-  {
-    "id": "erp-4193",
-    "slug": "ecosana-copos-de-avena-1k-2",
-    "name": "Ecosana – COPOS DE AVENA 1K Formato estándar – Cereales y Copos Integrales Ecológicos – Fuente de Energía Sostenida y Fibra Prebiótica – Desayuno Saludable",
-    "brand": "Ecosana",
-    "description": "El COPOS DE AVENA 1K de Ecosana (Formato estándar) es una propuesta nutritiva y equilibrada para iniciar la jornada con la mejor energía de la naturaleza. Elaborado exclusivamente a base de granos enteros y copos de cultivo ecológico certificado, este desayuno preserva la integridad del salvado y el germen del cereal, aportando carbohidratos complejos de absorción lenta que nutren tu cuerpo de manera constante y sin provocar picos bruscos de glucosa.\n\n**Granos enteros seleccionados y riqueza en betaglucanos**  \nLos cereales integrales ecológicos destacan por su contenido natural en fibra soluble, especialmente betaglucanos, reconocidos por su capacidad para regular el tránsito intestinal, favorecer el equilibrio del colesterol y prolongar la sensación de plenitud y saciedad durante toda la mañana.\n\n**Tostado suave artesanal sin grasas hidrogenadas ni aditivos**  \nA diferencia de los cereales de desayuno convencionales cargados de jarabes de glucosa y aceites refinados de palma, este producto mantiene un perfil transparente y limpio. No contiene conservantes, aromas sintéticos ni colorantes artificiales, permitiendo saborear el matiz tostado auténtico del cereal recién prensado.\n\n**Cultivo biológico que protege los suelos y la biodiversidad**  \nLos cereales proceden de tierras agrícolas trabajadas sin herbicidas químicos ni fertilizantes de síntesis, garantizando un alimento limpio, saludable y profundamente respetuoso con el medio ambiente.",
-    "price": 3.3,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/c-4193.jpg",
-    "category": "desayunos",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Contiene gluten de origen natural (cereal integral).",
-      "Puede contener trazas de frutos de cáscara y sésamo."
-    ],
-    "ingredients": "Cereales y copos integrales de agricultura ecológica certificada (100% bio).",
-    "usage": "✔ Porridge y gachas tradicionales: Cocinar a fuego suave 5 minutos con leche vegetal de avena o almendra, añadiendo una ramita de canela y piel de limón.\n✔ Boles matutinos con fruta fresca: Verter directamente sobre yogur natural bio o kéfir, complementando con arándanos, semillas de chía y un hilo de miel cruda.\n✔ Topping crujiente para postres: Espolvorear sobre compotas de manzana tibia, ensaladas de frutas de temporada o helados saludables de plátano.\n✔ Repostería casera nutritiva: Incorporar en masas de galletas de avena, barritas de cereales al horno o bizcochos rústicos integrales.\n✔ Batidos densos y saciantes: Añadir dos cucharadas a batidos verdes o de frutas para conferirles cuerpo, fibra y energía duradera.\n\n*Envasado en paquete protector de Formato estándar que mantiene la textura crujiente y la fragancia natural del grano recién procesado.*",
-    "inStock": true
-  },
   {
     "id": "erp-4081",
     "slug": "ecosana-copos-de-avena-500gr",
@@ -110,29 +41,6 @@ export const desayunosProducts: CatalogProduct[] = [
     ],
     "ingredients": "Cereales y copos integrales de agricultura ecológica certificada (100% bio).",
     "usage": "✔ Porridge y gachas tradicionales: Cocinar a fuego suave 5 minutos con leche vegetal de avena o almendra, añadiendo una ramita de canela y piel de limón.\n✔ Boles matutinos con fruta fresca: Verter directamente sobre yogur natural bio o kéfir, complementando con arándanos, semillas de chía y un hilo de miel cruda.\n✔ Topping crujiente para postres: Espolvorear sobre compotas de manzana tibia, ensaladas de frutas de temporada o helados saludables de plátano.\n✔ Repostería casera nutritiva: Incorporar en masas de galletas de avena, barritas de cereales al horno o bizcochos rústicos integrales.\n✔ Batidos densos y saciantes: Añadir dos cucharadas a batidos verdes o de frutas para conferirles cuerpo, fibra y energía duradera.\n\n*Envasado en paquete protector de 500gr que mantiene la textura crujiente y la fragancia natural del grano recién procesado.*",
-    "inStock": true
-  },
-  {
-    "id": "erp-4082",
-    "slug": "ecosana-copos-de-avena-1kg",
-    "name": "Ecosana – COPOS DE AVENA 1KG 1kg – Cereales y Copos Integrales Ecológicos – Fuente de Energía Sostenida y Fibra Prebiótica – Desayuno Saludable",
-    "brand": "Ecosana",
-    "description": "El COPOS DE AVENA 1KG de Ecosana (1kg) es una propuesta nutritiva y equilibrada para iniciar la jornada con la mejor energía de la naturaleza. Elaborado exclusivamente a base de granos enteros y copos de cultivo ecológico certificado, este desayuno preserva la integridad del salvado y el germen del cereal, aportando carbohidratos complejos de absorción lenta que nutren tu cuerpo de manera constante y sin provocar picos bruscos de glucosa.\n\n**Granos enteros seleccionados y riqueza en betaglucanos**  \nLos cereales integrales ecológicos destacan por su contenido natural en fibra soluble, especialmente betaglucanos, reconocidos por su capacidad para regular el tránsito intestinal, favorecer el equilibrio del colesterol y prolongar la sensación de plenitud y saciedad durante toda la mañana.\n\n**Tostado suave artesanal sin grasas hidrogenadas ni aditivos**  \nA diferencia de los cereales de desayuno convencionales cargados de jarabes de glucosa y aceites refinados de palma, este producto mantiene un perfil transparente y limpio. No contiene conservantes, aromas sintéticos ni colorantes artificiales, permitiendo saborear el matiz tostado auténtico del cereal recién prensado.\n\n**Cultivo biológico que protege los suelos y la biodiversidad**  \nLos cereales proceden de tierras agrícolas trabajadas sin herbicidas químicos ni fertilizantes de síntesis, garantizando un alimento limpio, saludable y profundamente respetuoso con el medio ambiente.",
-    "price": 3.35,
-    "weight": "1kg",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/c-4082.jpg",
-    "category": "desayunos",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Contiene gluten de origen natural (cereal integral).",
-      "Puede contener trazas de frutos de cáscara y sésamo."
-    ],
-    "ingredients": "Cereales y copos integrales de agricultura ecológica certificada (100% bio).",
-    "usage": "✔ Porridge y gachas tradicionales: Cocinar a fuego suave 5 minutos con leche vegetal de avena o almendra, añadiendo una ramita de canela y piel de limón.\n✔ Boles matutinos con fruta fresca: Verter directamente sobre yogur natural bio o kéfir, complementando con arándanos, semillas de chía y un hilo de miel cruda.\n✔ Topping crujiente para postres: Espolvorear sobre compotas de manzana tibia, ensaladas de frutas de temporada o helados saludables de plátano.\n✔ Repostería casera nutritiva: Incorporar en masas de galletas de avena, barritas de cereales al horno o bizcochos rústicos integrales.\n✔ Batidos densos y saciantes: Añadir dos cucharadas a batidos verdes o de frutas para conferirles cuerpo, fibra y energía duradera.\n\n*Envasado en paquete protector de 1kg que mantiene la textura crujiente y la fragancia natural del grano recién procesado.*",
     "inStock": true
   },
   {
@@ -323,31 +231,8 @@ export const desayunosProducts: CatalogProduct[] = [
     "inStock": true
   },
   {
-    "id": "erp-4123",
-    "slug": "ecosana-corn-flakes-500gr",
-    "name": "Ecosana – CORN FLAKES 500gr 500gr – Cereales y Copos Integrales Ecológicos – Fuente de Energía Sostenida y Fibra Prebiótica – Desayuno Saludable",
-    "brand": "Ecosana",
-    "description": "El CORN FLAKES 500gr de Ecosana (500gr) es una propuesta nutritiva y equilibrada para iniciar la jornada con la mejor energía de la naturaleza. Elaborado exclusivamente a base de granos enteros y copos de cultivo ecológico certificado, este desayuno preserva la integridad del salvado y el germen del cereal, aportando carbohidratos complejos de absorción lenta que nutren tu cuerpo de manera constante y sin provocar picos bruscos de glucosa.\n\n**Granos enteros seleccionados y riqueza en betaglucanos**  \nLos cereales integrales ecológicos destacan por su contenido natural en fibra soluble, especialmente betaglucanos, reconocidos por su capacidad para regular el tránsito intestinal, favorecer el equilibrio del colesterol y prolongar la sensación de plenitud y saciedad durante toda la mañana.\n\n**Tostado suave artesanal sin grasas hidrogenadas ni aditivos**  \nA diferencia de los cereales de desayuno convencionales cargados de jarabes de glucosa y aceites refinados de palma, este producto mantiene un perfil transparente y limpio. No contiene conservantes, aromas sintéticos ni colorantes artificiales, permitiendo saborear el matiz tostado auténtico del cereal recién prensado.\n\n**Cultivo biológico que protege los suelos y la biodiversidad**  \nLos cereales proceden de tierras agrícolas trabajadas sin herbicidas químicos ni fertilizantes de síntesis, garantizando un alimento limpio, saludable y profundamente respetuoso con el medio ambiente.",
-    "price": 3.85,
-    "weight": "500gr",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/c-4123.jpg",
-    "category": "desayunos",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Contiene gluten de origen natural (cereal integral).",
-      "Puede contener trazas de frutos de cáscara y sésamo."
-    ],
-    "ingredients": "Cereales y copos integrales de agricultura ecológica certificada (100% bio).",
-    "usage": "✔ Porridge y gachas tradicionales: Cocinar a fuego suave 5 minutos con leche vegetal de avena o almendra, añadiendo una ramita de canela y piel de limón.\n✔ Boles matutinos con fruta fresca: Verter directamente sobre yogur natural bio o kéfir, complementando con arándanos, semillas de chía y un hilo de miel cruda.\n✔ Topping crujiente para postres: Espolvorear sobre compotas de manzana tibia, ensaladas de frutas de temporada o helados saludables de plátano.\n✔ Repostería casera nutritiva: Incorporar en masas de galletas de avena, barritas de cereales al horno o bizcochos rústicos integrales.\n✔ Batidos densos y saciantes: Añadir dos cucharadas a batidos verdes o de frutas para conferirles cuerpo, fibra y energía duradera.\n\n*Envasado en paquete protector de 500gr que mantiene la textura crujiente y la fragancia natural del grano recién procesado.*",
-    "inStock": true
-  },
-  {
     "id": "erp-4201",
-    "slug": "ecosana-corn-flakes-500gr-2",
+    "slug": "ecosana-corn-flakes-500gr",
     "name": "Ecosana – CORN FLAKES 500gr 500gr – Cereales y Copos Integrales Ecológicos – Fuente de Energía Sostenida y Fibra Prebiótica – Desayuno Saludable",
     "brand": "Ecosana",
     "description": "El CORN FLAKES 500gr de Ecosana (500gr) es una propuesta nutritiva y equilibrada para iniciar la jornada con la mejor energía de la naturaleza. Elaborado exclusivamente a base de granos enteros y copos de cultivo ecológico certificado, este desayuno preserva la integridad del salvado y el germen del cereal, aportando carbohidratos complejos de absorción lenta que nutren tu cuerpo de manera constante y sin provocar picos bruscos de glucosa.\n\n**Granos enteros seleccionados y riqueza en betaglucanos**  \nLos cereales integrales ecológicos destacan por su contenido natural en fibra soluble, especialmente betaglucanos, reconocidos por su capacidad para regular el tránsito intestinal, favorecer el equilibrio del colesterol y prolongar la sensación de plenitud y saciedad durante toda la mañana.\n\n**Tostado suave artesanal sin grasas hidrogenadas ni aditivos**  \nA diferencia de los cereales de desayuno convencionales cargados de jarabes de glucosa y aceites refinados de palma, este producto mantiene un perfil transparente y limpio. No contiene conservantes, aromas sintéticos ni colorantes artificiales, permitiendo saborear el matiz tostado auténtico del cereal recién prensado.\n\n**Cultivo biológico que protege los suelos y la biodiversidad**  \nLos cereales proceden de tierras agrícolas trabajadas sin herbicidas químicos ni fertilizantes de síntesis, garantizando un alimento limpio, saludable y profundamente respetuoso con el medio ambiente.",
@@ -2916,7 +2801,7 @@ export const conservasmarProducts: CatalogProduct[] = [];
 // Categoría: COSMETICA (0 productos)
 export const cosmeticaProducts: CatalogProduct[] = [];
 
-// Categoría: GRANEL (1017 productos)
+// Categoría: GRANEL (960 productos)
 export const granelProducts: CatalogProduct[] = [
   {
     "id": "erp-22069",
@@ -3836,28 +3721,6 @@ export const granelProducts: CatalogProduct[] = [
     ],
     "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
     "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
-    "id": "erp-5067",
-    "slug": "bezoya-agua-1l-cristal",
-    "name": "Bezoya – AGUA 1L CRISTAL 1l – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "Bezoya",
-    "description": "El producto AGUA 1L CRISTAL de Bezoya (1l) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.99,
-    "weight": "1l",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/c-5067.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de 1l garantizando frescura y durabilidad de sus propiedades organolépticas.*",
     "inStock": true
   },
   {
@@ -6057,30 +5920,8 @@ export const granelProducts: CatalogProduct[] = [
     "inStock": true
   },
   {
-    "id": "erp-5051",
-    "slug": "ecomil-bebida-de-chufa-1l",
-    "name": "EcoMil – BEBIDA DE CHUFA 1L 1l – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "EcoMil",
-    "description": "El producto BEBIDA DE CHUFA 1L de EcoMil (1l) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 2.8,
-    "weight": "1l",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/c-5051.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de 1l garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
     "id": "erp-9148",
-    "slug": "ecomil-bebida-de-chufa-1l-2",
+    "slug": "ecomil-bebida-de-chufa-1l",
     "name": "EcoMil – BEBIDA DE CHUFA 1L 1l – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
     "brand": "EcoMil",
     "description": "El producto BEBIDA DE CHUFA 1L de EcoMil (1l) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
@@ -7183,28 +7024,6 @@ export const granelProducts: CatalogProduct[] = [
     "price": 3.0,
     "weight": "100gr",
     "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/c-3102.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de 100gr garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
-    "id": "erp-3169",
-    "slug": "herbes-del-moli-cardo-mariano-100gr-herbes-del-moli-2",
-    "name": "Herbes del Molí – CARDO MARIANO 100gr HERBES DEL MOLI 100gr – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "Herbes del Molí",
-    "description": "El producto CARDO MARIANO 100gr HERBES DEL MOLI de Herbes del Molí (100gr) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 2.85,
-    "weight": "100gr",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/c-3169.jpg",
     "category": "granel",
     "tags": [
       "bio",
@@ -12623,30 +12442,8 @@ export const granelProducts: CatalogProduct[] = [
     "inStock": true
   },
   {
-    "id": "erp-13040",
-    "slug": "ecosana-mermelada-de-ciruela-260gr",
-    "name": "Ecosana – MERMELADA DE CIRUELA 260gr 260gr – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "Ecosana",
-    "description": "El producto MERMELADA DE CIRUELA 260gr de Ecosana (260gr) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 3.35,
-    "weight": "260gr",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/c-13040.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de 260gr garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
     "id": "erp-13083",
-    "slug": "ecosana-mermelada-de-ciruela-260gr-2",
+    "slug": "ecosana-mermelada-de-ciruela-260gr",
     "name": "Ecosana – MERMELADA DE CIRUELA 260gr 260gr – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
     "brand": "Ecosana",
     "description": "El producto MERMELADA DE CIRUELA 260gr de Ecosana (260gr) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
@@ -18420,28 +18217,6 @@ export const granelProducts: CatalogProduct[] = [
     "inStock": true
   },
   {
-    "id": "nuevo-364",
-    "slug": "general-multimarca-siluet360-programa-completo-frontal-del-e",
-    "name": "General / Multimarca – Siluet360 Programa Completo frontal del envase Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Multimarca",
-    "description": "El producto Siluet360 Programa Completo frontal del envase de General / Multimarca (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/p-IMG_0171.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
     "id": "nuevo-365",
     "slug": "general-multimarca-siluet360-cellblock-45-comprimidos",
     "name": "General / Multimarca – Siluet360 Cellblock – 45 comprimidos Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
@@ -18661,27 +18436,6 @@ export const granelProducts: CatalogProduct[] = [
     "inStock": true
   },
   {
-    "id": "nuevo-547",
-    "slug": "general-multimarca-royal-vit-jalea-real-expert",
-    "name": "General / Multimarca – Royal-Vit Jalea Real Expert Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Multimarca",
-    "description": "El producto Royal-Vit Jalea Real Expert de General / Multimarca (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 2.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/n-547.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
     "id": "nuevo-549",
     "slug": "general-multimarca-royal-vit-jalea-real-mega-total-2000-mg-c",
     "name": "General / Multimarca – Royal-Vit Jalea Real Mega Total 2000 mg Con reishi, shiitake, azafrán, aminoácidos y 11 vitaminas, 20 viales Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
@@ -18883,50 +18637,6 @@ export const granelProducts: CatalogProduct[] = [
     "inStock": true
   },
   {
-    "id": "nuevo-692",
-    "slug": "general-multimarca-envase-para-75-dias-o-37-dias-con-dosis-d",
-    "name": "General / Multimarca – Envase para 75 días o 37 días con dosis doble . Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Multimarca",
-    "description": "El producto Envase para 75 días o 37 días con dosis doble . de General / Multimarca (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/o-IMG_20250215_133627.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
-    "id": "nuevo-1001",
-    "slug": "general-tienda-ecoso-ovasanu",
-    "name": "General / Tienda – ecoso ovasanü\\ Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto ecoso ovasanü\\ de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/p-IMG_0029.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
     "id": "nuevo-1002",
     "slug": "vivani-chocolate-feine-bitter-99-cacao-panama-organico",
     "name": "Vivani – - Chocolate Feine Bitter 99% Cacao Panamá Orgánico Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
@@ -18971,138 +18681,6 @@ export const granelProducts: CatalogProduct[] = [
     "inStock": true
   },
   {
-    "id": "nuevo-1004",
-    "slug": "general-tienda-illiiuif",
-    "name": "General / Tienda – Illíiúif Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto Illíiúif de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/p-IMG_0055.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
-    "id": "nuevo-1005",
-    "slug": "general-tienda-enio-hlim-noo",
-    "name": "General / Tienda – ENIO HLIM NOO Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto ENIO HLIM NOO de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/p-IMG_0064.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
-    "id": "nuevo-1006",
-    "slug": "general-tienda-opos-c",
-    "name": "General / Tienda – OPOS c Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto OPOS c de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/p-IMG_0072.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
-    "id": "nuevo-1007",
-    "slug": "seed-and-bean-chocolate-negro-con-coco-y-frambuesa-66-cacao",
-    "name": "Seed and Bean – - Chocolate Negro con Coco y Frambuesa 66% Cacao Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "Seed and Bean",
-    "description": "El producto - Chocolate Negro con Coco y Frambuesa 66% Cacao de Seed and Bean (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/p-IMG_0073.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
-    "id": "nuevo-1008",
-    "slug": "seed-and-bean-chocolate-negro-con-espresso-58-cacao",
-    "name": "Seed and Bean – - Chocolate Negro con Espresso 58% Cacao Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "Seed and Bean",
-    "description": "El producto - Chocolate Negro con Espresso 58% Cacao de Seed and Bean (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/p-IMG_0078.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
-    "id": "nuevo-1009",
-    "slug": "seed-and-bean-chocolate-negro-con-menta-fresca-72-cacao-cool",
-    "name": "Seed and Bean – - Chocolate Negro con Menta Fresca 72% Cacao Cool Mint Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "Seed and Bean",
-    "description": "El producto - Chocolate Negro con Menta Fresca 72% Cacao Cool Mint de Seed and Bean (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/p-IMG_0081.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
     "id": "nuevo-1010",
     "slug": "herbes-del-moli-especies-en-estanteria-infusion-a-granel",
     "name": "Herbes del Molí – Especies en Estantería / Infusión a Granel Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
@@ -19111,28 +18689,6 @@ export const granelProducts: CatalogProduct[] = [
     "price": 0.0,
     "weight": "Formato estándar",
     "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/p-IMG_0084.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
-    "id": "nuevo-1016",
-    "slug": "general-tienda-lote-141s27s",
-    "name": "General / Tienda – LOTE 141S27S Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto LOTE 141S27S de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/p-IMG_0096.jpg",
     "category": "granel",
     "tags": [
       "bio",
@@ -19216,116 +18772,6 @@ export const granelProducts: CatalogProduct[] = [
     "inStock": true
   },
   {
-    "id": "nuevo-1021",
-    "slug": "general-tienda-svsvd-sw-tn",
-    "name": "General / Tienda – SVSVd sw tn Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto SVSVd sw tn de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/p-IMG_0138.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
-    "id": "nuevo-1022",
-    "slug": "general-tienda-bayas-ot",
-    "name": "General / Tienda – BAYAS ot Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto BAYAS ot de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/p-IMG_0142.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
-    "id": "nuevo-1023",
-    "slug": "general-tienda-0-sad",
-    "name": "General / Tienda – 0 sad Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto 0 sad de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/p-IMG_0145.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
-    "id": "nuevo-1024",
-    "slug": "general-tienda-70044",
-    "name": "General / Tienda – 70044 , Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto 70044 , de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/p-IMG_0148.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
-    "id": "nuevo-1025",
-    "slug": "general-tienda-00-007003-700",
-    "name": "General / Tienda – 00/007003 700 Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto 00/007003 700 de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/p-IMG_0160.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
     "id": "nuevo-1026",
     "slug": "general-tienda-drasmvi-c",
     "name": "General / Tienda – DrasmVí C Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
@@ -19334,28 +18780,6 @@ export const granelProducts: CatalogProduct[] = [
     "price": 0.0,
     "weight": "Formato estándar",
     "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/p-IMG_0167.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
-    "id": "nuevo-1027",
-    "slug": "general-tienda-de-grasoq",
-    "name": "General / Tienda – DE GRASOQ Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto DE GRASOQ de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/p-IMG_0177.jpg",
     "category": "granel",
     "tags": [
       "bio",
@@ -19502,28 +18926,6 @@ export const granelProducts: CatalogProduct[] = [
     "inStock": true
   },
   {
-    "id": "nuevo-1034",
-    "slug": "general-tienda-damas-che-darnasrichpe",
-    "name": "General / Tienda – Damas che' DarnasRichpe. Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto Damas che' DarnasRichpe. de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/p-IMG_0197.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
     "id": "nuevo-1035",
     "slug": "damasriche-jabon-de-alepo-liquido-40-500-ml-17-00",
     "name": "DamasRiche – - Jabón de Alepo Líquido 40% 500 ml 17,00€ 500 ml – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
@@ -19543,50 +18945,6 @@ export const granelProducts: CatalogProduct[] = [
     ],
     "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
     "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de 500 ml garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
-    "id": "nuevo-1036",
-    "slug": "general-tienda-1-elox-luenlial-oll",
-    "name": "General / Tienda – 1 elox luenlial oll Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto 1 elox luenlial oll de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/p-IMG_0202.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
-    "id": "nuevo-1037",
-    "slug": "general-tienda-8-428-201",
-    "name": "General / Tienda – 8 428'201 Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto 8 428'201 de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/p-IMG_0209.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
     "inStock": true
   },
   {
@@ -19656,50 +19014,6 @@ export const granelProducts: CatalogProduct[] = [
     "inStock": true
   },
   {
-    "id": "nuevo-1041",
-    "slug": "general-tienda-soa110ib38d-no",
-    "name": "General / Tienda – soa110iB38d No Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto soa110iB38d No de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/p-IMG_0221.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
-    "id": "nuevo-1042",
-    "slug": "general-tienda-u-narou",
-    "name": "General / Tienda – u.NAROU Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto u.NAROU de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/p-IMG_0222.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
     "id": "nuevo-1043",
     "slug": "general-tienda-narom",
     "name": "General / Tienda – NARÓM Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
@@ -19708,50 +19022,6 @@ export const granelProducts: CatalogProduct[] = [
     "price": 0.0,
     "weight": "Formato estándar",
     "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/p-IMG_0224.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
-    "id": "nuevo-1044",
-    "slug": "general-tienda-3non",
-    "name": "General / Tienda – 3NON Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto 3NON de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/p-IMG_0225.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
-    "id": "nuevo-1045",
-    "slug": "general-tienda-ocma",
-    "name": "General / Tienda – OCMA Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto OCMA de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/p-IMG_0226.jpg",
     "category": "granel",
     "tags": [
       "bio",
@@ -19810,28 +19080,6 @@ export const granelProducts: CatalogProduct[] = [
     "inStock": true
   },
   {
-    "id": "nuevo-1048",
-    "slug": "general-tienda-p-v-oo-k",
-    "name": "General / Tienda – P V OO€/K Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto P V OO€/K de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/p-IMG_0235.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
     "id": "nuevo-1049",
     "slug": "general-tienda-p-v-p-75-00c-k",
     "name": "General / Tienda – p _v p 75,00C/ K Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
@@ -19840,28 +19088,6 @@ export const granelProducts: CatalogProduct[] = [
     "price": 0.0,
     "weight": "Formato estándar",
     "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/p-IMG_0236.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
-    "id": "nuevo-1050",
-    "slug": "general-tienda-tomillo",
-    "name": "General / Tienda – TOMILLo Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto TOMILLo de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/p-IMG_0238.jpg",
     "category": "granel",
     "tags": [
       "bio",
@@ -19950,28 +19176,6 @@ export const granelProducts: CatalogProduct[] = [
     "price": 0.0,
     "weight": "Formato estándar",
     "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/p-IMG_0251.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
-    "id": "nuevo-1055",
-    "slug": "general-tienda-ado-cola-d",
-    "name": "General / Tienda – Ado Cola d Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto Ado Cola d de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/p-IMG_0253.jpg",
     "category": "granel",
     "tags": [
       "bio",
@@ -20735,28 +19939,6 @@ export const granelProducts: CatalogProduct[] = [
     "inStock": true
   },
   {
-    "id": "nuevo-1092",
-    "slug": "general-tienda-9-60-32",
-    "name": "General / Tienda – 9,60 32 Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto 9,60 32 de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 9.6,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/p-IMG_0336.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
     "id": "nuevo-1093",
     "slug": "general-tienda-nature-s-spray-solar-bebe-spf-50-200-ml-con-a",
     "name": "General / Tienda – Nature’s Spray Solar Bebé SPF 50+ 200 ml, con agua unicelular de naranja dulce y caléndula , resistente al agua Precio 22,85€ 200 ml – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
@@ -21095,28 +20277,6 @@ export const granelProducts: CatalogProduct[] = [
     "price": 0.0,
     "weight": "Formato estándar",
     "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/p-IMG_0400.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
-    "id": "nuevo-1110",
-    "slug": "general-tienda-pola",
-    "name": "General / Tienda – pola Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto pola de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/p-IMG_0402.jpg",
     "category": "granel",
     "tags": [
       "bio",
@@ -21684,28 +20844,6 @@ export const granelProducts: CatalogProduct[] = [
     "inStock": true
   },
   {
-    "id": "nuevo-1138",
-    "slug": "general-tienda-e-os",
-    "name": "General / Tienda – e»os Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto e»os de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/p-IMG_0456.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
     "id": "nuevo-1139",
     "slug": "vuelve-a-la-naturaleza-charcuteria-ecologica",
     "name": "Vuelve a la Naturaleza – - Charcutería Ecológica Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
@@ -21802,28 +20940,6 @@ export const granelProducts: CatalogProduct[] = [
     "price": 0.0,
     "weight": "Formato estándar",
     "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/p-IMG_0461.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
-    "id": "nuevo-1144",
-    "slug": "general-tienda-811",
-    "name": "General / Tienda – 811 Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto 811 de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/p-IMG_0462.jpg",
     "category": "granel",
     "tags": [
       "bio",
@@ -23449,50 +22565,6 @@ export const granelProducts: CatalogProduct[] = [
     "inStock": true
   },
   {
-    "id": "nuevo-1219",
-    "slug": "general-tienda-cuondo-bebes-olrisana",
-    "name": "General / Tienda – cuondo bebes Olrisana Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto cuondo bebes Olrisana de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/r-IMG_0295.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
-    "id": "nuevo-1220",
-    "slug": "general-tienda-1-11-11-lighting-for-your-sout",
-    "name": "General / Tienda – 1/11/11 LIGHTING FOR YOUR sout Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto 1/11/11 LIGHTING FOR YOUR sout de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/r-IMG_0298.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
     "id": "nuevo-1221",
     "slug": "general-tienda-chili-dulce",
     "name": "General / Tienda – Chili Dulce Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
@@ -23537,28 +22609,6 @@ export const granelProducts: CatalogProduct[] = [
     "inStock": true
   },
   {
-    "id": "nuevo-1224",
-    "slug": "general-tienda-ageuel-sz-vo-6z",
-    "name": "General / Tienda – ageuel sz!vo/6Z Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto ageuel sz!vo/6Z de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/o-IMG_20250213_133545.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
     "id": "nuevo-1225",
     "slug": "senorio-de-montanera-jamon-embutido-iberico-ecologico-25-95",
     "name": "Señorío de Montanera – - Jamón / Embutido Ibérico Ecológico 25,95€ Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
@@ -23589,50 +22639,6 @@ export const granelProducts: CatalogProduct[] = [
     "price": 0.0,
     "weight": "Formato estándar",
     "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/o-IMG_20250213_133646.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
-    "id": "nuevo-1227",
-    "slug": "general-tienda-saqoup-18",
-    "name": "General / Tienda – saqoup,..18 Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto saqoup,..18 de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/o-IMG_20250213_133655.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
-    "id": "nuevo-1228",
-    "slug": "general-tienda-caj-gho-vagnebiologiche",
-    "name": "General / Tienda – CaJ@gho vagnebiologiche / Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto CaJ@gho vagnebiologiche / de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/o-IMG_20250213_134510.jpg",
     "category": "granel",
     "tags": [
       "bio",
@@ -23823,72 +22829,6 @@ export const granelProducts: CatalogProduct[] = [
     "inStock": true
   },
   {
-    "id": "nuevo-1237",
-    "slug": "general-tienda-tosson8fv-tsla",
-    "name": "General / Tienda – tOSSON8fV tSlA Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto tOSSON8fV tSlA de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/o-IMG_20250215_133552.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
-    "id": "nuevo-1238",
-    "slug": "general-tienda-ec0109fa-or-un-nuevo-i-siinas",
-    "name": "General / Tienda – Ec0109fa or un Nuevo I\" SiiNas Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto Ec0109fa or un Nuevo I\" SiiNas de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/o-IMG_20250215_133556.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
-    "id": "nuevo-1239",
-    "slug": "general-tienda-or-un-nuevo-mudo-444-lavavajillas",
-    "name": "General / Tienda – or un Nuevo Mudo 444 Lavavajillas Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto or un Nuevo Mudo 444 Lavavajillas de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/o-IMG_20250215_133608.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
     "id": "nuevo-1240",
     "slug": "general-tienda-detergente-liquido-lavadora",
     "name": "General / Tienda – Detergente Líquido ' Lavadora Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
@@ -23897,28 +22837,6 @@ export const granelProducts: CatalogProduct[] = [
     "price": 0.0,
     "weight": "Formato estándar",
     "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/o-IMG_20250215_133642.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
-    "id": "nuevo-1241",
-    "slug": "general-tienda-no-reflejes-los-productos-de-las-anteriores-d",
-    "name": "General / Tienda – No reflejes los productos de las anteriores de anteriores preguntas Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto No reflejes los productos de las anteriores de anteriores preguntas de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/o-IMG_20250215_133653.jpg",
     "category": "granel",
     "tags": [
       "bio",
@@ -24043,28 +22961,6 @@ export const granelProducts: CatalogProduct[] = [
     "inStock": true
   },
   {
-    "id": "nuevo-1247",
-    "slug": "general-tienda-nafracare-panty-liners",
-    "name": "General / Tienda – nafracare panty liners Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto nafracare panty liners de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/o-IMG_20250215_133817.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
     "id": "nuevo-1248",
     "slug": "general-tienda-masnnreuse-organic-care",
     "name": "General / Tienda – masnñReuse ORGANIC CARE Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
@@ -24073,138 +22969,6 @@ export const granelProducts: CatalogProduct[] = [
     "price": 0.0,
     "weight": "Formato estándar",
     "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/o-IMG_20250215_133823.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
-    "id": "nuevo-1249",
-    "slug": "general-tienda-sos-goa-en-aoe-je-rueu",
-    "name": "General / Tienda – SOS goa en aoe je rueu Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto SOS goa en aoe je rueu de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/o-IMG_20250215_133857.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
-    "id": "nuevo-1250",
-    "slug": "general-tienda-mittel-lpu-sf-ay-para-el-control-una",
-    "name": "General / Tienda – Mittel LPU SF ay para el control una Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto Mittel LPU SF ay para el control una de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/o-IMG_20250215_133913.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
-    "id": "nuevo-1251",
-    "slug": "general-tienda-piante-do-frutto-vertayja1-din",
-    "name": "General / Tienda – piante do frutto vertayJa1'din Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto piante do frutto vertayJa1'din de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/o-IMG_20250215_133925.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
-    "id": "nuevo-1252",
-    "slug": "general-tienda-producto-fisico-en-estanteria-img-20250215-13",
-    "name": "General / Tienda – Producto físico en estantería IMG_20250215_133937.jpg Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto Producto físico en estantería IMG_20250215_133937.jpg de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/o-IMG_20250215_133937.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
-    "id": "nuevo-1253",
-    "slug": "general-tienda-ec0109fa-or-uh-nuevo-impiador-brillo",
-    "name": "General / Tienda – Ec0109fa or uh Nuevo IMPIADOR BRILLO Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto Ec0109fa or uh Nuevo IMPIADOR BRILLO de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/o-IMG_20250215_134212.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
-    "id": "nuevo-1254",
-    "slug": "general-tienda-drasanvl-champo",
-    "name": "General / Tienda – DrasanVl champo Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto DrasanVl champo de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/o-IMG_20250215_134536.jpg",
     "category": "granel",
     "tags": [
       "bio",
@@ -24242,51 +23006,6 @@ export const granelProducts: CatalogProduct[] = [
     "inStock": true
   },
   {
-    "id": "nuevo-1256",
-    "slug": "general-tienda-drasawl-aceite-de",
-    "name": "General / Tienda – DrasaWl' Aceite de Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto DrasaWl' Aceite de de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/o-IMG_20250215_134725.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano",
-      "sin-gluten"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
-    "id": "nuevo-1257",
-    "slug": "general-tienda-ecotecif-olll-lado-natural-para-tu-diel",
-    "name": "General / Tienda – ECOTECIF ólll lado Natural para tu Diel Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto ECOTECIF ólll lado Natural para tu Diel de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/o-IMG_20250215_134744.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
     "id": "nuevo-1258",
     "slug": "general-tienda-arcilla-natural-peso-neto",
     "name": "General / Tienda – Arcilla natural Peso neto Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
@@ -24295,72 +23014,6 @@ export const granelProducts: CatalogProduct[] = [
     "price": 0.0,
     "weight": "Formato estándar",
     "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/o-IMG_20250215_134814.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
-    "id": "nuevo-1259",
-    "slug": "general-tienda-natracare-deansing",
-    "name": "General / Tienda – natracare deansing Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto natracare deansing de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/o-IMG_20250215_134823.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
-    "id": "nuevo-1260",
-    "slug": "general-tienda-muy-abs-i-ultraliger",
-    "name": "General / Tienda – Muy abs I Ultraliger. Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto Muy abs I Ultraliger. de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 23.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/o-IMG_20250215_134849.jpg",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de Formato estándar garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
-    "id": "nuevo-1261",
-    "slug": "general-tienda-nafra-12",
-    "name": "General / Tienda – nafra 12 Formato estándar – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "General / Tienda",
-    "description": "El producto nafra 12 de General / Tienda (Formato estándar) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 0.0,
-    "weight": "Formato estándar",
-    "image": "https://ecoland-inventario.valetdemo.workers.dev/fotos/m/o-IMG_20250215_135054.jpg",
     "category": "granel",
     "tags": [
       "bio",
@@ -24977,28 +23630,6 @@ export const granelProducts: CatalogProduct[] = [
     "name": "Tienes Que Hacer – Argán 100 g 100 g – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
     "brand": "Tienes Que Hacer",
     "description": "El producto Argán 100 g de Tienes Que Hacer (100 g) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
-    "price": 2.5,
-    "weight": "100 g",
-    "image": "https://images.unsplash.com/photo-1542838132-92c53300491e?w=600",
-    "category": "granel",
-    "tags": [
-      "bio",
-      "premium",
-      "vegano"
-    ],
-    "allergens": [
-      "Consultar el envase para confirmación detallada de posibles trazas."
-    ],
-    "ingredients": "Ingredientes 100% procedentes de agricultura ecológica certificada.",
-    "usage": "✔ Consumo habitual saludable: Integrar en menús equilibrados como alternativa natural y limpia.\n✔ Creatividad gastronómica: Combinar en recetas tradicionales o platos de autor para enriquecer su perfil nutricional.\n✔ Sustitución limpia: La elección idónea frente a productos convencionales que contienen aditivos y ultraprocesados.\n✔ Conservación: Conservar en envase cerrado en ambiente seco, fresco y ventilado.\n\n*Envasado en formato de 100 g garantizando frescura y durabilidad de sus propiedades organolépticas.*",
-    "inStock": true
-  },
-  {
-    "id": "nuevo-1294",
-    "slug": "el-exito-desmaquillante-100-g",
-    "name": "El Éxito – Desmaquillante 100 g 100 g – Especialidad Ecológica Seleccionada – 100% Natural – Calidad Gourmet Certificada",
-    "brand": "El Éxito",
-    "description": "El producto Desmaquillante 100 g de El Éxito (100 g) es una especialidad ecológica seleccionada por Ecoland por su calidad excepcional, pureza biológica y fidelidad a las pautas de elaboración limpia y sostenible. Diseñado para quienes buscan llenar su despensa de alimentos honestos y saludables, este producto conserva la esencia intacta de su origen natural.\n\n**Ingredientes ecológicos de procedencia controlada**  \nCultivado y elaborado bajo la estricta normativa de la Unión Europea para alimentos ecológicos, lo que certifica la ausencia total de pesticidas sintéticos, abonos químicos y manipulación genética.\n\n**Densidad nutricional y sabor sincero**  \nAl prescindir de refinamientos industriales agresivos y conservantes sintéticos, mantiene íntegros sus nutrientes esenciales, su textura genuina y su aroma auténtico.\n\n**Sostenibilidad y respeto ambiental**  \nCada lote apoya un modelo de producción agraria que cuida la salud de los suelos, fomenta la biodiversidad rural y minimiza el impacto ecológico.",
     "price": 2.5,
     "weight": "100 g",
     "image": "https://images.unsplash.com/photo-1542838132-92c53300491e?w=600",
