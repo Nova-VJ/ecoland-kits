@@ -1,3 +1,4 @@
+import ReactMarkdown from "react-markdown";
 import { useParams, Link } from 'react-router-dom';
 import { useEffect } from 'react';
 import { motion } from 'framer-motion';
@@ -134,7 +135,16 @@ const CatalogProductDetail = () => {
               )}
             </div>
 
-            <p className="text-muted-foreground text-lg">{product.description}</p>
+            <div className="prose prose-emerald max-w-none text-slate-700 leading-relaxed text-base pt-6 border-t border-slate-200">
+              <ReactMarkdown
+                components={{
+                  p: ({ children }) => <p className="mb-4 text-slate-700 leading-relaxed text-base">{children}</p>,
+                  strong: ({ children }) => <strong className="font-bold text-emerald-950 block text-lg mt-5 mb-1.5">{children}</strong>
+                }}
+              >
+                {product.description}
+              </ReactMarkdown>
+            </div>
 
             <Button
               size="lg"
