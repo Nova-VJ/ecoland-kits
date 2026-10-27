@@ -81,9 +81,9 @@ const CatalogProductDetail = () => {
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="aspect-square rounded-3xl overflow-hidden bg-muted"
+            className="aspect-square rounded-3xl overflow-hidden bg-white p-6 border flex items-center justify-center shadow-xs"
           >
-            <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+            <img src={product.image} alt={product.name} className="max-h-full max-w-full object-contain hover:scale-105 transition-transform duration-300" />
           </motion.div>
 
           <motion.div
@@ -97,7 +97,20 @@ const CatalogProductDetail = () => {
               </Badge>
             )}
 
-            <h1 className="font-display text-3xl md:text-4xl font-bold">{product.name}</h1>
+            <h1 className="font-display text-3xl md:text-4xl font-bold text-slate-900 leading-tight">{product.name}</h1>
+
+            {/* Certificado Ecológico Oficial UE */}
+            <div className="flex items-center gap-3 p-3 bg-emerald-50 border border-emerald-200 rounded-2xl">
+              <span className="text-2xl">🌿</span>
+              <div>
+                <div className="text-xs font-bold text-emerald-950 uppercase tracking-wide">
+                  Certificado de Agricultura Ecológica (Unión Europea)
+                </div>
+                <div className="text-xs text-emerald-800 font-medium">
+                  Garantía oficial Euro-hoja · 100% libre de pesticidas sintéticos y organismos modificados
+                </div>
+              </div>
+            </div>
 
             <Badge variant="outline">{product.brand}</Badge>
 
@@ -142,9 +155,13 @@ const CatalogProductDetail = () => {
               )}
 
               {product.usage && (
-                <div className="bg-muted/30 rounded-xl p-4">
-                  <h3 className="font-semibold mb-2">Modo de uso</h3>
-                  <p className="text-muted-foreground">{product.usage}</p>
+                <div className="bg-emerald-50/60 border border-emerald-100 rounded-2xl p-5 shadow-xs">
+                  <h3 className="font-bold text-emerald-950 mb-2 flex items-center gap-2 text-base">
+                    <span>🍳</span> Versatilidad en la cocina y aplicaciones saludables
+                  </h3>
+                  <div className="text-slate-700 text-sm whitespace-pre-line leading-relaxed font-normal">
+                    {product.usage}
+                  </div>
                 </div>
               )}
 
