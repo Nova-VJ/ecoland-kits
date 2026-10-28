@@ -87,4 +87,22 @@ describe('Pasarela de Pago Sandbox y Veri*factu (RD 1619/2012 y RD 1007/2023)', 
     expect(invoice2.previousRecordHash).toBe(invoice1.currentRecordHash);
     expect(invoice2.currentRecordHash).not.toBe(invoice1.currentRecordHash);
   });
+
+  it('debe generar código QR de cotejo AEAT cumpliendo estrictamente la Orden HAC/1177/2024', () => {
+    const qrUrl = verifactuService.generateQrPayload(
+      'F2026-000100',
+      '2026-10-28T12:00:00.000Z',
+      84.50,
+      'a1b2c3d4e5f60718293a4b5c6d7e8f90123456789abcdef0123456789abcdef0'
+    );
+
+    const parsed = new URL(qrUrl);
+    expect(parsed.origin).toBe('https://sede.agenciatributaria.gob.es');
+    expect(parsed.pathname).toBe('/qr');
+    expect(parsed.searchParams.get('nif')).toBe('B47000001');
+    expect(parsed.searchParams.get('num')).toBe('F2026-000100');
+    expect(parsed.searchParams.get('fecha')).toBe('2026-10-28');
+    expect(parsed.searchParams.get('total')).toBe('84.50');
+    expect(parsed.searchParams.get('huella')).toBe('a1b2c3d4');
+  });
 });

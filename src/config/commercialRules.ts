@@ -112,6 +112,13 @@ export const COMMERCIAL_RULES = {
 
   // --- SISTEMA DE EVIDENCIA AMBIENTAL (PRIORIDAD 9) ---
   // Solo se muestran claims cuando verification_status === 'VERIFIED'
+  ENVIRONMENTAL_CLAIMS: {
+    CO2_METHODOLOGY: {
+      factorGramsPerEuro: 120,
+      source: 'Inventario de ciclo de vida de producción ecológica comparada'
+    }
+  },
+
   ENVIRONMENTAL_EVIDENCE_SYSTEM: {
     SHOW_UNVERIFIED_ESTIMATES: false,
     ACTIVE_VERIFIED_CLAIMS: [
