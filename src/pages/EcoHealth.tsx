@@ -29,9 +29,176 @@ interface MealLogItem {
 export const EcoHealth = () => {
   const { addCatalogProduct, setIsOpen } = useCart();
   const { toast } = useToast();
+  // ==========================================
+  // CALCULADORA DE GASTO ENERGÉTICO & TDEE
+  // ==========================================
+  const [userGender, setUserGender] = useState<'hombre' | 'mujer'>('mujer');
+  const [userAge, setUserAge] = useState<number>(32);
+  const [userHeight, setUserHeight] = useState<number>(168);
+  const [userWeight, setUserWeight] = useState<number>(64);
+  const [activityLevel, setActivityLevel] = useState<number>(1.375); // 1.2 sedentario, 1.375 ligero, 1.55 moderado, 1.725 activo
+  const [fitnessGoal, setFitnessGoal] = useState<'perder' | 'mantener' | 'ganar'>('mantener');
+
+  // Mifflin-St Jeor formula
+  const bmr = userGender === 'hombre'
+    ? Math.round(10 * userWeight + 6.25 * userHeight - 5 * userAge + 5)
+    : Math.round(10 * userWeight + 6.25 * userHeight - 5 * userAge - 161);
+
+  const tdee = Math.round(bmr * activityLevel);
+
+  const targetCaloriesCalculated = fitnessGoal === 'perder'
+    ? Math.round(tdee - 400)
+    : fitnessGoal === 'ganar'
+      ? Math.round(tdee + 350)
+      : tdee;
+
+  // Daily calorie goal (can be customized by calculator)
+  const [calorieGoal, setCalorieGoal] = useState<number>(() => {
+    try {
+      const saved = localStorage.getItem('ecoland-target-calories');
+      return saved ? Number(saved) : 2000;
+    } catch { return 2000; }
+  });
+
+  const applyCalculatedCalories = () => {
+    setCalorieGoal(targetCaloriesCalculated);
+    try { localStorage.setItem('ecoland-target-calories', targetCaloriesCalculated.toString()); } catch {}
+    toast({
+      title: "Objetivo calórico actualizado",
+      description: `Tu nuevo objetivo es de ${targetCaloriesCalculated} kcal/día (quemas aprox. ${tdee} kcal diarias).`,
+    });
+  };
+
+  // ==========================================
+  // PLATO HARVARD INTERACTIVO & COMPRAS SALUDABLES
+  // ==========================================
+  interface PlateItem {
+    id: string;
+    category: 'vegetales' | 'granos' | 'proteinas' | 'grasas';
+    product: CatalogProduct;
+    portionGrams: number;
+    calories: number;
+  }
+
+  const [plateItems, setPlateItems] = useState<PlateItem[]>([
+    {
+      id: 'p-1',
+      category: 'vegetales',
+      product: allCatalogProducts.find(p => p.slug.includes('lentejas-con-verduras')) || allCatalogProducts[0],
+      portionGrams: 200,
+      calories: 140
+    },
+    {
+      id: 'p-2',
+      category: 'granos',
+      product: allCatalogProducts.find(p => p.slug.includes('copos-de-avena-sin-gluten')) || allCatalogProducts[1],
+      portionGrams: 60,
+      calories: 220
+    },
+    {
+      id: 'p-3',
+      category: 'proteinas',
+      product: allCatalogProducts.find(p => p.slug.includes('garbanzo-cocido')) || allCatalogProducts[2],
+      portionGrams: 100,
+      calories: 130
+    }
+  ]);
+
+  const addProductToPlate = (product: CatalogProduct, cat: 'vegetales' | 'granos' | 'proteinas' | 'grasas') => {
+    const defaultGrams = cat === 'vegetales' ? 180 : cat === 'granos' ? 70 : cat === 'proteinas' ? 120 : 15;
+    const estimatedCals = cat === 'vegetales' ? 75 : cat === 'granos' ? 240 : cat === 'proteinas' ? 150 : 120;
+
+    const newItem: PlateItem = {
+      id: `${product.slug}-${Date.now()}`,
+      category: cat,
+      product,
+      portionGrams: defaultGrams,
+      calories: estimatedCals
+    };
+
+    setPlateItems(prev => [...prev, newItem]);
+    toast({
+      title: "Alimento colocado en el Plato Harvard",
+      description: `Se añadió ${product.name.split('–')[0]} a la sección de ${cat}.`,
+    });
+  };
+
+  const removePlateItem = (id: string) => {
+    setPlateItems(prev => prev.filter(x => x.id !== id));
+  };
+
+  // Plate Calculations
+  const plateTotalGrams = plateItems.reduce((acc, it) => acc + it.portionGrams, 0) || 1;
+  const plateVeggiesGrams = plateItems.filter(it => it.category === 'vegetales').reduce((acc, it) => acc + it.portionGrams, 0);
+  const plateGrainsGrams = plateItems.filter(it => it.category === 'granos').reduce((acc, it) => acc + it.portionGrams, 0);
+  const plateProteinGrams = plateItems.filter(it => it.category === 'proteinas').reduce((acc, it) => acc + it.portionGrams, 0);
+
+  const plateVeggiesPercent = Math.round((plateVeggiesGrams / plateTotalGrams) * 100);
+  const plateGrainsPercent = Math.round((plateGrainsGrams / plateTotalGrams) * 100);
+  const plateProteinPercent = Math.round((plateProteinGrams / plateTotalGrams) * 100);
+
+  const plateTotalCalories = plateItems.reduce((acc, it) => acc + it.calories, 0);
+  const plateTotalPrice = plateItems.reduce((acc, it) => acc + it.product.price, 0);
+
+  // Harvard Healthy Plate Balance Feedback
+  let plateFeedback = {
+    isBalanced: false,
+    statusText: 'Construyendo plato...',
+    statusColor: 'text-amber-800 bg-amber-50 border-amber-200',
+    tip: 'Añade alimentos a las tres secciones para equilibrar tu plato según las proporciones de Harvard.'
+  };
+
+  if (plateItems.length > 0) {
+    if (plateVeggiesPercent >= 45 && plateVeggiesPercent <= 55 && plateGrainsPercent >= 20 && plateGrainsPercent <= 30 && plateProteinPercent >= 20 && plateProteinPercent <= 30) {
+      plateFeedback = {
+        isBalanced: true,
+        statusText: '¡Bien! Llegaste a tu objetivo de plato balanceado Harvard',
+        statusColor: 'text-emerald-950 bg-emerald-50 border-emerald-300 font-bold',
+        tip: '✨ Proporción áurea alcanzada: 50% Vegetales y Frutas, 25% Granos Integrales y 25% Proteínas Saludables.'
+      };
+    } else if (plateVeggiesPercent < 40) {
+      plateFeedback = {
+        isBalanced: false,
+        statusText: 'Faltan vegetales en tu plato (Harvard recomienda 50%)',
+        statusColor: 'text-orange-950 bg-orange-50 border-orange-200',
+        tip: '🥦 Ya tienes suficientes calorías/granos; arroja algo de verdura u hortalizas a tus alimentos para tener una dieta más balanceada y saciante.'
+      };
+    } else if (plateGrainsPercent > 35) {
+      plateFeedback = {
+        isBalanced: false,
+        statusText: 'Demasiada proporción de cereales/granos (máx. 25%)',
+        statusColor: 'text-amber-950 bg-amber-50 border-amber-200',
+        tip: '🌾 Equilibra tu plato reduciendo la ración de cereal y sumando legumbres o ensalada verde.'
+      };
+    } else if (plateProteinPercent > 35) {
+      plateFeedback = {
+        isBalanced: false,
+        statusText: 'Aporte proteico superior al 25% recomendado',
+        statusColor: 'text-blue-950 bg-blue-50 border-blue-200',
+        tip: '💪 Buena fuente de fuerza, pero asegúrate de acompañarla con hojas verdes y hortalizas frescas.'
+      };
+    } else {
+      plateFeedback = {
+        isBalanced: false,
+        statusText: 'Ajustando equilibrio del plato...',
+        statusColor: 'text-slate-800 bg-slate-50 border-slate-200',
+        tip: 'Tu plato promedio debe ser: 50% Vegetales, 25% Granos integrales y 25% Proteína limpia.'
+      };
+    }
+  }
+
+  const handleAddPlateToCart = () => {
+    plateItems.forEach(it => addCatalogProduct(it.product));
+    setIsOpen(true);
+    toast({
+      title: "¡Plato Harvard añadido al carrito!",
+      description: `Se han añadido los productos para tu plato equilibrado por un total de ${plateTotalPrice.toFixed(2)}€.`,
+    });
+  };
+
 
   // Active Tab
-  const [activeTab, setActiveTab] = useState<'diario' | 'perfil' | 'escaner' | 'comparador' | 'despensa' | 'presupuesto'>('diario');
+  const [activeTab, setActiveTab] = useState<'harvard' | 'diario' | 'calculadora' | 'perfil' | 'escaner' | 'comparador' | 'despensa' | 'presupuesto'>('harvard');
 
   // Diet Profile State
   const [dietTags, setDietTags] = useState<string[]>(() => {
@@ -99,7 +266,7 @@ export const EcoHealth = () => {
 
   // Target Daily Nutritional Goals
   const dailyGoals = {
-    calories: 2000,
+    calories: calorieGoal,
     protein: 80,
     carbs: 220,
     fats: 65,
@@ -276,12 +443,14 @@ export const EcoHealth = () => {
         <div className="bg-white p-1.5 rounded-2xl border shadow-xs mb-8 overflow-x-auto">
           <div className="flex gap-1.5 min-w-max">
             {[
-              { id: 'diario', label: '📊 Mi Diario & Nutrición', desc: 'Calorías, macros y comidas' },
+              { id: 'harvard', label: '🍽️ Plato Harvard Interactivo', desc: '¡Otra forma creativa de comprar!' },
+              { id: 'calculadora', label: '🔥 Gasto Calórico & TDEE', desc: 'Averigua cuánto quemas al día' },
+              { id: 'diario', label: '📊 Mi Diario & Calorías', desc: 'Seguimiento de comidas y macros' },
               { id: 'perfil', label: '🌾 Perfil & Alergias', desc: 'Dietas e intolerancias' },
               { id: 'escaner', label: '📷 Escáner EAN Bio', desc: 'Cámara y Nutri-Score' },
               { id: 'comparador', label: '⚖️ Comparador 1 a 1', desc: 'Nutrientes y €/kg' },
               { id: 'despensa', label: '🥫 Mi Despensa & Reposición', desc: 'Caducidad y stock en casa' },
-              { id: 'presupuesto', label: '💶 Menú por Presupuesto', desc: 'Nutrición por euro' },
+              { id: 'presupuesto', label: '💶 Modo Presupuesto', desc: 'Nutrición por euro' },
             ].map(tab => (
               <button
                 key={tab.id}
@@ -304,6 +473,387 @@ export const EcoHealth = () => {
         {/* ============================================================== */}
         {/* TAB 1: DIARIO NUTRICIONAL (CALORÍAS, MACROS, COMIDAS, AGUA) */}
         {/* ============================================================== */}
+                {/* ============================================================== */}
+        {/* TAB HARVARD: PLATO SALUDABLE HARVARD INTERACTIVO */}
+        {/* ============================================================== */}
+        {activeTab === 'harvard' && (
+          <div className="space-y-8">
+            {/* Header creativo */}
+            <div className="bg-gradient-to-r from-emerald-900 via-teal-900 to-slate-900 text-white rounded-3xl p-6 md:p-8 shadow-md">
+              <div className="max-w-3xl space-y-2">
+                <span className="text-xs uppercase font-extrabold tracking-widest text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
+                  🍽️ Método Científico de Nutrición
+                </span>
+                <h2 className="text-2xl md:text-4xl font-display font-black tracking-tight">
+                  ¡Otra forma creativa de hacer tus compras!
+                </h2>
+                <p className="text-emerald-100 text-sm md:text-base leading-relaxed">
+                  Te ayudamos a tener en balance tu dieta según el <strong>Plato para Comer Saludable de Harvard</strong>. Arrastra o añade alimentos bio y te avisaremos en tiempo real para que tu plato sea 50% vegetales y frutas, 25% granos integrales y 25% proteína limpia.
+                </p>
+              </div>
+            </div>
+
+            {/* Layout: Plato Visual + Panel de Control y Productos */}
+            <div className="grid lg:grid-cols-12 gap-8 items-start">
+              
+              {/* Left Column: Plato Visual Interactivo (7 cols) */}
+              <div className="lg:col-span-7 bg-white rounded-3xl p-6 md:p-8 border shadow-xs space-y-6">
+                <div className="flex items-center justify-between border-b pb-4">
+                  <div>
+                    <h3 className="font-bold text-slate-900 text-lg">Tu Plato Saludable Actual</h3>
+                    <p className="text-xs text-slate-500">Haz clic en los productos para sumarlos a cada facción del plato.</p>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-xl font-display font-extrabold text-emerald-800">{plateTotalCalories} kcal</span>
+                    <span className="block text-[11px] text-slate-400">Total plato estimado</span>
+                  </div>
+                </div>
+
+                {/* Feedback Bar & Harvard Status */}
+                <div className={`p-4 rounded-2xl border text-xs space-y-1.5 transition-all ${plateFeedback.statusColor}`}>
+                  <div className="flex items-center justify-between font-bold">
+                    <span>{plateFeedback.statusText}</span>
+                    <span className="text-xs font-mono">{plateItems.length} alimentos</span>
+                  </div>
+                  <p className="text-[11px] leading-relaxed opacity-90">{plateFeedback.tip}</p>
+                </div>
+
+                {/* Visual Representation of the Harvard Plate */}
+                <div className="relative aspect-square max-w-md mx-auto rounded-full p-4 bg-slate-50 border-4 border-slate-200/80 shadow-inner flex flex-col justify-between overflow-hidden">
+                  
+                  {/* Top Half: 50% Vegetales y Frutas */}
+                  <div className="h-1/2 w-full bg-emerald-500/15 border-b-2 border-dashed border-emerald-600/40 rounded-t-full p-4 flex flex-col justify-center items-center text-center relative group">
+                    <span className="text-xs font-black text-emerald-950 uppercase tracking-wider bg-emerald-100/90 px-2.5 py-0.5 rounded-full mb-1">
+                      🥦 50% Vegetales & Frutas
+                    </span>
+                    <span className="text-lg font-black text-emerald-800">{plateVeggiesPercent}% del plato</span>
+                    <div className="flex flex-wrap gap-1 justify-center max-h-16 overflow-y-auto mt-1">
+                      {plateItems.filter(x => x.category === 'vegetales').map(it => (
+                        <span key={it.id} className="text-[10px] bg-white text-emerald-950 px-2 py-0.5 rounded-full border shadow-2xs flex items-center gap-1 font-medium">
+                          {it.product.name.split('–')[0]}
+                          <button onClick={() => removePlateItem(it.id)} className="text-red-500 hover:text-red-700">×</button>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Bottom Half Split: 25% Granos y 25% Proteína */}
+                  <div className="h-1/2 w-full flex">
+                    {/* Bottom-Left: 25% Granos Integrales */}
+                    <div className="w-1/2 h-full bg-amber-500/15 border-r border-dashed border-amber-600/40 rounded-bl-full p-3 flex flex-col justify-center items-center text-center">
+                      <span className="text-[11px] font-black text-amber-950 uppercase tracking-wider bg-amber-100/90 px-2 py-0.5 rounded-full mb-1">
+                        🌾 25% Granos
+                      </span>
+                      <span className="text-base font-black text-amber-800">{plateGrainsPercent}%</span>
+                      <div className="flex flex-wrap gap-1 justify-center max-h-14 overflow-y-auto mt-1">
+                        {plateItems.filter(x => x.category === 'granos').map(it => (
+                          <span key={it.id} className="text-[9px] bg-white text-amber-950 px-1.5 py-0.5 rounded-full border shadow-2xs flex items-center gap-1 font-medium">
+                            {it.product.name.split('–')[0]}
+                            <button onClick={() => removePlateItem(it.id)} className="text-red-500 hover:text-red-700">×</button>
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Bottom-Right: 25% Proteína Saludable */}
+                    <div className="w-1/2 h-full bg-blue-500/15 rounded-br-full p-3 flex flex-col justify-center items-center text-center">
+                      <span className="text-[11px] font-black text-blue-950 uppercase tracking-wider bg-blue-100/90 px-2 py-0.5 rounded-full mb-1">
+                        🫘 25% Proteína
+                      </span>
+                      <span className="text-base font-black text-blue-800">{plateProteinPercent}%</span>
+                      <div className="flex flex-wrap gap-1 justify-center max-h-14 overflow-y-auto mt-1">
+                        {plateItems.filter(x => x.category === 'proteinas').map(it => (
+                          <span key={it.id} className="text-[9px] bg-white text-blue-950 px-1.5 py-0.5 rounded-full border shadow-2xs flex items-center gap-1 font-medium">
+                            {it.product.name.split('–')[0]}
+                            <button onClick={() => removePlateItem(it.id)} className="text-red-500 hover:text-red-700">×</button>
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+
+                {/* Buy Whole Plate Button */}
+                <div className="pt-4 border-t flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div>
+                    <span className="text-xs text-slate-500">Total compra productos del plato:</span>
+                    <span className="text-2xl font-display font-extrabold text-slate-900 block">{plateTotalPrice.toFixed(2)}€</span>
+                  </div>
+                  <Button 
+                    onClick={handleAddPlateToCart}
+                    className="w-full sm:w-auto bg-emerald-800 hover:bg-emerald-700 text-white font-black px-6 py-6 text-sm shadow-md gap-2"
+                  >
+                    <ShoppingBag className="h-4 w-4" />
+                    Comprar ingredientes de mi plato en 1 clic
+                  </Button>
+                </div>
+              </div>
+
+              {/* Right Column: Catálogo de Alimentos para el Plato (5 cols) */}
+              <div className="lg:col-span-5 space-y-6">
+                
+                {/* 1. Vegetales y Frutas Picker */}
+                <div className="bg-white rounded-3xl p-5 border shadow-2xs space-y-3">
+                  <div className="flex items-center justify-between border-b pb-2">
+                    <span className="font-bold text-slate-900 text-xs flex items-center gap-1.5">
+                      🥦 Sumar Vegetales & Frutas (Meta: 50%)
+                    </span>
+                    <Badge className="bg-emerald-100 text-emerald-800 border-0 text-[10px]">Hortalizas bio</Badge>
+                  </div>
+                  <div className="space-y-2">
+                    {[
+                      { slug: 'gumendi-lentejas-con-verduras-720gr', name: 'Lentejas con Verduras Bio Gumendi (720g)', price: 3.50 },
+                      { slug: 'drasanvi-acai-en-polvo-70gr', name: 'Açaí Puro Ecológico en Polvo Drasanvi (70g)', price: 11.70 },
+                      { slug: 'general-multimarca-gazpacho-andaluz-1l-arteoliva', name: 'Gazpacho Andaluz Bio con Hortalizas (1L)', price: 3.85 },
+                      { slug: 'gumendi-garbanzos-con-verduras-720gr', name: 'Garbanzos Estofados con Verduras Bio (720g)', price: 3.30 },
+                    ].map(item => {
+                      const prod = allCatalogProducts.find(p => p.slug === item.slug);
+                      return (
+                        <div key={item.slug} className="flex items-center justify-between text-xs p-2 rounded-xl bg-slate-50 border border-slate-100">
+                          <span className="font-medium text-slate-800 truncate max-w-[200px]">{item.name}</span>
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono text-emerald-800 font-bold">{item.price.toFixed(2)}€</span>
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              className="h-7 text-[11px] px-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border-emerald-300 font-bold"
+                              onClick={() => prod && addProductToPlate(prod, 'vegetales')}
+                            >
+                              + Plato
+                            </Button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* 2. Granos Integrales Picker */}
+                <div className="bg-white rounded-3xl p-5 border shadow-2xs space-y-3">
+                  <div className="flex items-center justify-between border-b pb-2">
+                    <span className="font-bold text-slate-900 text-xs flex items-center gap-1.5">
+                      🌾 Sumar Granos Integrales (Meta: 25%)
+                    </span>
+                    <Badge className="bg-amber-100 text-amber-800 border-0 text-[10px]">Cereales enteros</Badge>
+                  </div>
+                  <div className="space-y-2">
+                    {[
+                      { slug: 'ecosana-copos-de-avena-sin-gluten-1k', name: 'Copos de Avena Sin Gluten 1k Ecosana', price: 5.90 },
+                      { slug: 'el-granero-integral-quinoa-bio-500gr-granero', name: 'Quinoa Real Bio 500g El Granero Integral', price: 4.95 },
+                      { slug: 'el-granero-integral-tortas-quinoa-y-tamari-bio-140gr-granero', name: 'Tortas de Quinoa y Tamari Bio', price: 1.90 },
+                    ].map(item => {
+                      const prod = allCatalogProducts.find(p => p.slug === item.slug);
+                      return (
+                        <div key={item.slug} className="flex items-center justify-between text-xs p-2 rounded-xl bg-slate-50 border border-slate-100">
+                          <span className="font-medium text-slate-800 truncate max-w-[200px]">{item.name}</span>
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono text-amber-800 font-bold">{item.price.toFixed(2)}€</span>
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              className="h-7 text-[11px] px-2.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border-amber-300 font-bold"
+                              onClick={() => prod && addProductToPlate(prod, 'granos')}
+                            >
+                              + Plato
+                            </Button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* 3. Proteínas Saludables Picker */}
+                <div className="bg-white rounded-3xl p-5 border shadow-2xs space-y-3">
+                  <div className="flex items-center justify-between border-b pb-2">
+                    <span className="font-bold text-slate-900 text-xs flex items-center gap-1.5">
+                      🫘 Sumar Proteínas Saludables (Meta: 25%)
+                    </span>
+                    <Badge className="bg-blue-100 text-blue-800 border-0 text-[10px]">Legumbres & plant-protein</Badge>
+                  </div>
+                  <div className="space-y-2">
+                    {[
+                      { slug: 'gumendi-garbanzo-cocido-660gr', name: 'Garbanzo Cocido Extra Bio Gumendi 660g', price: 3.10 },
+                      { slug: 'iswari-super-vegan-protein-250gr', name: 'Súper Vegan Protein 250g Iswari', price: 11.05 },
+                      { slug: 'vegetalia-vegenuggets-de-tofu-180gr', name: 'Vegenuggets de Tofu 180g Vegetalia', price: 3.75 },
+                    ].map(item => {
+                      const prod = allCatalogProducts.find(p => p.slug === item.slug);
+                      return (
+                        <div key={item.slug} className="flex items-center justify-between text-xs p-2 rounded-xl bg-slate-50 border border-slate-100">
+                          <span className="font-medium text-slate-800 truncate max-w-[200px]">{item.name}</span>
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono text-blue-800 font-bold">{item.price.toFixed(2)}€</span>
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              className="h-7 text-[11px] px-2.5 bg-blue-50 hover:bg-blue-100 text-blue-900 border-blue-300 font-bold"
+                              onClick={() => prod && addProductToPlate(prod, 'proteinas')}
+                            >
+                              + Plato
+                            </Button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+        )}
+
+        {/* ============================================================== */}
+        {/* TAB CALCULADORA: GASTO ENERGÉTICO & TDEE */}
+        {/* ============================================================== */}
+        {activeTab === 'calculadora' && (
+          <div className="bg-white rounded-3xl p-6 md:p-8 border shadow-xs max-w-4xl mx-auto space-y-8">
+            <div className="border-b pb-4">
+              <h2 className="font-bold text-slate-900 text-xl flex items-center gap-2">
+                <span>🔥</span> Calculadora de Gasto Energético Diario (TDEE & BMR)
+              </h2>
+              <p className="text-xs text-slate-500 mt-1">
+                Averigua con exactitud cuántas calorías quema tu cuerpo al día para saber exactamente cuánto consumir y lograr tu objetivo sin pasar hambre.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-8 items-start">
+              
+              {/* Form Inputs */}
+              <div className="space-y-4 text-xs">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1.5">Sexo biológico:</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setUserGender('mujer')}
+                      className={`p-2.5 rounded-xl border font-bold text-center transition-all ${
+                        userGender === 'mujer' ? 'bg-emerald-800 text-white border-emerald-800' : 'bg-slate-50 text-slate-700'
+                      }`}
+                    >
+                      👩 Mujer
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setUserGender('hombre')}
+                      className={`p-2.5 rounded-xl border font-bold text-center transition-all ${
+                        userGender === 'hombre' ? 'bg-emerald-800 text-white border-emerald-800' : 'bg-slate-50 text-slate-700'
+                      }`}
+                    >
+                      👨 Hombre
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Edad (años):</label>
+                    <Input 
+                      type="number" 
+                      value={userAge} 
+                      onChange={(e) => setUserAge(Number(e.target.value))}
+                      className="text-xs h-10"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Altura (cm):</label>
+                    <Input 
+                      type="number" 
+                      value={userHeight} 
+                      onChange={(e) => setUserHeight(Number(e.target.value))}
+                      className="text-xs h-10"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Peso (kg):</label>
+                    <Input 
+                      type="number" 
+                      value={userWeight} 
+                      onChange={(e) => setUserWeight(Number(e.target.value))}
+                      className="text-xs h-10"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1.5">Nivel de Actividad Física:</label>
+                  <select
+                    value={activityLevel}
+                    onChange={(e) => setActivityLevel(Number(e.target.value))}
+                    className="w-full text-xs rounded-xl border border-slate-200 p-2.5 bg-slate-50/50"
+                  >
+                    <option value={1.2}>Sedentario (trabajo de oficina, poco ejercicio)</option>
+                    <option value={1.375}>Ligero (ejercicio suave 1 a 3 días por semana)</option>
+                    <option value={1.55}>Moderado (deporte o entrenamiento 3 a 5 días/semana)</option>
+                    <option value={1.725}>Muy activo (entrenamiento intenso 6 a 7 días/semana)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1.5">Objetivo Personal:</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {[
+                      { id: 'perder', label: '⚖️ Perder Grasa' },
+                      { id: 'mantener', label: '✨ Mantener / Vital' },
+                      { id: 'ganar', label: '💪 Ganar Músculo' },
+                    ].map(g => (
+                      <button
+                        key={g.id}
+                        type="button"
+                        onClick={() => setFitnessGoal(g.id as any)}
+                        className={`p-2 rounded-xl border text-[11px] font-bold text-center transition-all ${
+                          fitnessGoal === g.id ? 'bg-emerald-800 text-white border-emerald-800' : 'bg-slate-50 text-slate-700'
+                        }`}
+                      >
+                        {g.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Calculation Result Card */}
+              <div className="p-6 rounded-3xl bg-slate-900 text-white space-y-5">
+                <div className="border-b border-slate-800 pb-3">
+                  <span className="text-xs uppercase font-extrabold text-emerald-400">Resultados Científicos (Fórmula Mifflin-St Jeor)</span>
+                  <h3 className="text-xl font-bold mt-1">Tu Gasto Metabólico</h3>
+                </div>
+
+                <div className="space-y-3 text-xs">
+                  <div className="flex justify-between items-center py-1 border-b border-slate-800/80">
+                    <span className="text-slate-400">Metabolismo Basal (BMR - quema en reposo):</span>
+                    <strong className="text-white font-mono text-sm">{bmr} kcal</strong>
+                  </div>
+                  <div className="flex justify-between items-center py-1 border-b border-slate-800/80">
+                    <span className="text-slate-400">Gasto Total Diario (TDEE - con tu actividad):</span>
+                    <strong className="text-emerald-400 font-mono text-base">{tdee} kcal</strong>
+                  </div>
+                  <div className="p-3.5 rounded-2xl bg-emerald-950/80 border border-emerald-800/60 flex justify-between items-center">
+                    <div>
+                      <span className="text-[11px] text-emerald-300 font-bold block uppercase">Objetivo recomendado:</span>
+                      <span className="text-xs text-emerald-100">
+                        {fitnessGoal === 'perder' ? 'Déficit calórico moderado' : fitnessGoal === 'ganar' ? 'Superávit limpio para masa' : 'Mantenimiento de energía'}
+                      </span>
+                    </div>
+                    <strong className="text-2xl font-black text-white font-mono">{targetCaloriesCalculated} kcal</strong>
+                  </div>
+                </div>
+
+                <Button 
+                  onClick={applyCalculatedCalories}
+                  className="w-full bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-black h-11 text-xs shadow-md"
+                >
+                  Aplicar {targetCaloriesCalculated} kcal a mi diario de hoy
+                </Button>
+              </div>
+
+            </div>
+          </div>
+        )}
+
         {activeTab === 'diario' && (
           <div className="space-y-8">
             
