@@ -32,6 +32,7 @@ import { ExperienceMode } from '@/services/dailyNutritionStore';
 import { Bot, Users, HelpCircle, Package } from 'lucide-react';
 import { OfflineIndicatorBar } from '@/components/offline/OfflineIndicatorBar';
 import { ZeroFrictionPantryModal } from '@/components/pantry/ZeroFrictionPantryModal';
+import { RecipeInboxModal } from '@/components/recipes/RecipeInboxModal';
 import { Link } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 
@@ -50,6 +51,7 @@ export const EcolandHoy = () => {
   const [isWhatCanIDoOpen, setIsWhatCanIDoOpen] = useState(false);
   const [isHouseholdModalOpen, setIsHouseholdModalOpen] = useState(false);
   const [isPantryModalOpen, setIsPantryModalOpen] = useState(false);
+  const [isRecipeModalOpen, setIsRecipeModalOpen] = useState(false);
 
   // Diálogos modales
   const [isFastModalOpen, setIsFastModalOpen] = useState(false);
@@ -255,6 +257,16 @@ export const EcolandHoy = () => {
             >
               <Package className="w-3.5 h-3.5 text-emerald-800" />
               <span>Mi Despensa</span>
+            </Button>
+
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setIsRecipeModalOpen(true)}
+              className="border-emerald-300 text-emerald-900 bg-emerald-50/50 hover:bg-emerald-100 font-semibold text-xs rounded-xl h-8 px-3 gap-1.5"
+            >
+              <ChefHat className="w-3.5 h-3.5 text-emerald-800" />
+              <span>Recetas & Cocina</span>
             </Button>
           </div>
 
@@ -915,6 +927,12 @@ export const EcolandHoy = () => {
         isOpen={isPantryModalOpen}
         onClose={() => setIsPantryModalOpen(false)}
         onItemConsumedToDaily={() => refreshData()}
+      />
+
+      <RecipeInboxModal
+        isOpen={isRecipeModalOpen}
+        onClose={() => setIsRecipeModalOpen(false)}
+        onCookRecipeSuccess={() => refreshData()}
       />
     </div>
   );
