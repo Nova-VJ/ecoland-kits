@@ -4,11 +4,32 @@ import { Clock, Users, ChefHat, AlertTriangle, Lightbulb, ShoppingBag, ArrowLeft
 import { Button } from '@/components/ui/button';
 import { getRecipeBySlug } from '@/data/recipes';
 import { getPackBySlug } from '@/data/packs';
+import { useCart } from '@/context/CartContext';
+import { useToast } from '@/hooks/use-toast';
 
 const RecipeDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const recipe = getRecipeBySlug(slug || '');
   const pack = recipe ? getPackBySlug(recipe.packSlug) : null;
+  const { addPack, setIsOpen } = useCart();
+  const { toast } = useToast();
+
+  const handleAddRecipeToCart = () => {
+    if (pack) {
+      addPack(pack, 'M', false);
+      setIsOpen(true);
+      toast({
+        title: "¡Ingredientes añadidos!",
+        description: `Se han añadido los ingredientes frescos para ${recipe?.title || 'tu receta'} al carrito.`,
+      });
+    } else {
+      setIsOpen(true);
+      toast({
+        title: "Receta lista",
+        description: "Revisa los productos recomendados para esta receta en tu cesta.",
+      });
+    }
+  };
 
   if (!recipe) {
     return (
@@ -101,9 +122,9 @@ const RecipeDetail = () => {
                 <Link to={`/packs/${pack.slug}`}>
                   <Button variant="outline">Ver pack</Button>
                 </Link>
-                <Button className="gap-2">
+                <Button className="gap-2 btn-hero" onClick={handleAddRecipeToCart}>
                   <ShoppingBag className="h-4 w-4" />
-                  Comprar pack
+                  Comprar ingredientes ({pack.prices.M.toFixed(2)}€)
                 </Button>
               </div>
             </div>
@@ -128,6 +149,21 @@ const RecipeDetail = () => {
                   </li>
                 ))}
               </ul>
+
+              {pack && (
+                <div className="mt-5 pt-4 border-t">
+                  <Button 
+                    className="w-full gap-2 shadow-md"
+                    onClick={handleAddRecipeToCart}
+                  >
+                    <ShoppingBag className="h-4 w-4" />
+                    Añadir cesta de receta (1-clic)
+                  </Button>
+                  <p className="text-[11px] text-muted-foreground text-center mt-2">
+                    Incluye los ingredientes bio necesarios para {recipe.servings} raciones.
+                  </p>
+                </div>
+              )}
 
               {/* Allergens */}
               {recipe.allergens.length > 0 && (

@@ -18,6 +18,7 @@ import Quiz from "./pages/Quiz";
 import Suscripcion from "./pages/Suscripcion";
 import Club from "./pages/Club";
 import Tienda from "./pages/Tienda";
+import EcoHealth from "./pages/EcoHealth";
 import ProductDetail from "./pages/ProductDetail";
 import CatalogProductDetail from "./pages/CatalogProductDetail";
 import CatalogPackDetail from "./pages/CatalogPackDetail";
@@ -76,6 +77,7 @@ const App = () => {
                 <Route path="/suscripcion" element={<Suscripcion />} />
                 <Route path="/club" element={<Club />} />
                 <Route path="/tienda" element={<Tienda />} />
+                <Route path="/ecohealth" element={<EcoHealth />} />
                 <Route path="/tienda/:slug" element={<ProductDetail />} />
                 <Route path="/tienda/producto/:slug" element={<CatalogProductDetail />} />
                 <Route path="/tienda/pack/:slug" element={<CatalogPackDetail />} />

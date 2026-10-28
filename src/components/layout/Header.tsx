@@ -1,18 +1,22 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ShoppingBag, User, Package, Store, ClipboardList, Repeat, BookOpen, Crown, MapPin, Heart } from 'lucide-react';
+import { Sparkles, Menu, X, ShoppingBag, User, Package, Store, ClipboardList, Repeat, BookOpen, Crown, MapPin, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/CartContext';
 import logoEcoland from '@/assets/logo-ecoland-2.jpg';
 const navLinks = [{
-  to: '/packs',
-  label: 'Packs',
-  icon: Package
-}, {
   to: '/tienda',
   label: 'Tienda',
   icon: Store
+}, {
+  to: '/ecohealth',
+  label: 'EcoHealth',
+  icon: Sparkles
+}, {
+  to: '/packs',
+  label: 'Packs',
+  icon: Package
 }, {
   to: '/quiz',
   label: 'Test',

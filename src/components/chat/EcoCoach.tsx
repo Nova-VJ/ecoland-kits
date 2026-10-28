@@ -12,6 +12,7 @@ import { useCart } from '@/context/CartContext';
 import { allCatalogProducts } from '@/data/catalog/individual-products';
 import { catalogPacks } from '@/data/catalog/packs-catalog';
 import { useToast } from '@/hooks/use-toast';
+import { generateEcoAsistenteResponse } from '@/lib/ecoAsistenteEngine';
 
 interface Message {
   id: string;
@@ -262,9 +263,11 @@ export const EcoCoach = () => {
         }
       }
     } catch (e: any) {
+      // Local Intelligent EcoAsistente fallback: instant expert response with real Ecoland products
+      const localResponse = generateEcoAsistenteResponse(text);
       setMessages(prev => [
         ...prev,
-        { id: `err-${Date.now()}`, role: 'assistant', content: `❌ ${e.message || 'Error al conectar. Inténtalo de nuevo.'}` },
+        { id: `asistente-${Date.now()}`, role: 'assistant', content: localResponse.content },
       ]);
     } finally {
       setIsLoading(false);

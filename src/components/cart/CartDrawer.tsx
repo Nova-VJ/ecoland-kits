@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Plus, Minus, Trash2, ShoppingBag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -6,6 +7,7 @@ import { Link } from 'react-router-dom';
 
 export const CartDrawer = () => {
   const { items, isOpen, setIsOpen, removeItem, updateQuantity, totalPrice, totalItems } = useCart();
+  const [showBasketAnalysis, setShowBasketAnalysis] = useState(false);
 
   return (
     <AnimatePresence>
@@ -238,12 +240,43 @@ export const CartDrawer = () => {
             {/* Footer */}
             {items.length > 0 && (
               <div className="p-4 border-t space-y-3 bg-muted/20">
-                <div className="p-2.5 rounded-lg bg-background border text-xs space-y-1 text-muted-foreground">
+                <div className="p-2.5 rounded-xl bg-background border text-xs space-y-2 text-muted-foreground shadow-2xs">
                   <div className="flex justify-between items-center font-medium text-foreground">
-                    <span className="flex items-center gap-1.5">🌱 100% Ecológico Certificado</span>
-                    <span className="text-primary font-semibold">+{Math.floor(totalPrice)} EcoPuntos</span>
+                    <span className="flex items-center gap-1.5 font-semibold text-emerald-800">
+                      🌿 Cesta 100% Ecológica
+                    </span>
+                    <span className="text-primary font-bold bg-primary/10 px-2 py-0.5 rounded-full text-[11px]">
+                      +{Math.floor(totalPrice)} EcoPuntos
+                    </span>
                   </div>
-                  <p className="text-[11px] leading-tight">Garantía de frescura bio directa de tienda física y productores locales.</p>
+
+                  <button
+                    onClick={() => setShowBasketAnalysis(!showBasketAnalysis)}
+                    className="w-full text-left flex items-center justify-between text-[11px] font-semibold text-primary hover:underline pt-1 border-t border-muted"
+                  >
+                    <span>🥗 Analizar equilibrio nutricional y bio</span>
+                    <span>{showBasketAnalysis ? '▲ Ocultar' : '▼ Ver análisis'}</span>
+                  </button>
+
+                  {showBasketAnalysis && (
+                    <div className="pt-2 border-t border-dashed space-y-1.5 text-[11px] text-slate-600 bg-emerald-50/50 p-2.5 rounded-lg">
+                      <div className="flex justify-between">
+                        <span>Certificación ecológica:</span>
+                        <strong className="text-emerald-700">100% Bio (Euro-hoja)</strong>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Envases sostenibles:</span>
+                        <strong className="text-emerald-700">Cristal / Reciclables</strong>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Aditivos sintéticos / OGM:</span>
+                        <strong className="text-emerald-700">0% (Libre de químicos)</strong>
+                      </div>
+                      <p className="text-[10px] text-slate-500 pt-1 leading-snug">
+                        💡 Tu cesta aporta carbohidratos complejos de absorción lenta y proteínas vegetales limpias para tu bienestar diario.
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex justify-between items-center pt-1">

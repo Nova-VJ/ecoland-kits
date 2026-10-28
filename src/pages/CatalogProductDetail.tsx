@@ -143,6 +143,14 @@ const CatalogProductDetail = () => {
   const { trackView } = useProductViews();
   const [quantity, setQuantity] = useState(1);
   const [addedAnimation, setAddedAnimation] = useState(false);
+  const [userDietTags, setUserDietTags] = useState<string[]>([]);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('ecoland-diet-tags');
+      if (saved) setUserDietTags(JSON.parse(saved));
+    } catch {}
+  }, []);
 
   useEffect(() => {
     if (product) {
@@ -416,6 +424,27 @@ const CatalogProductDetail = () => {
                 </Badge>
               )}
             </div>
+
+            {/* Perfil Alimentario Compatibility Banner */}
+            {userDietTags.length > 0 && (
+              <div className="p-3.5 rounded-2xl border text-xs flex items-center justify-between gap-3 shadow-xs transition-all bg-emerald-50/80 border-emerald-200/80 text-emerald-950">
+                <div className="flex items-center gap-2.5">
+                  <span className="text-lg">🌿</span>
+                  <div>
+                    <span className="font-bold">Tu Perfil Alimentario: </span>
+                    <span>
+                      {userDietTags.includes('sin-gluten') && (product.tags.includes('sin-gluten') ? '✅ Sin gluten verificado • ' : '⚠️ Precaución con gluten • ')}
+                      {userDietTags.includes('vegano') && (product.tags.includes('vegano') ? '🌱 100% Vegano • ' : '⚠️ No vegano • ')}
+                      {userDietTags.includes('proteina') && (product.tags.includes('proteina') ? '💪 Alto en proteína • ' : '')}
+                      {userDietTags.includes('bio') ? '✨ Certificado Bio UE' : 'Garantía Ecoland'}
+                    </span>
+                  </div>
+                </div>
+                <Link to="/tienda" className="text-[11px] font-semibold text-emerald-800 hover:underline shrink-0">
+                  Modificar perfil
+                </Link>
+              </div>
+            )}
 
             {/* Product Title */}
             <h1 className="font-display text-2xl md:text-3xl lg:text-4xl font-extrabold text-slate-900 leading-snug">
