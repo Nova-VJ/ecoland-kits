@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   X, Sparkles, Search, Keyboard, Mic, Camera, Barcode, 
   Check, Plus, Trash2, Edit2, AlertCircle, ShoppingBag, ArrowRight,
-  Bookmark, CheckCircle2, AlertTriangle, Clock, RefreshCw
+  Bookmark, CheckCircle2, AlertTriangle, Clock, RefreshCw, UtensilsCrossed
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -30,7 +30,8 @@ export const FastFoodModal = ({
 }: FastFoodModalProps) => {
   const { toast } = useToast();
 
-  const [activeMode, setActiveMode] = useState<'text' | 'voice' | 'photo' | 'barcode' | 'catalog'>('text');
+  const [activeMode, setActiveMode] = useState<'text' | 'voice' | 'photo' | 'barcode' | 'catalog' | 'eat_out'>('text');
+  const [eatOutInput, setEatOutInput] = useState('');
   const [selectedMeal, setSelectedMeal] = useState<MealType>(defaultMeal);
 
   // Modo Texto
@@ -60,6 +61,16 @@ export const FastFoodModal = ({
   const predictiveContext = dailyNutritionStore.getPredictiveSuggestions();
 
   // Manejador de parseo de texto natural
+  const handleParseEatOut = (presetText?: string) => {
+    const raw = (presetText || eatOutInput).trim() || 'Lentejas, pollo con patatas y café';
+    const res = fastFoodParser.parseNaturalText(raw, 'text');
+    res.confidenceNotice = 'Estimación: las cantidades de una comida preparada fuera de casa pueden variar considerablemente.';
+    res.requiresReview = true;
+    res.overallConfidence = 'medium';
+    setParsedResult(res);
+    dailyNutritionStore.trackEvent('eat_out_logged', { text: raw });
+  };
+
   const handleParseText = () => {
     if (!textInput.trim()) return;
     const res = fastFoodParser.parseNaturalText(textInput, 'text');
@@ -340,6 +351,7 @@ export const FastFoodModal = ({
                   { id: 'photo', label: 'Foto IA', icon: Camera },
                   { id: 'barcode', label: 'Código', icon: Barcode },
                   { id: 'catalog', label: 'Catálogo', icon: Search },
+                  { id: 'eat_out', label: 'Comí fuera', icon: UtensilsCrossed },
                 ].map(tab => {
                   const Icon = tab.icon;
                   const isActive = activeMode === tab.id;
@@ -489,6 +501,57 @@ export const FastFoodModal = ({
                       Escanear
                     </Button>
                   </div>
+                </div>
+              )}
+
+              {/* 6. MODO COMÍ FUERA (P2-D) */}
+              {activeMode === 'eat_out' && (
+                <div className="space-y-3">
+                  <div className="p-3 bg-amber-50/70 border border-amber-200 rounded-2xl text-[11px] text-amber-950 space-y-1">
+                    <strong className="block font-bold">Registro flexible sin culpa:</strong>
+                    <p className="text-amber-800 leading-relaxed">
+                      Ecoland no castiga ni compensa restrictivamente las comidas fuera. Estimamos las porciones para mantener tu visión global.
+                    </p>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-[11px] font-bold text-slate-700">Describe lo que has comido:</label>
+                    <Input
+                      value={eatOutInput}
+                      onChange={(e) => setEatOutInput(e.target.value)}
+                      placeholder="Ej: Lentejas, pollo con patatas y café..."
+                      className="rounded-xl h-11 text-xs"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <span className="text-[10px] uppercase font-bold text-slate-400 block">O elige un ejemplo habitual:</span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                      {[
+                        'Menú del día: lentejas estofadas y pollo con patatas',
+                        'Ensalada mediterránea completa y café solo',
+                        'Tapas variadas de verduras y tortilla casera',
+                        'Plato de arroz con verduras y pescado a la plancha'
+                      ].map((preset, i) => (
+                        <button
+                          key={i}
+                          type="button"
+                          onClick={() => handleParseEatOut(preset)}
+                          className="p-2 text-left bg-slate-50 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 rounded-xl text-[11px] font-semibold text-slate-700 hover:text-emerald-950 transition-all line-clamp-1"
+                        >
+                          {preset}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <Button
+                    onClick={() => handleParseEatOut()}
+                    className="w-full bg-emerald-900 hover:bg-emerald-800 text-white rounded-xl py-5 font-bold text-xs gap-1.5"
+                  >
+                    <span>Estimar Comida Fuera</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
                 </div>
               )}
 

@@ -177,6 +177,104 @@ export interface TelemetryEvent {
   metadata?: Record<string, any>;
 }
 
+// ==========================================
+// P2: ADAPTIVE COMPANION INTERFACES
+// ==========================================
+
+export type DayCompletenessStatus = 'COMPLETE' | 'INCOMPLETE' | 'USER_CONFIRMED';
+
+export type ExperienceMode = 'simple' | 'nutrition';
+
+export interface HouseholdMember {
+  id: string;
+  name: string;
+  email: string;
+  role: 'OWNER' | 'MEMBER';
+  joinedAt: string;
+}
+
+export interface Household {
+  id: string;
+  name: string;
+  code: string;
+  members: HouseholdMember[];
+}
+
+export type RecommendationReaction = 
+  | 'like' 
+  | 'dislike' 
+  | 'never_suggest' 
+  | 'too_long' 
+  | 'too_expensive' 
+  | 'cook_often';
+
+export interface UserRecommendationPreference {
+  id: string;
+  itemTitle: string;
+  itemType: 'recipe' | 'product';
+  reaction: RecommendationReaction;
+  createdAt: string;
+}
+
+export interface ImportedIngredient {
+  raw: string;
+  normalizedName: string;
+  amount: number;
+  unit: string;
+  inPantry: boolean;
+  catalogSlug?: string;
+  estimatedPriceEuro?: number;
+}
+
+export interface ImportedRecipe {
+  id: string;
+  title: string;
+  sourceUrl?: string;
+  sourceAttribution: string;
+  servings: number;
+  prepTimeMinutes: number;
+  estimatedCalories: number;
+  estimatedProtein: number;
+  estimatedFiber: number;
+  ingredients: ImportedIngredient[];
+  steps: string[];
+  isFavorite?: boolean;
+  createdAt: string;
+}
+
+export interface BatchPrepStep {
+  id: string;
+  title: string;
+  description: string;
+  timeMinutes: number;
+  relatedRecipes: string[];
+}
+
+export interface BatchPrepPlan {
+  id: string;
+  title: string;
+  estimatedMinutes: number;
+  steps: BatchPrepStep[];
+  mealsSavedCount: number;
+}
+
+export interface ContextualAction {
+  id: string;
+  title: string;
+  subtitle: string;
+  actionType: 'log' | 'cook_pantry' | 'plan_tomorrow' | 'hydrate' | 'check_expiring';
+  actionLabel: string;
+  targetUrl?: string;
+}
+
+export interface IngredientSubstitution {
+  name: string;
+  flavorChange: string;
+  textureChange: string;
+  nutritionChange: string;
+  priceDiffEuro: number;
+}
+
 // 10 Objetivos de Salud Personalizados
 export const NUTRITIONAL_GOALS_CATALOG = [
   { id: 'equilibrio', title: 'Comer más equilibrado (Plato Harvard)', cals: 2050, prot: 85, carbs: 240, fats: 65, fiber: 32 },
@@ -204,6 +302,11 @@ class DailyNutritionStore {
   private readonly WEIGHT_RECORDS_KEY = 'ecoland-weight-records-v2';
   private readonly WEIGHT_ENABLED_KEY = 'ecoland-weight-enabled-v2';
   private readonly TELEMETRY_KEY = 'ecoland-daily-telemetry-v2';
+  private readonly DAY_COMPLETENESS_KEY = 'ecoland-day-completeness-v2';
+  private readonly EXPERIENCE_MODE_KEY = 'ecoland-experience-mode-v2';
+  private readonly HOUSEHOLD_KEY = 'ecoland-household-v2';
+  private readonly PREFERENCES_KEY = 'ecoland-recommendation-preferences-v2';
+  private readonly IMPORTED_RECIPES_KEY = 'ecoland-imported-recipes-v2';
 
   /**
    * Obtiene los registros del día actual
@@ -1088,6 +1191,18 @@ class DailyNutritionStore {
     } catch {}
   }
 
+  public addShoppingListItem(item: Omit<ShoppingListItem, 'id' | 'checked'>): ShoppingListItem {
+    const list = this.getShoppingList();
+    const newItem: ShoppingListItem = {
+      ...item,
+      id: `shop_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+      checked: false
+    };
+    list.push(newItem);
+    this.updateShoppingList(list);
+    return newItem;
+  }
+
   // ==========================================
   // P1-F: REGISTRO OPCIONAL DE PESO (TENDENCIA SUAVIZADA)
   // ==========================================
@@ -1251,6 +1366,395 @@ class DailyNutritionStore {
       fiber,
       source: 'recipe_ai'
     });
+  }
+
+  // ==========================================
+  // P2-C: CALIDAD DEL DIARIO & REGISTROS INCOMPLETOS
+  // ==========================================
+  public getDayCompleteness(dateStr?: string): DayCompletenessStatus {
+    const d = dateStr || new Date().toISOString().split('T')[0];
+    try {
+      const map = JSON.parse(localStorage.getItem(this.DAY_COMPLETENESS_KEY) || '{}');
+      return map[d] || 'COMPLETE';
+    } catch {
+      return 'COMPLETE';
+    }
+  }
+
+  public setDayCompleteness(dateStr: string, status: DayCompletenessStatus): void {
+    try {
+      const map = JSON.parse(localStorage.getItem(this.DAY_COMPLETENESS_KEY) || '{}');
+      map[dateStr] = status;
+      localStorage.setItem(this.DAY_COMPLETENESS_KEY, JSON.stringify(map));
+      this.trackEvent('incomplete_day_confirmed', { dateStr, status });
+    } catch {}
+  }
+
+  public checkYesterdayIncomplete(): { isIncomplete: boolean; yesterdayCalories: number; expectedCalories: number } {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const dateStr = yesterday.toISOString().split('T')[0];
+
+    const currentStatus = this.getDayCompleteness(dateStr);
+    if (currentStatus === 'USER_CONFIRMED' || currentStatus === 'INCOMPLETE') {
+      return { isIncomplete: false, yesterdayCalories: 0, expectedCalories: 0 };
+    }
+
+    const yesterdayEntries = this.getYesterdayLogs();
+    const totalCals = yesterdayEntries.reduce((acc, it) => acc + it.calories, 0);
+    const goals = this.getGoals();
+
+    // Si tiene menos del 55% de calorías o menos de 2 comidas registradas
+    const isUnusual = totalCals > 0 && totalCals < (goals.targetCalories * 0.55);
+    if (isUnusual) {
+      this.trackEvent('incomplete_day_detected', { dateStr, totalCals });
+      return { isIncomplete: true, yesterdayCalories: totalCals, expectedCalories: goals.targetCalories };
+    }
+
+    return { isIncomplete: false, yesterdayCalories: totalCals, expectedCalories: goals.targetCalories };
+  }
+
+  // ==========================================
+  // P2-F: MODOS DE EXPERIENCIA (Simple vs Nutrición)
+  // ==========================================
+  public getExperienceMode(): ExperienceMode {
+    try {
+      const mode = localStorage.getItem(this.EXPERIENCE_MODE_KEY);
+      return (mode === 'simple' || mode === 'nutrition') ? mode : 'nutrition';
+    } catch {
+      return 'nutrition';
+    }
+  }
+
+  public setExperienceMode(mode: ExperienceMode): void {
+    try {
+      localStorage.setItem(this.EXPERIENCE_MODE_KEY, mode);
+      if (mode === 'simple') {
+        this.trackEvent('simple_mode_enabled');
+      }
+    } catch {}
+  }
+
+  // ==========================================
+  // P2-E: HOGAR ECOLAND (HOUSEHOLD)
+  // ==========================================
+  public getHousehold(): Household | null {
+    try {
+      const raw = localStorage.getItem(this.HOUSEHOLD_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch {}
+    return null;
+  }
+
+  public createOrUpdateHousehold(name: string): Household {
+    const existing = this.getHousehold();
+    const household: Household = existing || {
+      id: `hh_${Date.now()}`,
+      name: name.trim() || 'Hogar Familiar',
+      code: `ECO-${Math.floor(1000 + Math.random() * 9000)}`,
+      members: [
+        {
+          id: 'mem_owner',
+          name: 'Tú (Titular)',
+          email: 'titular@ecoland.es',
+          role: 'OWNER',
+          joinedAt: new Date().toISOString()
+        }
+      ]
+    };
+
+    if (existing) {
+      household.name = name.trim();
+    }
+
+    try {
+      localStorage.setItem(this.HOUSEHOLD_KEY, JSON.stringify(household));
+      this.trackEvent('household_created', { name: household.name });
+    } catch {}
+    return household;
+  }
+
+  public addHouseholdMember(name: string, email: string): Household {
+    const hh = this.createOrUpdateHousehold('Hogar Familiar');
+    const newMember: HouseholdMember = {
+      id: `mem_${Date.now()}`,
+      name: name.trim(),
+      email: email.trim(),
+      role: 'MEMBER',
+      joinedAt: new Date().toISOString()
+    };
+    hh.members.push(newMember);
+    try {
+      localStorage.setItem(this.HOUSEHOLD_KEY, JSON.stringify(hh));
+    } catch {}
+    return hh;
+  }
+
+  public leaveHousehold(): void {
+    try {
+      localStorage.removeItem(this.HOUSEHOLD_KEY);
+    } catch {}
+  }
+
+  // ==========================================
+  // P2-G: PREFERENCIAS APRENDIDAS
+  // ==========================================
+  public getRecommendationPreferences(): UserRecommendationPreference[] {
+    try {
+      const raw = localStorage.getItem(this.PREFERENCES_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch {}
+    return [];
+  }
+
+  public addRecommendationPreference(
+    itemTitle: string, 
+    itemType: 'recipe' | 'product', 
+    reaction: RecommendationReaction
+  ): UserRecommendationPreference {
+    const prefs = this.getRecommendationPreferences();
+    const existingIdx = prefs.findIndex(p => p.itemTitle.toLowerCase() === itemTitle.toLowerCase());
+    
+    const pref: UserRecommendationPreference = {
+      id: `pref_${Date.now()}`,
+      itemTitle,
+      itemType,
+      reaction,
+      createdAt: new Date().toISOString()
+    };
+
+    if (existingIdx >= 0) {
+      prefs[existingIdx] = pref;
+    } else {
+      prefs.push(pref);
+    }
+
+    try {
+      localStorage.setItem(this.PREFERENCES_KEY, JSON.stringify(prefs));
+    } catch {}
+    return pref;
+  }
+
+  public removeRecommendationPreference(id: string): void {
+    const prefs = this.getRecommendationPreferences().filter(p => p.id !== id);
+    try {
+      localStorage.setItem(this.PREFERENCES_KEY, JSON.stringify(prefs));
+    } catch {}
+  }
+
+  public clearAllRecommendationPreferences(): void {
+    try {
+      localStorage.removeItem(this.PREFERENCES_KEY);
+    } catch {}
+  }
+
+  // ==========================================
+  // P2-B: IMPORTADOR UNIVERSAL DE RECETAS
+  // ==========================================
+  public getImportedRecipes(): ImportedRecipe[] {
+    try {
+      const raw = localStorage.getItem(this.IMPORTED_RECIPES_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch {}
+
+    const defaults: ImportedRecipe[] = [
+      {
+        id: 'rec_imp_1',
+        title: 'Curry Suave de Garbanzos y Espinacas con Arroz',
+        sourceUrl: 'https://recetas.bio/curry-garbanzos',
+        sourceAttribution: 'Recetario Tradicional Bio (Castilla y León)',
+        servings: 2,
+        prepTimeMinutes: 20,
+        estimatedCalories: 430,
+        estimatedProtein: 16.5,
+        estimatedFiber: 12.0,
+        ingredients: [
+          { raw: '400g garbanzos cocidos bio', normalizedName: 'garbanzos cocidos', amount: 400, unit: 'g', inPantry: true },
+          { raw: '200g espinacas frescas', normalizedName: 'espinacas', amount: 200, unit: 'g', inPantry: true },
+          { raw: '1 taza de arroz integral', normalizedName: 'arroz integral', amount: 150, unit: 'g', inPantry: false, estimatedPriceEuro: 1.85 },
+          { raw: '2 cucharadas AOVE', normalizedName: 'aceite de oliva virgen extra', amount: 20, unit: 'ml', inPantry: true }
+        ],
+        steps: [
+          'Saltear las espinacas en una sartén con AOVE y una pizca de sal marina.',
+          'Añadir los garbanzos cocidos escurridos y especias suaves al gusto.',
+          'Cocinar 8 minutos a fuego medio y servir sobre una base de arroz integral.'
+        ],
+        isFavorite: true,
+        createdAt: new Date().toISOString()
+      }
+    ];
+
+    try {
+      localStorage.setItem(this.IMPORTED_RECIPES_KEY, JSON.stringify(defaults));
+    } catch {}
+    return defaults;
+  }
+
+  public saveImportedRecipe(recipe: Omit<ImportedRecipe, 'id' | 'createdAt'>): ImportedRecipe {
+    const recipes = this.getImportedRecipes();
+    const newRecipe: ImportedRecipe = {
+      ...recipe,
+      id: `imp_rec_${Date.now()}`,
+      createdAt: new Date().toISOString()
+    };
+    recipes.unshift(newRecipe);
+    try {
+      localStorage.setItem(this.IMPORTED_RECIPES_KEY, JSON.stringify(recipes));
+      this.trackEvent('recipe_import_completed', { title: newRecipe.title });
+    } catch {}
+    return newRecipe;
+  }
+
+  public deleteImportedRecipe(id: string): void {
+    const filtered = this.getImportedRecipes().filter(r => r.id !== id);
+    try {
+      localStorage.setItem(this.IMPORTED_RECIPES_KEY, JSON.stringify(filtered));
+    } catch {}
+  }
+
+  public toggleFavoriteImportedRecipe(id: string): void {
+    const list = this.getImportedRecipes();
+    const item = list.find(r => r.id === id);
+    if (item) {
+      item.isFavorite = !item.isFavorite;
+      try {
+        localStorage.setItem(this.IMPORTED_RECIPES_KEY, JSON.stringify(list));
+      } catch {}
+    }
+  }
+
+  // ==========================================
+  // P2-H: "¿QUÉ PUEDO HACER AHORA?" (Máximo 3 acciones)
+  // ==========================================
+  public getWhatCanIDoNow(currentHour?: number): ContextualAction[] {
+    const hour = currentHour !== undefined ? currentHour : new Date().getHours();
+    const logs = this.getTodayLogs();
+    const pantryExpiring = this.getExpiringPantryItems();
+    const actions: ContextualAction[] = [];
+
+    // Acción 1: Despensa / Caducidad si hay algo urgente
+    if (pantryExpiring.length > 0) {
+      actions.push({
+        id: 'act_expiring',
+        title: `Consumir antes de que venza: ${pantryExpiring[0].name}`,
+        subtitle: `Quedan ~${pantryExpiring[0].daysToConsumeBeforePreferred} días de consumo preferente. ¡Aprovéchalo hoy!`,
+        actionType: 'check_expiring',
+        actionLabel: 'Ver qué cocinar',
+        targetUrl: '/blog'
+      });
+    }
+
+    // Acción 2: Registro según la hora y lo que falte
+    if (hour >= 6 && hour < 12 && !logs.some(l => l.meal === 'desayuno')) {
+      actions.push({
+        id: 'act_breakfast',
+        title: 'Anotar tu desayuno bio de hoy',
+        subtitle: 'Un toque rápido para llevar el control sin esfuerzo matutino.',
+        actionType: 'log',
+        actionLabel: 'Anotar desayuno'
+      });
+    } else if (hour >= 12 && hour < 16 && !logs.some(l => l.meal === 'comida')) {
+      actions.push({
+        id: 'act_lunch',
+        title: 'Registrar tu comida de mediodía',
+        subtitle: 'Consolida tu balance energético y proteína de la jornada.',
+        actionType: 'log',
+        actionLabel: 'Anotar comida'
+      });
+    } else if (hour >= 19 && !logs.some(l => l.meal === 'cena')) {
+      actions.push({
+        id: 'act_dinner',
+        title: 'Completar tu cena equilibrada',
+        subtitle: 'Descubre recetas con lo que ya tienes en casa sin comprar.',
+        actionType: 'cook_pantry',
+        actionLabel: 'Cocinar con lo que tengo'
+      });
+    } else {
+      actions.push({
+        id: 'act_water',
+        title: 'Hidratación consciente',
+        subtitle: 'Suma un vaso de agua fresca para cuidar tu digestión.',
+        actionType: 'hydrate',
+        actionLabel: '+1 Vaso de agua'
+      });
+    }
+
+    // Acción 3: Planificación o consulta con el coach
+    if (actions.length < 3) {
+      actions.push({
+        id: 'act_coach',
+        title: 'Consultar al EcoCoach contextual',
+        subtitle: 'Pregúntale qué cocinar en 15 minutos o cómo optimizar tu fibra.',
+        actionType: 'plan_tomorrow',
+        actionLabel: 'Abrir EcoCoach',
+        targetUrl: '/coach'
+      });
+    }
+
+    return actions.slice(0, 3);
+  }
+
+  // ==========================================
+  // P2-I: PREPARACIÓN ANTICIPADA (Batch Cooking Domingo)
+  // ==========================================
+  public getBatchPrepPlan(): BatchPrepPlan {
+    return {
+      id: 'batch_prep_domingo',
+      title: 'Plan de Preparación Anticipada para la Semana',
+      estimatedMinutes: 35,
+      mealsSavedCount: 4,
+      steps: [
+        {
+          id: 'step_1',
+          title: 'Cocer base de Quinoa Real Bio (300g)',
+          description: 'Lavar la quinoa, hervir 15 minutos en abundante agua con laurel y guardar en tupper de cristal refrigerado.',
+          timeMinutes: 15,
+          relatedRecipes: ['Bowl templado de quinoa', 'Ensalada bio de media tarde']
+        },
+        {
+          id: 'step_2',
+          title: 'Lavar y escurrir verduras de hoja (Espinacas y acelgas)',
+          description: 'Lavar en agua fría, centrifugar y conservar con papel absorbente para que no pierdan crujido ni nutrientes.',
+          timeMinutes: 10,
+          relatedRecipes: ['Curry de garbanzos', 'Crema verde templada']
+        },
+        {
+          id: 'step_3',
+          title: 'Escurrir y marinar legumbres (Garbanzos con AOVE y pimentón)',
+          description: 'Tenerlos listos para saltear en 3 minutos en cualquier comida rápida de entre semana.',
+          timeMinutes: 10,
+          relatedRecipes: ['Garbanzos salteados con espinacas', 'Hummus rústico bio']
+        }
+      ]
+    };
+  }
+
+  // ==========================================
+  // P2-J: RECETAS FLEXIBLES & SUSTITUCIONES DE INGREDIENTES
+  // ==========================================
+  public getRecipeSubstitutions(ingredientName: string): { original: string; substitutes: IngredientSubstitution[] } {
+    const key = ingredientName.toLowerCase();
+    const map: Record<string, IngredientSubstitution[]> = {
+      'espinacas': [
+        { name: 'Acelga bio fresca', flavorChange: 'Ligeramente más terroso', textureChange: 'Tallo más crujiente', nutritionChange: 'Similar fibra (+0.4g) y hierro', priceDiffEuro: -0.20 },
+        { name: 'Kale rizado bio', flavorChange: 'Más intenso y silvestre', textureChange: 'Hoja más firme', nutritionChange: 'Mayor vitamina C y calcio (+25%)', priceDiffEuro: +0.35 },
+        { name: 'Mezcla verde tierna', flavorChange: 'Suave y neutro', textureChange: 'Muy tierna al vapor', nutritionChange: 'Prácticamente idéntico', priceDiffEuro: 0 }
+      ],
+      'quinoa': [
+        { name: 'Arroz integral de Calasparra', flavorChange: 'Más a nuez', textureChange: 'Grano más masticable', nutritionChange: 'Ligeramente menor proteína (-2g/100g)', priceDiffEuro: -0.40 },
+        { name: 'Mijo bio pelado', flavorChange: 'Dulce y suave', textureChange: 'Esponjoso y cremoso', nutritionChange: 'Excelente digestión sin gluten', priceDiffEuro: -0.15 }
+      ],
+      'garbanzos': [
+        { name: 'Lentejas pardinas bio', flavorChange: 'Más tostado y tradicional', textureChange: 'Piel más fina', nutritionChange: 'Similar proteína (+1g/100g) y alta fibra', priceDiffEuro: 0 },
+        { name: 'Alubias blancas cocidas', flavorChange: 'Muy cremoso', textureChange: 'Textura suave y mantecosa', nutritionChange: 'Perfil idéntico de aminoácidos', priceDiffEuro: +0.10 }
+      ]
+    };
+
+    const foundKey = Object.keys(map).find(k => key.includes(k)) || 'espinacas';
+    return {
+      original: ingredientName,
+      substitutes: map[foundKey]
+    };
   }
 
   public getWeeklySummary(): WeeklyTrendSummary {

@@ -24,6 +24,11 @@ import { FastFoodModal } from '@/components/daily/FastFoodModal';
 import { HabitualMealsRow } from '@/components/daily/HabitualMealsRow';
 import { CompleteMyDayCard } from '@/components/daily/CompleteMyDayCard';
 import { WeeklyTrendDialog } from '@/components/daily/WeeklyTrendDialog';
+import { IncompleteDayBanner } from '@/components/daily/IncompleteDayBanner';
+import { WhatCanIDoNowModal } from '@/components/daily/WhatCanIDoNowModal';
+import { HouseholdSettingsModal } from '@/components/household/HouseholdSettingsModal';
+import { ExperienceMode } from '@/services/dailyNutritionStore';
+import { Bot, Users, HelpCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 
@@ -36,6 +41,11 @@ export const EcolandHoy = () => {
   const [waterGlasses, setWaterGlasses] = useState<number>(() => dailyNutritionStore.getWaterGlasses());
   const [savedMeals, setSavedMeals] = useState<SavedMeal[]>(() => dailyNutritionStore.getSavedMeals());
   const [expiringPantry, setExpiringPantry] = useState<PantryItem[]>(() => dailyNutritionStore.getExpiringPantryItems());
+
+  // Modo de Experiencia P2-F (Simple vs Nutrición)
+  const [experienceMode, setExperienceMode] = useState<ExperienceMode>(() => dailyNutritionStore.getExperienceMode());
+  const [isWhatCanIDoOpen, setIsWhatCanIDoOpen] = useState(false);
+  const [isHouseholdModalOpen, setIsHouseholdModalOpen] = useState(false);
 
   // Diálogos modales
   const [isFastModalOpen, setIsFastModalOpen] = useState(false);
@@ -179,6 +189,81 @@ export const EcolandHoy = () => {
   return (
     <div className="min-h-screen bg-slate-50/70 pb-24 pt-4 sm:pt-6">
       <div className="container-eco max-w-4xl space-y-6">
+
+        {/* BANNER DE DÍA INCOMPLETO (P2-C) */}
+        <IncompleteDayBanner 
+          onCompleteYesterday={() => {
+            setFastModalMeal('comida');
+            setIsFastModalOpen(true);
+          }}
+          onStatusUpdated={refreshData}
+        />
+
+        {/* BARRA DE HERRAMIENTAS INTELIGENTES P2 (EcoCoach, Qué puedo hacer, Hogar, Modo Simple) */}
+        <div className="flex flex-wrap items-center justify-between gap-2 p-2 bg-white rounded-2xl border shadow-2xs text-xs">
+          <div className="flex flex-wrap items-center gap-1.5">
+            <Button
+              size="sm"
+              onClick={() => setIsWhatCanIDoOpen(true)}
+              className="bg-emerald-900 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl h-8 px-3 gap-1.5 shadow-2xs"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-emerald-300" />
+              <span>¿Qué puedo hacer ahora?</span>
+            </Button>
+
+            <Button
+              asChild
+              size="sm"
+              variant="outline"
+              className="border-emerald-300 text-emerald-900 hover:bg-emerald-50 font-bold text-xs rounded-xl h-8 px-3 gap-1.5"
+            >
+              <Link to="/coach">
+                <Bot className="w-3.5 h-3.5 text-emerald-800" />
+                <span>EcoCoach</span>
+              </Link>
+            </Button>
+
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setIsHouseholdModalOpen(true)}
+              className="border-slate-300 text-slate-700 hover:bg-slate-100 font-semibold text-xs rounded-xl h-8 px-3 gap-1.5"
+            >
+              <Users className="w-3.5 h-3.5 text-slate-600" />
+              <span>Hogar Ecoland</span>
+            </Button>
+          </div>
+
+          {/* Toggle Modo Simple vs Nutrición (P2-F) */}
+          <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-xl">
+            <button
+              onClick={() => {
+                setExperienceMode('simple');
+                dailyNutritionStore.setExperienceMode('simple');
+              }}
+              className={`px-2.5 py-1 rounded-lg font-bold text-[11px] transition-all ${
+                experienceMode === 'simple'
+                  ? 'bg-white text-emerald-950 shadow-2xs'
+                  : 'text-slate-500 hover:text-slate-800'
+              }`}
+            >
+              Modo Simple
+            </button>
+            <button
+              onClick={() => {
+                setExperienceMode('nutrition');
+                dailyNutritionStore.setExperienceMode('nutrition');
+              }}
+              className={`px-2.5 py-1 rounded-lg font-bold text-[11px] transition-all ${
+                experienceMode === 'nutrition'
+                  ? 'bg-white text-emerald-950 shadow-2xs'
+                  : 'text-slate-500 hover:text-slate-800'
+              }`}
+            >
+              Modo Nutrición
+            </button>
+          </div>
+        </div>
 
         {/* 1. CABECERA CONTEXTUAL ADAPTADA POR HORARIO (P1-A Punto 1) */}
         <div className="bg-white p-5 sm:p-6 rounded-3xl border shadow-2xs space-y-3">
@@ -402,8 +487,24 @@ export const EcolandHoy = () => {
             />
           </div>
 
-          {/* Cuadrante de Macronutrientes y Fibra (P1-A Punto 2: "Fibra" sin asumir prebiótica) */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
+          {/* Cuadrante de Macronutrientes y Fibra o Foco Simple según Modo de Experiencia (P2-F) */}
+          {experienceMode === 'simple' ? (
+            <div className="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200 text-xs text-emerald-950 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <strong className="block font-bold text-sm text-emerald-950 mb-0.5">Foco del día:</strong>
+                <p className="text-emerald-800 text-xs leading-relaxed">
+                  {caloriePercent >= 90 
+                    ? '¡Excelente jornada! Has alcanzado un equilibrio nutritivo completo sin complicaciones.' 
+                    : `Llevas ${totalCalories} kcal registradas. Te quedan ~${remainingCalories} kcal para tu equilibrio diario saludable.`}
+                </p>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <span className="text-[11px] font-bold text-emerald-800 uppercase">Avance:</span>
+                <span className="font-mono font-black text-emerald-950 text-base">{caloriePercent}%</span>
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
             <div className="p-3.5 rounded-2xl bg-slate-50 border space-y-1">
               <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Proteína</span>
               <div className="flex items-baseline justify-between">
@@ -463,6 +564,7 @@ export const EcolandHoy = () => {
               </div>
             </div>
           </div>
+          )}
 
           {/* Control de Agua en 1 toque */}
           <div className="p-3.5 rounded-2xl bg-slate-50 border flex items-center justify-between">
@@ -759,6 +861,21 @@ export const EcolandHoy = () => {
       <WeeklyTrendDialog
         isOpen={isWeeklyTrendOpen}
         onClose={() => setIsWeeklyTrendOpen(false)}
+      />
+
+      <WhatCanIDoNowModal
+        isOpen={isWhatCanIDoOpen}
+        onClose={() => setIsWhatCanIDoOpen(false)}
+        onTriggerLog={() => {
+          setFastModalMeal('comida');
+          setIsFastModalOpen(true);
+        }}
+        onAddWater={() => handleWaterClick(1)}
+      />
+
+      <HouseholdSettingsModal
+        isOpen={isHouseholdModalOpen}
+        onClose={() => setIsHouseholdModalOpen(false)}
       />
     </div>
   );

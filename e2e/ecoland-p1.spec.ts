@@ -133,7 +133,7 @@ test.describe('Ecoland Daily — P1 Daily Intelligence E2E Tests', () => {
     await expect(page.locator('text=3. ¿Qué puedes probar la próxima semana?')).toBeVisible();
 
     // Validar indicador de variedad vegetal (plantas diferentes)
-    await expect(page.locator('text=Variedad de Plantas')).toBeVisible();
+    await expect(page.locator('text=Variedad vegetal esta semana')).toBeVisible();
     await expect(page.locator('text=plantas').first()).toBeVisible();
   });
 

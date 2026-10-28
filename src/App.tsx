@@ -35,6 +35,7 @@ import Cookies from "./pages/legal/Cookies";
 import Terminos from "./pages/legal/Terminos";
 import EcolandHoy from "./pages/EcolandHoy";
 import MiSemana from "./pages/MiSemana";
+import EcoCoach from "./pages/EcoCoach";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -53,17 +54,18 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <CatalogProvider>
-          <CartProvider>
-            <Toaster />
-            <Sonner />
-            {showSplash && <IntroSplash onComplete={() => setShowSplash(false)} />}
-            <BrowserRouter>
+        <BrowserRouter>
+          <CatalogProvider>
+            <CartProvider>
+              <Toaster />
+              <Sonner />
+              {showSplash && <IntroSplash onComplete={() => setShowSplash(false)} />}
               <Layout>
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/hoy" element={<EcolandHoy />} />
                   <Route path="/semana" element={<MiSemana />} />
+                  <Route path="/coach" element={<EcoCoach />} />
                   <Route path="/packs" element={<Packs />} />
                   <Route path="/packs/:slug" element={<PackDetail />} />
                   <Route path="/blog" element={<Blog />} />
@@ -90,10 +92,10 @@ const App = () => {
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </Layout>
-            </BrowserRouter>
-            <CookieConsent />
-          </CartProvider>
-        </CatalogProvider>
+              <CookieConsent />
+            </CartProvider>
+          </CatalogProvider>
+        </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
   );

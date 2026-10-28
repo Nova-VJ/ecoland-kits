@@ -3,8 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Calendar, Sparkles, ChefHat, ShoppingBag, Clock, Users, 
   Check, AlertTriangle, Plus, ArrowRight, DollarSign, X,
-  Trash2, RefreshCw, Bookmark, ChevronRight
+  Trash2, RefreshCw, Bookmark, ChevronRight, Download, ChevronUp, ChevronDown
 } from 'lucide-react';
+import { ImportRecipeModal } from '@/components/recipes/ImportRecipeModal';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { 
@@ -26,6 +27,9 @@ export const MiSemana = () => {
   const [selectedMode, setSelectedMode] = useState<'cenas' | 'comidas_cenas' | 'completa'>(plan.mode);
   const [numPersons, setNumPersons] = useState<number>(plan.numPersons);
   const [isShoppingListOpen, setIsShoppingListOpen] = useState(false);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [showPrepPlan, setShowPrepPlan] = useState(false);
+  const batchPrepPlan = dailyNutritionStore.getBatchPrepPlan();
   const [shoppingList, setShoppingList] = useState<ShoppingListItem[]>(() => dailyNutritionStore.getShoppingList());
 
   const handleModeChange = (mode: 'cenas' | 'comidas_cenas' | 'completa') => {
@@ -103,6 +107,15 @@ export const MiSemana = () => {
           </div>
 
           <div className="flex flex-col sm:flex-row items-center gap-2 shrink-0">
+            <Button
+              onClick={() => setIsImportModalOpen(true)}
+              variant="outline"
+              className="w-full sm:w-auto border-emerald-300 text-emerald-900 hover:bg-emerald-50 font-bold py-6 px-5 rounded-2xl shadow-2xs gap-2 text-xs"
+            >
+              <Download className="w-4 h-4 text-emerald-700" />
+              <span>Importar Receta Externa</span>
+            </Button>
+
             <Button
               onClick={handleOpenShoppingList}
               className="w-full sm:w-auto bg-emerald-800 hover:bg-emerald-900 text-white font-bold py-6 px-6 rounded-2xl shadow-sm gap-2 text-xs"
@@ -196,6 +209,75 @@ export const MiSemana = () => {
           </div>
         </div>
 
+        {/* PREPARACIÓN ANTICIPADA / BATCH COOKING DOMINGO (P2-I) */}
+        <div className="bg-emerald-950 text-white rounded-3xl p-5 sm:p-6 shadow-md space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="space-y-1">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-800 text-emerald-200 text-[10px] font-bold">
+                <Clock className="w-3.5 h-3.5" />
+                <span>PREPARACIÓN ANTICIPADA · 35 MINUTOS EL DOMINGO</span>
+              </div>
+              <h3 className="font-bold text-base sm:text-lg">
+                Cocina una vez el domingo y ahorra 4 preparaciones entre semana
+              </h3>
+              <p className="text-xs text-emerald-300 leading-relaxed max-w-xl">
+                Cociendo la base de quinoa y legumbres y centrifugando verduras de hoja, reduces tus cenas de diario a solo 5 minutos de sartén.
+              </p>
+            </div>
+
+            <Button
+              onClick={() => setShowPrepPlan(!showPrepPlan)}
+              className="bg-white hover:bg-emerald-100 text-emerald-950 font-bold py-5 rounded-2xl text-xs gap-1.5 shrink-0"
+            >
+              <ChefHat className="w-4 h-4 text-emerald-800" />
+              <span>{showPrepPlan ? 'Ocultar pasos domingo' : 'Ver plan de 35 min'}</span>
+              {showPrepPlan ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+            </Button>
+          </div>
+
+          <AnimatePresence>
+            {showPrepPlan && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="pt-3 border-t border-emerald-800/80 space-y-3"
+              >
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  {batchPrepPlan.steps.map((step, idx) => (
+                    <div key={step.id} className="p-3.5 rounded-2xl bg-emerald-900/60 border border-emerald-800 space-y-1.5">
+                      <div className="flex items-center justify-between text-[10px] text-emerald-300 font-mono">
+                        <span className="font-bold uppercase tracking-wider">Paso {idx + 1}</span>
+                        <span>⏱ {step.timeMinutes} min</span>
+                      </div>
+                      <strong className="block text-white text-xs font-bold leading-tight">
+                        {step.title}
+                      </strong>
+                      <p className="text-[11px] text-emerald-200/90 leading-relaxed">
+                        {step.description}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* DESGLOSE TRANSPARENTE DE COSTE (P2: Valor Ingredientes vs Dinero a Gastar Hoy) */}
+        <div className="p-4 bg-slate-50 border rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-600">
+          <div className="flex items-center gap-2">
+            <span className="font-bold text-slate-800">Transparencia económica:</span>
+            <span>Valor total ingredientes utilizados: <strong>~{(parseFloat(averagePricePerServing) * numPersons * 7).toFixed(2)} €</strong></span>
+          </div>
+          <div className="flex items-center gap-4 text-[11px]">
+            <span className="text-emerald-800 font-semibold">Ya en despensa: +{totalPantrySavings} €</span>
+            <span className="text-amber-900 font-bold bg-amber-100/70 px-2.5 py-1 rounded-xl border border-amber-300">
+              Dinero que necesitas gastar hoy: ~{(parseFloat(averagePricePerServing) * numPersons * 7 - parseFloat(totalPantrySavings)).toFixed(2)} €
+            </span>
+          </div>
+        </div>
+
         {/* Calendario Lunes a Domingo */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
@@ -255,6 +337,12 @@ export const MiSemana = () => {
             ))}
           </div>
         </div>
+
+        {/* MODAL IMPORTADOR UNIVERSAL DE RECETAS (P2-B) */}
+        <ImportRecipeModal
+          isOpen={isImportModalOpen}
+          onClose={() => setIsImportModalOpen(false)}
+        />
 
         {/* MODAL / DRAWER: LISTA DE COMPRA INTELIGENTE (P1-E Punto 12) */}
         <AnimatePresence>

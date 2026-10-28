@@ -105,12 +105,12 @@ export const WeeklyTrendDialog = ({ isOpen, onClose }: WeeklyTrendDialogProps) =
             <div className="p-3.5 rounded-2xl bg-slate-50 border space-y-1">
               <span className="text-[11px] text-slate-500 flex items-center gap-1">
                 <Apple className="h-3.5 w-3.5 text-emerald-800" />
-                Variedad de Plantas
+                Variedad vegetal esta semana
               </span>
               <strong className="block text-xl font-black text-slate-900">
-                {summary.plantDiversityCount} plantas
+                {summary.plantDiversityCount} plantas observadas
               </strong>
-              <span className="text-[10px] text-slate-500 block">Legumbres, frutas, granos, semillas</span>
+              <span className="text-[10px] text-slate-500 block">Meta orientativa personal (no médica)</span>
             </div>
 
             <div className="p-3.5 rounded-2xl bg-slate-50 border space-y-1">

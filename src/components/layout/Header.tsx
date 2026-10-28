@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Sparkles, Menu, X, ShoppingBag, User, Package, Store, 
   ClipboardList, Repeat, BookOpen, Crown, MapPin, Heart, Search, Calendar,
-  Sun, CalendarDays
+  Sun, CalendarDays, Bot
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/CartContext';
@@ -14,6 +14,7 @@ import { QuickSearchModal } from '@/components/layout/QuickSearchModal';
 const navLinks = [
   { to: '/hoy', label: 'Hoy', icon: Sun },
   { to: '/semana', label: 'Mi Semana', icon: CalendarDays },
+  { to: '/coach', label: 'EcoCoach', icon: Bot },
   { to: '/tienda', label: 'Tienda', icon: Store },
   { to: '/ecohealth', label: 'EcoHealth', icon: Sparkles },
   { to: '/packs', label: 'Packs', icon: Package },
