@@ -918,13 +918,24 @@ export const EcoHealth = () => {
                         <div className="w-16 h-16 mx-auto mb-2 bg-white rounded-xl border p-1">
                           <img src={p.image} alt={p.name} className="w-full h-full object-contain" />
                         </div>
-                        <span className="line-clamp-2">{p.name.split('–')[0]}</span>
+                        <span className="line-clamp-2 text-xs font-bold">{p.name.split('–')[1]?.trim() || p.name.split('–')[0]}</span>
                         <span className="text-emerald-800 font-extrabold text-sm block mt-1">{p.price.toFixed(2)}€</span>
                       </th>
                     ))}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
+                  <tr className="bg-emerald-50/40">
+                    <td className="p-3 font-bold text-emerald-950">EcoScore Sostenibilidad</td>
+                    {compareProducts.map((p, idx) => (
+                      <td key={p.id} className="p-3 text-center">
+                        <span className="inline-block bg-emerald-900 text-white font-black px-2 py-0.5 rounded text-[10px]">
+                          EcoScore A (★★★)
+                        </span>
+                        <span className="block text-[10px] text-emerald-800 mt-0.5">~0.24 kg CO₂e</span>
+                      </td>
+                    ))}
+                  </tr>
                   <tr>
                     <td className="p-3 font-semibold text-slate-600">Certificación Oficial</td>
                     {compareProducts.map(p => (

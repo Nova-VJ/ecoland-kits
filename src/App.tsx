@@ -22,6 +22,7 @@ import EcoHealth from "./pages/EcoHealth";
 import ProductDetail from "./pages/ProductDetail";
 import CatalogProductDetail from "./pages/CatalogProductDetail";
 import CatalogPackDetail from "./pages/CatalogPackDetail";
+import Checkout from "./pages/Checkout";
 import DondeEstamos from "./pages/DondeEstamos";
 import ImportanciaMision from "./pages/ImportanciaMision";
 import Login from "./pages/auth/Login";
@@ -37,68 +38,59 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 const App = () => {
-  const [showIntro, setShowIntro] = useState(true);
-  const [introComplete, setIntroComplete] = useState(false);
+  const [showSplash, setShowSplash] = useState(false);
 
   useEffect(() => {
-    const introShown = sessionStorage.getItem('ecoland-intro-shown');
-    if (introShown) {
-      setShowIntro(false);
-      setIntroComplete(true);
+    const splashSeen = sessionStorage.getItem('ecoland-splash-seen');
+    if (!splashSeen) {
+      setShowSplash(true);
+      sessionStorage.setItem('ecoland-splash-seen', 'true');
     }
   }, []);
 
-  const handleIntroComplete = () => {
-    setIntroComplete(true);
-    setTimeout(() => setShowIntro(false), 500);
-  };
-
   return (
     <QueryClientProvider client={queryClient}>
-      <CatalogProvider>
-      <CartProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          
-          {showIntro && !introComplete && (
-            <IntroSplash onComplete={handleIntroComplete} />
-          )}
-          
-          <BrowserRouter>
-            <Layout>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/packs" element={<Packs />} />
-                <Route path="/packs/:slug" element={<PackDetail />} />
-                <Route path="/blog" element={<Blog />} />
-                <Route path="/blog/:slug" element={<RecipeDetail />} />
-                <Route path="/quiz" element={<Quiz />} />
-                <Route path="/suscripcion" element={<Suscripcion />} />
-                <Route path="/club" element={<Club />} />
-                <Route path="/tienda" element={<Tienda />} />
-                <Route path="/ecohealth" element={<EcoHealth />} />
-                <Route path="/tienda/:slug" element={<ProductDetail />} />
-                <Route path="/tienda/producto/:slug" element={<CatalogProductDetail />} />
-                <Route path="/tienda/pack/:slug" element={<CatalogPackDetail />} />
-                <Route path="/donde-estamos" element={<DondeEstamos />} />
-                <Route path="/importancia-y-mision" element={<ImportanciaMision />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/registro" element={<Registro />} />
-                <Route path="/cuenta" element={<Cuenta />} />
-                <Route path="/admin" element={<AdminDashboard />} />
-                <Route path="/aviso-legal" element={<AvisoLegal />} />
-                <Route path="/privacidad" element={<Privacidad />} />
-                <Route path="/cookies" element={<Cookies />} />
-                <Route path="/terminos" element={<Terminos />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Layout>
+      <TooltipProvider>
+        <CatalogProvider>
+          <CartProvider>
+            <Toaster />
+            <Sonner />
+            {showSplash && <IntroSplash onComplete={() => setShowSplash(false)} />}
+            <BrowserRouter>
+              <Layout>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/packs" element={<Packs />} />
+                  <Route path="/packs/:slug" element={<PackDetail />} />
+                  <Route path="/blog" element={<Blog />} />
+                  <Route path="/blog/:slug" element={<RecipeDetail />} />
+                  <Route path="/quiz" element={<Quiz />} />
+                  <Route path="/suscripcion" element={<Suscripcion />} />
+                  <Route path="/club" element={<Club />} />
+                  <Route path="/tienda" element={<Tienda />} />
+                  <Route path="/ecohealth" element={<EcoHealth />} />
+                  <Route path="/checkout" element={<Checkout />} />
+                  <Route path="/tienda/:slug" element={<ProductDetail />} />
+                  <Route path="/tienda/producto/:slug" element={<CatalogProductDetail />} />
+                  <Route path="/tienda/pack/:slug" element={<CatalogPackDetail />} />
+                  <Route path="/donde-estamos" element={<DondeEstamos />} />
+                  <Route path="/importancia-y-mision" element={<ImportanciaMision />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/registro" element={<Registro />} />
+                  <Route path="/cuenta" element={<Cuenta />} />
+                  <Route path="/admin" element={<AdminDashboard />} />
+                  <Route path="/aviso-legal" element={<AvisoLegal />} />
+                  <Route path="/privacidad" element={<Privacidad />} />
+                  <Route path="/cookies" element={<Cookies />} />
+                  <Route path="/terminos" element={<Terminos />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </Layout>
+            </BrowserRouter>
             <CookieConsent />
-          </BrowserRouter>
-        </TooltipProvider>
-      </CartProvider>
-    </CatalogProvider>
+          </CartProvider>
+        </CatalogProvider>
+      </TooltipProvider>
     </QueryClientProvider>
   );
 };
