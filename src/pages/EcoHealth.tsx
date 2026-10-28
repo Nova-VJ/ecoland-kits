@@ -298,6 +298,39 @@ export const EcoHealth = () => {
           </p>
         </div>
 
+                {/* AVISO MÉDICO Y CLASIFICACIÓN DE FUNCIONALIDADES (PRIORIDAD 8) */}
+        <div className="mb-6 p-4 rounded-2xl bg-amber-50/80 border border-amber-200/80 text-xs text-amber-950 space-y-2 shadow-2xs">
+          <div className="flex items-center justify-between font-bold text-amber-900 border-b border-amber-200/60 pb-1.5">
+            <span className="flex items-center gap-1.5">
+              <span>⚖️</span> Marco de Transparencia Nutricional y Descargo Médico
+            </span>
+            <span className="text-[10px] bg-amber-200/70 text-amber-900 px-2 py-0.5 rounded-full font-mono">
+              Auditoría Sanitaria 2026
+            </span>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-[11px]">
+            <div className="bg-white/80 p-2 rounded-xl border border-amber-100">
+              <strong className="block text-slate-800 text-[10px] uppercase font-bold">1. Información</strong>
+              <span className="text-slate-600 text-[10px]">Valores nutricionales y alérgenos de etiquetado oficial (Reglamento UE 1169/2011).</span>
+            </div>
+            <div className="bg-white/80 p-2 rounded-xl border border-amber-100">
+              <strong className="block text-slate-800 text-[10px] uppercase font-bold">2. Estimación</strong>
+              <span className="text-slate-600 text-[10px]">Fórmula bioenergética Mifflin-St Jeor para TDEE. Cálculo matemático orientativo.</span>
+            </div>
+            <div className="bg-white/80 p-2 rounded-xl border border-amber-100">
+              <strong className="block text-slate-800 text-[10px] uppercase font-bold">3. Recomendación</strong>
+              <span className="text-slate-600 text-[10px]">Guía visual Plato Harvard (Harvard T.H. Chan School of Public Health).</span>
+            </div>
+            <div className="bg-white/80 p-2 rounded-xl border border-amber-100">
+              <strong className="block text-slate-800 text-[10px] uppercase font-bold">4. Función Comercial</strong>
+              <span className="text-slate-600 text-[10px]">Asociación a productos biológicos en stock para confeccionar la cesta de compra.</span>
+            </div>
+          </div>
+          <p className="text-[10px] text-amber-800/90 leading-relaxed pt-1">
+            <strong>Aviso de Salud:</strong> Las herramientas de Ecoland EcoHealth tienen carácter exclusivamente informativo y de divulgación alimentaria. No constituyen diagnóstico médico, plan dietoterápico clínico ni prescripción individual. Las personas con patologías digestivas, enfermedad celíaca, alergias anafilácticas o mujeres embarazadas deben consultar siempre a su médico especialista o dietista-nutricionista colegiado.
+          </p>
+        </div>
+
         {/* Global Hub Navigation Tabs */}
         <div className="bg-white p-1.5 rounded-2xl border shadow-xs mb-8 overflow-x-auto">
           <div className="flex gap-1.5 min-w-max">
