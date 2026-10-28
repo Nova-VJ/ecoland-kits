@@ -21,6 +21,7 @@ import {
   WeightRecord
 } from '@/services/dailyNutritionStore';
 import { FastFoodModal } from '@/components/daily/FastFoodModal';
+import { SmartFoodLoggerModal } from '@/components/daily/SmartFoodLoggerModal';
 import { HabitualMealsRow } from '@/components/daily/HabitualMealsRow';
 import { CompleteMyDayCard } from '@/components/daily/CompleteMyDayCard';
 import { WeeklyTrendDialog } from '@/components/daily/WeeklyTrendDialog';
@@ -49,6 +50,7 @@ export const EcolandHoy = () => {
 
   // Diálogos modales
   const [isFastModalOpen, setIsFastModalOpen] = useState(false);
+  const [isSmartLoggerOpen, setIsSmartLoggerOpen] = useState(false);
   const [fastModalMeal, setFastModalMeal] = useState<MealType>('desayuno');
   const [isWeeklyTrendOpen, setIsWeeklyTrendOpen] = useState(false);
   const [isGoalSelectorOpen, setIsGoalSelectorOpen] = useState(false);
@@ -209,6 +211,15 @@ export const EcolandHoy = () => {
             >
               <Sparkles className="w-3.5 h-3.5 text-emerald-300" />
               <span>¿Qué puedo hacer ahora?</span>
+            </Button>
+
+            <Button
+              size="sm"
+              onClick={() => setIsSmartLoggerOpen(true)}
+              className="bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs rounded-xl h-8 px-3 gap-1.5 shadow-2xs"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-emerald-300" />
+              <span>Smart Food Logger 3.0</span>
             </Button>
 
             <Button
@@ -850,6 +861,13 @@ export const EcolandHoy = () => {
       </div>
 
       {/* Modales Interactivos */}
+      <SmartFoodLoggerModal
+        isOpen={isSmartLoggerOpen}
+        onClose={() => setIsSmartLoggerOpen(false)}
+        defaultMeal={fastModalMeal}
+        onLoggedSuccess={refreshData}
+      />
+
       <FastFoodModal
         isOpen={isFastModalOpen}
         onClose={() => setIsFastModalOpen(false)}
