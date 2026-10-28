@@ -19,6 +19,8 @@ import {
   PaymentProvider 
 } from '@/services/transactionalOrderService';
 
+import { dailyNutritionStore } from '@/services/dailyNutritionStore';
+
 export const Checkout = () => {
   const { items, totalPrice, clearCart, totalItems } = useCart();
   const { toast } = useToast();
@@ -45,6 +47,8 @@ export const Checkout = () => {
   const [paymentMethod, setPaymentMethod] = useState<PaymentProvider>('tarjeta');
   const [isProcessing, setIsProcessing] = useState(false);
   const [confirmedOrder, setConfirmedOrder] = useState<OrderRecord | null>(null);
+  const [pantryAdded, setPantryAdded] = useState(false);
+  const [pantryPromptDismissed, setPantryPromptDismissed] = useState(false);
   const [idempotencyKey, setIdempotencyKey] = useState<string>('');
 
   // Generar clave de idempotencia única al cargar el checkout
@@ -304,6 +308,62 @@ export const Checkout = () => {
               <span className="text-base text-emerald-950 font-mono">{confirmedOrder.total.toFixed(2)}€</span>
             </div>
           </div>
+
+          {/* Integracion Pedidos -> Despensa Inteligente (P1-C) */}
+          {!pantryAdded && !pantryPromptDismissed && (
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="p-5 rounded-2xl bg-emerald-50/80 border border-emerald-200 text-left space-y-3"
+            >
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-emerald-700 shrink-0" />
+                <span className="font-bold text-sm text-emerald-950">
+                  ¿Añadir estos productos a tu despensa inteligente?
+                </span>
+              </div>
+              <p className="text-xs text-emerald-800 leading-relaxed">
+                Podrás aprovecharlos automáticamente en las sugerencias de «Completa mi día» y descontarlos al cocinar para evitar desperdicio alimentario.
+              </p>
+              <div className="flex items-center gap-2 pt-1">
+                <Button
+                  size="sm"
+                  className="bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs rounded-xl"
+                  onClick={() => {
+                    const itemsToAdd = confirmedOrder.lines.map(l => ({
+                      name: l.productName,
+                      quantity: l.quantity
+                    }));
+                    dailyNutritionStore.addOrderItemsToPantry(itemsToAdd);
+                    setPantryAdded(true);
+                    toast({
+                      title: "¡Despensa actualizada!",
+                      description: `Se han añadido ${itemsToAdd.length} productos a tu despensa inteligente.`
+                    });
+                  }}
+                >
+                  Añadir a mi despensa
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="text-emerald-800 hover:bg-emerald-100 text-xs font-semibold rounded-xl"
+                  onClick={() => setPantryPromptDismissed(true)}
+                >
+                  No ahora
+                </Button>
+              </div>
+            </motion.div>
+          )}
+
+          {pantryAdded && (
+            <div className="p-3.5 rounded-2xl bg-emerald-100/70 border border-emerald-300 text-xs text-emerald-900 font-medium text-center flex items-center justify-center gap-2">
+              <span>✓ Productos añadidos a tu despensa con fecha de compra de hoy.</span>
+              <Link to="/hoy" className="underline font-bold hover:text-emerald-950 ml-1">
+                Ver en Ecoland Hoy
+              </Link>
+            </div>
+          )}
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
             <Button asChild className="bg-emerald-900 hover:bg-emerald-800 text-white font-bold text-xs py-5 px-6 rounded-2xl">

@@ -3,7 +3,8 @@ import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Sparkles, Menu, X, ShoppingBag, User, Package, Store, 
-  ClipboardList, Repeat, BookOpen, Crown, MapPin, Heart, Search, Calendar 
+  ClipboardList, Repeat, BookOpen, Crown, MapPin, Heart, Search, Calendar,
+  Sun, CalendarDays
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/CartContext';
@@ -11,7 +12,8 @@ import logoEcoland from '@/assets/logo-ecoland-2.jpg';
 import { QuickSearchModal } from '@/components/layout/QuickSearchModal';
 
 const navLinks = [
-  { to: '/hoy', label: 'Hoy', icon: Calendar },
+  { to: '/hoy', label: 'Hoy', icon: Sun },
+  { to: '/semana', label: 'Mi Semana', icon: CalendarDays },
   { to: '/tienda', label: 'Tienda', icon: Store },
   { to: '/ecohealth', label: 'EcoHealth', icon: Sparkles },
   { to: '/packs', label: 'Packs', icon: Package },

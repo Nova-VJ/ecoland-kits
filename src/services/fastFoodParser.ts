@@ -16,6 +16,8 @@ export interface ParsedFoodItem {
   carbs: number;
   fats: number;
   fiber: number;
+  confidence?: 'high' | 'medium' | 'low';
+  confidenceReason?: string;
   isOrganic?: boolean;
 }
 
@@ -23,6 +25,8 @@ export interface FoodParseResult {
   rawInput: string;
   source: 'text' | 'voice' | 'photo' | 'barcode' | 'catalog';
   confidenceNotice: string;
+  overallConfidence: 'high' | 'medium' | 'low';
+  requiresReview: boolean;
   totalEstimatedCalories: number;
   totalProtein: number;
   totalCarbs: number;
@@ -113,6 +117,15 @@ export class FastFoodParser {
 
         const weight = explicitGrams !== null ? explicitGrams : info.defaultWeight * multiplier;
         const ratio = weight / 100;
+        const isOilOrSauce = normKey.includes('aceite') || normKey.includes('salsa');
+        const itemConfidence: 'high' | 'medium' | 'low' = explicitGrams !== null 
+          ? 'high' 
+          : isOilOrSauce 
+            ? 'medium' 
+            : 'high';
+        const confidenceReason = isOilOrSauce && explicitGrams === null
+          ? 'Cantidad orientativa para grasa o aliño. Revísala antes de guardar.'
+          : undefined;
 
         matchedItems.push({
           id: `item_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
@@ -124,6 +137,8 @@ export class FastFoodParser {
           carbs: Math.round(info.carbs100g * ratio * 10) / 10,
           fats: Math.round(info.fats100g * ratio * 10) / 10,
           fiber: Math.round(info.fiber100g * ratio * 10) / 10,
+          confidence: itemConfidence,
+          confidenceReason,
           isOrganic: true
         });
       }
@@ -141,6 +156,8 @@ export class FastFoodParser {
         carbs: 40,
         fats: 10,
         fiber: 5,
+        confidence: 'low',
+        confidenceReason: 'Plato interpretado de forma genérica. Te recomendamos ajustar los ingredientes y cantidades.',
         isOrganic: true
       });
     }
@@ -151,10 +168,19 @@ export class FastFoodParser {
     const totalFats = Math.round(matchedItems.reduce((acc, it) => acc + it.fats, 0) * 10) / 10;
     const totalFiber = Math.round(matchedItems.reduce((acc, it) => acc + it.fiber, 0) * 10) / 10;
 
+    const hasLow = matchedItems.some(i => i.confidence === 'low');
+    const hasMed = matchedItems.some(i => i.confidence === 'medium');
+    const overallConfidence: 'high' | 'medium' | 'low' = hasLow ? 'low' : hasMed ? 'medium' : 'high';
+    const requiresReview = hasLow || hasMed;
+
     return {
       rawInput: input,
       source,
-      confidenceNotice: 'Estimación orientativa calculada por IA a partir de ingredientes habituales. Puedes editar cualquier cantidad.',
+      confidenceNotice: requiresReview 
+        ? 'Hemos detectado ingredientes con cantidades estimadas. Revísalo antes de registrar para mayor exactitud.' 
+        : 'Estimación calculada con alta confianza a partir de ingredientes conocidos.',
+      overallConfidence,
+      requiresReview,
       totalEstimatedCalories,
       totalProtein,
       totalCarbs,
@@ -173,17 +199,19 @@ export class FastFoodParser {
         return {
           rawInput: 'Fotografía: Bowl templado de quinoa, garbanzos y verduras',
           source: 'photo',
-          confidenceNotice: 'Estimación visual por foto: Detectados 4 ingredientes principales. Ajusta las raciones si lo deseas.',
+          confidenceNotice: 'Estimación visual por foto: detectados 4 ingredientes. La cantidad exacta de aliño (aceite) requiere tu comprobación.',
+          overallConfidence: 'medium',
+          requiresReview: true,
           totalEstimatedCalories: 430,
           totalProtein: 16.5,
           totalCarbs: 58,
           totalFats: 13,
           totalFiber: 9.5,
           items: [
-            { id: 'f1', name: 'Quinoa cocida bio', quantityDescription: '1 taza (~150g)', weightGrams: 150, calories: 180, protein: 6.5, carbs: 32, fats: 2.8, fiber: 4.2 },
-            { id: 'f2', name: 'Garbanzos cocidos', quantityDescription: '1/2 taza (~100g)', weightGrams: 100, calories: 130, protein: 8.5, carbs: 22, fats: 2.5, fiber: 7 },
-            { id: 'f3', name: 'Espinacas baby frescas', quantityDescription: 'Puñado generoso (~60g)', weightGrams: 60, calories: 14, protein: 1.7, carbs: 2.2, fats: 0.2, fiber: 1.3 },
-            { id: 'f4', name: 'AOVE Ecológico (Aliño)', quantityDescription: '1 cucharada sopera (~12g)', weightGrams: 12, calories: 106, protein: 0, carbs: 0, fats: 12, fiber: 0 }
+            { id: 'f1', name: 'Quinoa cocida bio', quantityDescription: '1 taza (~150g)', weightGrams: 150, calories: 180, protein: 6.5, carbs: 32, fats: 2.8, fiber: 4.2, confidence: 'high' },
+            { id: 'f2', name: 'Garbanzos cocidos', quantityDescription: '1/2 taza (~100g)', weightGrams: 100, calories: 130, protein: 8.5, carbs: 22, fats: 2.5, fiber: 7, confidence: 'high' },
+            { id: 'f3', name: 'Espinacas baby frescas', quantityDescription: 'Puñado generoso (~60g)', weightGrams: 60, calories: 14, protein: 1.7, carbs: 2.2, fats: 0.2, fiber: 1.3, confidence: 'high' },
+            { id: 'f4', name: 'AOVE Ecológico (Aliño)', quantityDescription: '1 cucharada sopera (~12g)', weightGrams: 12, calories: 106, protein: 0, carbs: 0, fats: 12, fiber: 0, confidence: 'medium', confidenceReason: 'Cantidad de grasa/aceite estimada visualmente. Ajusta si echaste más o menos.' }
           ]
         };
 
@@ -191,16 +219,18 @@ export class FastFoodParser {
         return {
           rawInput: 'Fotografía: Porridge matutino de avena con frutos secos',
           source: 'photo',
-          confidenceNotice: 'Estimación visual por foto: Cereales integrales y frutos secos detectados.',
+          confidenceNotice: 'Estimación visual por foto: cereales integrales y frutos secos detectados con alta precisión.',
+          overallConfidence: 'high',
+          requiresReview: false,
           totalEstimatedCalories: 385,
           totalProtein: 14,
           totalCarbs: 48,
           totalFats: 14.5,
           totalFiber: 8.5,
           items: [
-            { id: 'f5', name: 'Copos de avena integral bio', quantityDescription: 'Porción (~50g)', weightGrams: 50, calories: 182, protein: 6.8, carbs: 29, fats: 3.5, fiber: 5 },
-            { id: 'f6', name: 'Bebida vegetal de avena', quantityDescription: 'Vaso (~180ml)', weightGrams: 180, calories: 85, protein: 2.5, carbs: 12, fats: 2.5, fiber: 1.2 },
-            { id: 'f7', name: 'Nueces y almendras bio', quantityDescription: 'Topping (~18g)', weightGrams: 18, calories: 118, protein: 3.5, carbs: 3.5, fats: 11, fiber: 1.8 }
+            { id: 'f5', name: 'Copos de avena integral bio', quantityDescription: 'Porción (~50g)', weightGrams: 50, calories: 182, protein: 6.8, carbs: 29, fats: 3.5, fiber: 5, confidence: 'high' },
+            { id: 'f6', name: 'Bebida vegetal de avena', quantityDescription: 'Vaso (~180ml)', weightGrams: 180, calories: 85, protein: 2.5, carbs: 12, fats: 2.5, fiber: 1.2, confidence: 'high' },
+            { id: 'f7', name: 'Nueces y almendras bio', quantityDescription: 'Topping (~18g)', weightGrams: 18, calories: 118, protein: 3.5, carbs: 3.5, fats: 11, fiber: 1.8, confidence: 'medium', confidenceReason: 'Cantidad de frutos secos estimada por superficie visible.' }
           ]
         };
 
@@ -209,17 +239,19 @@ export class FastFoodParser {
         return {
           rawInput: 'Fotografía: Dos tostadas integrales con aguacate y semillas',
           source: 'photo',
-          confidenceNotice: 'Estimación visual por foto: Pan integral de masa madre y aguacate en láminas.',
+          confidenceNotice: 'Estimación visual por foto: pan integral de masa madre y aguacate en láminas reconocidos.',
+          overallConfidence: 'high',
+          requiresReview: false,
           totalEstimatedCalories: 395,
           totalProtein: 10.5,
           totalCarbs: 46,
           totalFats: 18,
           totalFiber: 11.2,
           items: [
-            { id: 'f8', name: 'Pan integral de espelta bio', quantityDescription: '2 rebanadas (~80g)', weightGrams: 80, calories: 196, protein: 8, carbs: 35, fats: 2.4, fiber: 5.6 },
-            { id: 'f9', name: 'Aguacate hass en láminas', quantityDescription: 'Medio aguacate (~70g)', weightGrams: 70, calories: 112, protein: 1.4, carbs: 5.6, fats: 10.5, fiber: 4.9 },
-            { id: 'f10', name: 'Semillas de lino y sésamo', quantityDescription: '1 cucharadita (~10g)', weightGrams: 10, calories: 55, protein: 2, carbs: 2.5, fats: 4.5, fiber: 2.5 },
-            { id: 'f11', name: 'Café solo bio', quantityDescription: '1 taza (~100ml)', weightGrams: 100, calories: 2, protein: 0.1, carbs: 0.3, fats: 0, fiber: 0 }
+            { id: 'f8', name: 'Pan integral de espelta bio', quantityDescription: '2 rebanadas (~80g)', weightGrams: 80, calories: 196, protein: 8, carbs: 35, fats: 2.4, fiber: 5.6, confidence: 'high' },
+            { id: 'f9', name: 'Aguacate hass en láminas', quantityDescription: 'Medio aguacate (~70g)', weightGrams: 70, calories: 112, protein: 1.4, carbs: 5.6, fats: 10.5, fiber: 4.9, confidence: 'high' },
+            { id: 'f10', name: 'Semillas de lino y sésamo', quantityDescription: '1 cucharadita (~10g)', weightGrams: 10, calories: 55, protein: 2, carbs: 2.5, fats: 4.5, fiber: 2.5, confidence: 'medium' },
+            { id: 'f11', name: 'Café solo bio', quantityDescription: '1 taza (~100ml)', weightGrams: 100, calories: 2, protein: 0.1, carbs: 0.3, fats: 0, fiber: 0, confidence: 'high' }
           ]
         };
     }

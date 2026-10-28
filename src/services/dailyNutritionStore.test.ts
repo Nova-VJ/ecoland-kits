@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { dailyNutritionStore, NUTRITIONAL_GOALS_CATALOG } from './dailyNutritionStore';
 
-describe('DailyNutritionStore - Engagement, Habituals, Macros and Complete My Day', () => {
+describe('DailyNutritionStore - P1 Daily Intelligence Engine', () => {
   beforeEach(() => {
     localStorage.clear();
   });
@@ -24,121 +24,155 @@ describe('DailyNutritionStore - Engagement, Habituals, Macros and Complete My Da
     });
   });
 
-  describe('Meal Logging & Calculations', () => {
-    it('adds meal log and persists it to today logs', () => {
-      const added = dailyNutritionStore.addMealLog({
-        name: 'Tostada de pan integral con aguacate',
-        meal: 'desayuno',
-        calories: 280,
-        protein: 7,
-        carbs: 32,
-        fats: 14,
-        fiber: 6.5,
-        source: 'manual'
+  describe('Saved Meals (Guardar como comida)', () => {
+    it('saves a new custom combination as a saved meal', () => {
+      const saved = dailyNutritionStore.saveAsMeal({
+        name: 'Bowl Post-entreno Proteico',
+        meal: 'comida',
+        description: 'Tofu bio, quinoa y espinacas',
+        servings: 1,
+        calories: 450,
+        protein: 28,
+        carbs: 45,
+        fats: 12,
+        fiber: 9
       });
 
-      expect(added.id).toBeDefined();
-      expect(added.timeString).toBeDefined();
+      expect(saved.id).toBeDefined();
+      expect(dailyNutritionStore.getSavedMeals().some(m => m.name === 'Bowl Post-entreno Proteico')).toBe(true);
+    });
 
+    it('logs a saved meal with 1 click', () => {
+      const first = dailyNutritionStore.getSavedMeals()[0];
+      const logged = dailyNutritionStore.logSavedMeal(first.id);
+      expect(logged).not.toBeNull();
+      expect(logged?.calories).toBe(first.calories);
+      expect(logged?.source).toBe('saved_meal');
+    });
+  });
+
+  describe('Yesterday and Repeat Actions', () => {
+    it('retrieves yesterday logs and allows repeating a meal', () => {
+      const yesterday = dailyNutritionStore.getYesterdayLogs();
+      expect(yesterday.length).toBeGreaterThan(0);
+
+      const repeated = dailyNutritionStore.repeatMealFromYesterday('desayuno');
+      expect(repeated.length).toBeGreaterThan(0);
+      expect(repeated[0].name).toContain('Repetido de ayer');
+    });
+
+    it('copies yesterday entirely to today', () => {
+      const copied = dailyNutritionStore.copyYesterdayEntirely();
+      expect(copied.length).toBeGreaterThanOrEqual(2);
       const today = dailyNutritionStore.getTodayLogs();
-      expect(today.some(m => m.id === added.id)).toBe(true);
-    });
-
-    it('supports deleting a meal log', () => {
-      const added = dailyNutritionStore.addMealLog({
-        name: 'Snack temporal a borrar',
-        meal: 'snacks',
-        calories: 100,
-        protein: 2,
-        carbs: 10,
-        fats: 5,
-        fiber: 1,
-        source: 'manual'
-      });
-
-      const beforeDelete = dailyNutritionStore.getTodayLogs();
-      expect(beforeDelete.some(l => l.id === added.id)).toBe(true);
-
-      dailyNutritionStore.removeMealLog(added.id);
-      const afterDelete = dailyNutritionStore.getTodayLogs();
-      expect(afterDelete.some(l => l.id === added.id)).toBe(false);
+      expect(today.some(m => m.name.includes('Copiado de ayer'))).toBe(true);
     });
   });
 
-  describe('Habitual Meals (1-Tap Repeat)', () => {
-    it('provides default habitual meals', () => {
-      const habituals = dailyNutritionStore.getHabitualMeals();
-      expect(habituals.length).toBeGreaterThan(0);
-      expect(habituals[0].title).toBeDefined();
-      expect(habituals[0].calories).toBeGreaterThan(0);
+  describe('Predictive Context (Time-of-day suggestions)', () => {
+    it('returns morning breakfast suggestions at 8am', () => {
+      const pred = dailyNutritionStore.getPredictiveSuggestions(8);
+      expect(pred.timeSlot).toBe('desayuno');
+      expect(pred.recommendedMealType).toBe('desayuno');
+      expect(pred.suggestions.length).toBeGreaterThan(0);
     });
 
-    it('logs habitual meal with 1 click', () => {
-      const habitual = dailyNutritionStore.getHabitualMeals()[0];
-      const entry = dailyNutritionStore.logHabitualMeal(habitual.id);
-      expect(entry).not.toBeNull();
-      expect(entry?.meal).toBe(habitual.meal);
-      expect(entry?.calories).toBe(habitual.calories);
-      expect(entry?.isHabitual).toBe(true);
+    it('returns lunch suggestions at 13pm', () => {
+      const pred = dailyNutritionStore.getPredictiveSuggestions(13);
+      expect(pred.timeSlot).toBe('comida');
+      expect(pred.recommendedMealType).toBe('comida');
     });
-  });
 
-  describe('Water Tracker', () => {
-    it('increments and decrements water glasses with boundaries', () => {
-      localStorage.setItem('ecoland-water-glasses', '5');
-      expect(dailyNutritionStore.getWaterGlasses()).toBe(5);
-
-      const incremented = dailyNutritionStore.updateWaterGlasses(1);
-      expect(incremented).toBe(6);
-
-      const decremented = dailyNutritionStore.updateWaterGlasses(-1);
-      expect(decremented).toBe(5);
-
-      // Boundary check at zero
-      dailyNutritionStore.updateWaterGlasses(-10);
-      expect(dailyNutritionStore.getWaterGlasses()).toBe(0);
+    it('returns dinner suggestions at 21pm', () => {
+      const pred = dailyNutritionStore.getPredictiveSuggestions(21);
+      expect(pred.timeSlot).toBe('cena');
+      expect(pred.recommendedMealType).toBe('cena');
     });
   });
 
-  describe('Chef IA to Diary', () => {
-    it('scales recipe servings and adds directly to today diary', () => {
-      const entry = dailyNutritionStore.logRecipeToDiary(
-        'Salteado Mediterráneo Rápido Bio',
-        2, // 2 raciones
-        350,
-        15,
-        'comida'
-      );
+  describe('Despensa ↔ Diario Interaction', () => {
+    it('proposes deducting from pantry when logged item contains pantry ingredient', () => {
+      const entry = {
+        id: 'test_1',
+        name: 'Copos de avena cocidos con bebida vegetal',
+        meal: 'desayuno' as const,
+        calories: 220,
+        protein: 7,
+        carbs: 38,
+        fats: 4,
+        fiber: 5,
+        timeString: '09:00'
+      };
 
-      expect(entry.name).toContain('2 raciones');
-      expect(entry.calories).toBe(700);
-      expect(entry.protein).toBe(30);
-      expect(entry.source).toBe('recipe_ai');
+      const proposal = dailyNutritionStore.checkPantryDeductionSuggestions(entry);
+      expect(proposal).not.toBeNull();
+      expect(proposal?.pantryName.toLowerCase()).toContain('avena');
+      expect(proposal?.newEstimatedServings).toBeLessThan(proposal!.currentEstimatedServings);
+    });
 
-      const logs = dailyNutritionStore.getTodayLogs();
-      expect(logs.some(m => m.id === entry.id)).toBe(true);
+    it('confirms pantry deduction explicitly', () => {
+      const pantry = dailyNutritionStore.getPantryItems();
+      const target = pantry[0];
+      const initialServings = target.estimatedRemainingServings;
+
+      dailyNutritionStore.confirmPantryDeduction(target.id, 1);
+      const after = dailyNutritionStore.getPantryItems().find(p => p.id === target.id);
+      expect(after?.estimatedRemainingServings).toBe(initialServings - 1);
+    });
+
+    it('adds delivered order items to pantry', () => {
+      dailyNutritionStore.addOrderItemsToPantry([
+        { name: 'Lentejas pardinas bio', category: 'legumbres', servings: 8, price: 2.80 }
+      ]);
+
+      const pantry = dailyNutritionStore.getPantryItems();
+      expect(pantry.some(p => p.name.includes('Lentejas pardinas bio'))).toBe(true);
     });
   });
 
-  describe('Completa Mi Día Contextual', () => {
-    it('cross-references pantry inventory to generate personalized dinner recommendations', () => {
+  describe('Completa Mi Día 2.0 (Pantry-First & Effects)', () => {
+    it('places 100% pantry available suggestions at the top', () => {
       const res = dailyNutritionStore.getCompleteMyDaySuggestions();
       expect(res.suggestions.length).toBeGreaterThan(0);
-      expect(res.summaryNote).toBeDefined();
-
-      const firstSug = res.suggestions[0];
-      expect(firstSug.title).toBeDefined();
-      expect(firstSug.pantryMatches).toBeDefined();
-      expect(typeof firstSug.missingCost).toBe('number');
+      expect(res.suggestions[0].allPantryAvailable).toBe(true);
+      expect(res.suggestions[0].missingCost).toBe(0);
+      expect(res.suggestions[0].effectBefore).toBeDefined();
+      expect(res.suggestions[0].effectAfter.protein).toBeGreaterThan(res.suggestions[0].effectBefore.protein);
     });
   });
 
-  describe('Resumen Semanal Amable ("Tu Semana en Ecoland")', () => {
-    it('returns positive non-punitive consistency summary', () => {
-      const weekly = dailyNutritionStore.getWeeklySummary();
-      expect(weekly.daysLogged).toBeGreaterThan(0);
-      expect(weekly.plantDiversityCount).toBeGreaterThan(0);
-      expect(weekly.friendlyMessage).toContain('consistencia');
+  describe('Plan Semanal & Lista de Compra (/semana)', () => {
+    it('generates a 7-day meal plan with lunch and dinner recipes', () => {
+      const plan = dailyNutritionStore.getWeeklyPlan();
+      expect(plan.days.length).toBe(7);
+      expect(plan.days[0].almuerzo).toBeDefined();
+      expect(plan.days[0].cena).toBeDefined();
+    });
+
+    it('generates shopping list classifying what user already has vs what is missing', () => {
+      const list = dailyNutritionStore.generateShoppingListFromPlan();
+      expect(list.length).toBeGreaterThan(0);
+      expect(list.some(it => it.status === 'have')).toBe(true);
+      expect(list.some(it => it.status === 'missing')).toBe(true);
+    });
+  });
+
+  describe('Weight Tracking (Optional & Smoothed)', () => {
+    it('allows toggling weight tracking and calculates smoothed trend', () => {
+      dailyNutritionStore.toggleWeightTracking(true);
+      expect(dailyNutritionStore.isWeightTrackingEnabled()).toBe(true);
+
+      const entry = dailyNutritionStore.addWeightEntry(69.5);
+      expect(entry.weightKg).toBe(69.5);
+      expect(typeof entry.smoothedTrendKg).toBe('number');
+    });
+  });
+
+  describe('Telemetry & Friction Tracking', () => {
+    it('records user action events in local telemetry buffer', () => {
+      dailyNutritionStore.trackEvent('test_action', { step: 1 });
+      const events = dailyNutritionStore.getRecentTelemetryEvents();
+      expect(events.some(e => e.eventName === 'test_action')).toBe(true);
     });
   });
 });

@@ -2,13 +2,14 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   X, Sparkles, Search, Keyboard, Mic, Camera, Barcode, 
-  Check, Plus, Trash2, Edit2, AlertCircle, ShoppingBag, ArrowRight
+  Check, Plus, Trash2, Edit2, AlertCircle, ShoppingBag, ArrowRight,
+  Bookmark, CheckCircle2, AlertTriangle, Clock, RefreshCw
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { fastFoodParser, FoodParseResult, ParsedFoodItem } from '@/services/fastFoodParser';
-import { dailyNutritionStore, MealType } from '@/services/dailyNutritionStore';
+import { dailyNutritionStore, MealType, PantryDeductionProposal } from '@/services/dailyNutritionStore';
 import { allCatalogProducts, CatalogProduct } from '@/data/catalog/individual-products';
 import { useToast } from '@/hooks/use-toast';
 
@@ -17,13 +18,15 @@ interface FastFoodModalProps {
   onClose: () => void;
   defaultMeal?: MealType;
   onLoggedSuccess?: () => void;
+  onPantryProposalTriggered?: (proposal: PantryDeductionProposal) => void;
 }
 
 export const FastFoodModal = ({
   isOpen,
   onClose,
   defaultMeal = 'desayuno',
-  onLoggedSuccess
+  onLoggedSuccess,
+  onPantryProposalTriggered
 }: FastFoodModalProps) => {
   const { toast } = useToast();
 
@@ -49,6 +52,13 @@ export const FastFoodModal = ({
   // Resultado parseado para revisión / edición antes de guardar
   const [parsedResult, setParsedResult] = useState<FoodParseResult | null>(null);
 
+  // Guardar como comida personalizada favorita
+  const [shouldSaveAsMeal, setShouldSaveAsMeal] = useState(false);
+  const [savedMealName, setSavedMealName] = useState('');
+
+  // Sugerencias predictivas directas
+  const predictiveContext = dailyNutritionStore.getPredictiveSuggestions();
+
   // Manejador de parseo de texto natural
   const handleParseText = () => {
     if (!textInput.trim()) return;
@@ -67,77 +77,57 @@ export const FastFoodModal = ({
   };
 
   // Manejador de foto
-  const handleParsePhoto = (preset: 'tostadas_aguacate' | 'ensalada_quinoa' | 'bowl_avena') => {
-    setPhotoPreset(preset);
-    const res = fastFoodParser.parsePhotoMeal(preset);
+  const handleSelectPhotoPreset = (type: 'tostadas_aguacate' | 'ensalada_quinoa' | 'bowl_avena') => {
+    setPhotoPreset(type);
+    const res = fastFoodParser.parsePhotoMeal(type);
     setParsedResult(res);
   };
 
-  // Manejador de código de barras
-  const handleBarcodeLookup = () => {
-    const found = allCatalogProducts.find(p => p.id.includes(barcodeInput) || p.slug.includes(barcodeInput)) || allCatalogProducts[0];
-    const res: FoodParseResult = {
-      rawInput: `Código EAN: ${barcodeInput} · ${found.name}`,
-      source: 'barcode',
-      confidenceNotice: 'Datos oficiales verificados de la etiqueta del fabricante bio.',
-      totalEstimatedCalories: 185,
-      totalProtein: found.tags.includes('proteina') ? 14 : 7,
-      totalCarbs: 26,
-      totalFats: 3.5,
-      totalFiber: 5.5,
-      items: [
-        {
-          id: `ean_${found.id}`,
-          name: found.name.split('–')[0],
-          quantityDescription: '1 ración bio (~50g)',
-          weightGrams: 50,
-          calories: 185,
-          protein: found.tags.includes('proteina') ? 14 : 7,
-          carbs: 26,
-          fats: 3.5,
-          fiber: 5.5,
-          isOrganic: true
-        }
-      ]
-    };
-    setParsedResult(res);
-  };
+  // Ajuste rápido de ración en item (+/- 20%)
+  const adjustItemQuantity = (id: string, factor: number) => {
+    if (!parsedResult) return;
+    const updatedItems = parsedResult.items.map(it => {
+      if (it.id !== id) return it;
+      const newWeight = Math.max(10, Math.round(it.weightGrams * factor));
+      const ratio = newWeight / it.weightGrams;
+      return {
+        ...it,
+        weightGrams: newWeight,
+        quantityDescription: `~${newWeight}g ajustados`,
+        calories: Math.round(it.calories * ratio),
+        protein: Math.round(it.protein * ratio * 10) / 10,
+        carbs: Math.round(it.carbs * ratio * 10) / 10,
+        fats: Math.round(it.fats * ratio * 10) / 10,
+        fiber: Math.round(it.fiber * ratio * 10) / 10,
+        confidence: 'high' as const // Usuario lo validó manualmente
+      };
+    });
 
-  // Manejador de producto del catálogo
-  const handleSelectCatalogProduct = (prod: CatalogProduct) => {
-    const res: FoodParseResult = {
-      rawInput: prod.name,
-      source: 'catalog',
-      confidenceNotice: 'Información nutricional oficial del catálogo ecológico.',
-      totalEstimatedCalories: 190,
-      totalProtein: prod.tags.includes('proteina') ? 15 : 6,
-      totalCarbs: 28,
-      totalFats: 3,
-      totalFiber: 6,
-      items: [
-        {
-          id: `cat_${prod.id}`,
-          name: prod.name.split('–')[0],
-          quantityDescription: '1 ración (~60g)',
-          weightGrams: 60,
-          calories: 190,
-          protein: prod.tags.includes('proteina') ? 15 : 6,
-          carbs: 28,
-          fats: 3,
-          fiber: 6,
-          isOrganic: true
-        }
-      ]
-    };
-    setParsedResult(res);
+    const totalEstimatedCalories = updatedItems.reduce((acc, it) => acc + it.calories, 0);
+    const totalProtein = Math.round(updatedItems.reduce((acc, it) => acc + it.protein, 0) * 10) / 10;
+    const totalCarbs = Math.round(updatedItems.reduce((acc, it) => acc + it.carbs, 0) * 10) / 10;
+    const totalFats = Math.round(updatedItems.reduce((acc, it) => acc + it.fats, 0) * 10) / 10;
+    const totalFiber = Math.round(updatedItems.reduce((acc, it) => acc + it.fiber, 0) * 10) / 10;
+
+    setParsedResult({
+      ...parsedResult,
+      items: updatedItems,
+      totalEstimatedCalories,
+      totalProtein,
+      totalCarbs,
+      totalFats,
+      totalFiber
+    });
   };
 
   // Guardar en el diario
   const handleConfirmLog = () => {
     if (!parsedResult || parsedResult.items.length === 0) return;
 
+    let pantryProposalToTrigger: PantryDeductionProposal | null = null;
+
     for (const item of parsedResult.items) {
-      dailyNutritionStore.addMealLog({
+      const addedEntry = dailyNutritionStore.addMealLog({
         name: `${item.name} (${item.quantityDescription})`,
         meal: selectedMeal,
         calories: item.calories,
@@ -147,6 +137,34 @@ export const FastFoodModal = ({
         fiber: item.fiber,
         source: parsedResult.source
       });
+
+      // Cruce inteligente con despensa (P1-C)
+      if (!pantryProposalToTrigger) {
+        const prop = dailyNutritionStore.checkPantryDeductionSuggestions(addedEntry);
+        if (prop) {
+          pantryProposalToTrigger = prop;
+        }
+      }
+    }
+
+    // Si marcó "Guardar como comida" (P1-A Punto 5)
+    if (shouldSaveAsMeal && parsedResult.items.length > 0) {
+      const comboName = savedMealName.trim() || parsedResult.items.map(i => i.name).join(' + ');
+      dailyNutritionStore.saveAsMeal({
+        name: comboName,
+        meal: selectedMeal,
+        description: parsedResult.items.map(i => `${i.name} (${i.quantityDescription})`).join(', '),
+        servings: 1,
+        calories: parsedResult.totalEstimatedCalories,
+        protein: parsedResult.totalProtein,
+        carbs: parsedResult.totalCarbs,
+        fats: parsedResult.totalFats,
+        fiber: parsedResult.totalFiber
+      });
+      toast({
+        title: "¡Guardada en tus comidas habituales!",
+        description: `Podrás registrar "${comboName}" en un solo toque cuando quieras.`,
+      });
     }
 
     toast({
@@ -154,8 +172,14 @@ export const FastFoodModal = ({
       description: `Añadidas ${parsedResult.totalEstimatedCalories} kcal y ${parsedResult.totalProtein}g de proteína a tu ${selectedMeal}.`,
     });
 
+    if (pantryProposalToTrigger && onPantryProposalTriggered) {
+      onPantryProposalTriggered(pantryProposalToTrigger);
+    }
+
     setParsedResult(null);
     setTextInput('');
+    setShouldSaveAsMeal(false);
+    setSavedMealName('');
     if (onLoggedSuccess) onLoggedSuccess();
     onClose();
   };
@@ -179,6 +203,36 @@ export const FastFoodModal = ({
       totalFats,
       totalFiber
     });
+  };
+
+  // Registro en 1 toque desde sugerencia predictiva
+  const handleQuickPredictiveLog = (item: any) => {
+    if (item.type === 'habitual') {
+      const habId = item.id.replace('pred_hab_', '');
+      dailyNutritionStore.logHabitualMeal(habId);
+    } else if (item.type === 'saved') {
+      const savedId = item.id.replace('pred_saved_', '');
+      dailyNutritionStore.logSavedMeal(savedId, selectedMeal);
+    } else {
+      dailyNutritionStore.addMealLog({
+        name: item.subtitle || item.title,
+        meal: selectedMeal,
+        calories: item.calories,
+        protein: item.protein,
+        carbs: Math.round(item.calories * 0.5 / 4),
+        fats: Math.round(item.calories * 0.25 / 9),
+        fiber: item.fiber,
+        source: 'manual'
+      });
+    }
+
+    toast({
+      title: "¡Registrado en 1 toque!",
+      description: `Añadido ${item.title} (${item.calories} kcal) a tu ${selectedMeal}.`,
+    });
+
+    if (onLoggedSuccess) onLoggedSuccess();
+    onClose();
   };
 
   if (!isOpen) return null;
@@ -235,6 +289,46 @@ export const FastFoodModal = ({
               ))}
             </div>
           </div>
+
+          {/* SUGERENCIAS PREDICTIVAS DIRECTAS EN 1 TOQUE (P1-A Punto 3) */}
+          {!parsedResult && predictiveContext.suggestions.length > 0 && (
+            <div className="p-3 bg-emerald-50/70 border border-emerald-200/80 rounded-2xl space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-900 flex items-center gap-1.5">
+                  <Clock className="w-3.5 h-3.5 text-emerald-700" />
+                  Sugerencias para esta hora ({predictiveContext.recommendedMealType}):
+                </span>
+                <span className="text-[9px] text-emerald-700 font-medium">1 clic</span>
+              </div>
+              <div className="flex flex-col gap-1.5">
+                {predictiveContext.suggestions.map(sug => (
+                  <button
+                    key={sug.id}
+                    type="button"
+                    onClick={() => handleQuickPredictiveLog(sug)}
+                    className="p-2.5 rounded-xl bg-white border border-emerald-200/60 hover:bg-emerald-100/60 text-left flex items-center justify-between transition-all group shadow-2xs"
+                  >
+                    <div className="truncate pr-2">
+                      <strong className="block text-slate-900 text-[11px] truncate group-hover:text-emerald-950">
+                        {sug.title}
+                      </strong>
+                      <span className="text-[10px] text-slate-500 truncate block">
+                        {sug.subtitle}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="font-mono text-[10px] font-bold text-slate-700">
+                        {sug.calories} kcal
+                      </span>
+                      <span className="w-6 h-6 rounded-lg bg-emerald-800 text-white flex items-center justify-center font-bold text-xs group-hover:bg-emerald-900">
+                        +
+                      </span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Selector de modo de entrada (5 en 1) */}
           {!parsedResult && (
@@ -300,155 +394,144 @@ export const FastFoodModal = ({
                       <button
                         key={sample}
                         type="button"
-                        onClick={() => {
-                          setTextInput(sample);
-                          const res = fastFoodParser.parseNaturalText(sample, 'text');
-                          setParsedResult(res);
-                        }}
-                        className="text-[10px] bg-slate-100 hover:bg-emerald-50 hover:text-emerald-900 text-slate-600 px-2 py-1 rounded-lg transition-colors border border-slate-200"
+                        onClick={() => { setTextInput(sample); const res = fastFoodParser.parseNaturalText(sample, 'text'); setParsedResult(res); }}
+                        className="text-[10px] bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-900 border rounded-lg px-2 py-1 transition-colors"
                       >
-                        "{sample}"
+                        {sample}
                       </button>
                     ))}
                   </div>
                 </div>
               )}
 
-              {/* 2. MODO VOZ */}
+              {/* 2. MODO DICTADO POR VOZ */}
               {activeMode === 'voice' && (
-                <div className="p-5 rounded-2xl bg-slate-50 border text-center space-y-4">
-                  <div className={`w-14 h-14 rounded-full mx-auto flex items-center justify-center transition-all ${
-                    isRecording 
-                      ? 'bg-rose-500 text-white animate-pulse scale-110 shadow-lg' 
-                      : 'bg-emerald-900 text-white shadow-md'
-                  }`}>
-                    <Mic className="h-6 w-6" />
+                <div className="space-y-4 text-center py-4">
+                  <div className="mx-auto w-16 h-16 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center">
+                    <Mic className={`h-8 w-8 ${isRecording ? 'text-red-600 animate-pulse' : 'text-emerald-800'}`} />
                   </div>
-                  <div>
-                    <strong className="block text-slate-900 text-xs">
-                      {isRecording ? 'Escuchando tu comida...' : 'Dictar comida en voz alta'}
-                    </strong>
-                    <span className="text-[11px] text-slate-500">
-                      Pronuncia lo que has comido y las cantidades aproximadas.
-                    </span>
+                  <div className="space-y-1">
+                    <h4 className="font-bold text-slate-900 text-sm">Dicta tu comida</h4>
+                    <p className="text-[11px] text-slate-500 max-w-xs mx-auto">
+                      "Me he comido un plato de lentejas con un poco de arroz y una manzana"
+                    </p>
                   </div>
-                  <div className="p-3 bg-white rounded-xl border text-[11px] text-slate-700 italic">
-                    "{voiceText}"
+                  <div className="p-3 bg-slate-50 rounded-2xl border text-left text-[11px] text-slate-700">
+                    <span className="text-[10px] text-slate-400 font-bold block mb-1">Transcripción simulada:</span>
+                    <Input 
+                      value={voiceText} 
+                      onChange={(e) => setVoiceText(e.target.value)} 
+                      className="text-xs bg-white h-9"
+                    />
                   </div>
                   <Button
                     onClick={handleSimulateVoice}
                     disabled={isRecording}
-                    className="w-full bg-emerald-900 hover:bg-emerald-800 text-white rounded-xl py-5 font-bold text-xs"
+                    className="w-full bg-emerald-900 hover:bg-emerald-800 text-white font-bold py-5 rounded-2xl gap-2 shadow-sm"
                   >
-                    {isRecording ? 'Procesando audio...' : '🎙️ Simular dictado y estimar'}
+                    {isRecording ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Mic className="h-4 w-4" />}
+                    <span>{isRecording ? 'Escuchando y procesando...' : 'Iniciar dictado por voz'}</span>
                   </Button>
                 </div>
               )}
 
-              {/* 3. MODO FOTO */}
+              {/* 3. MODO FOTO IA */}
               {activeMode === 'photo' && (
                 <div className="space-y-3">
-                  <div className="p-3 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-950 flex items-center gap-2">
-                    <Camera className="h-4 w-4 text-emerald-800 shrink-0" />
-                    <span className="text-[11px]">
-                      La visión artificial identifica los alimentos visibles y calcula porciones promedio.
-                    </span>
-                  </div>
-                  <p className="text-[11px] font-semibold text-slate-700">Elige un plato fotografiado para estimar:</p>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  <p className="text-[11px] text-slate-500">
+                    Selecciona una foto de tu plato para analizarla con visión artificial:
+                  </p>
+                  <div className="grid grid-cols-3 gap-2">
                     {[
-                      { id: 'tostadas_aguacate', label: 'Tostadas Aguacate', desc: 'Pan espelta, aguacate, café', cals: '395 kcal' },
-                      { id: 'ensalada_quinoa', label: 'Bowl Quinoa & Garbanzos', desc: 'Quinoa, garbanzos, espinacas', cals: '430 kcal' },
-                      { id: 'bowl_avena', label: 'Porridge de Avena Bio', desc: 'Avena, bebida vegetal, nueces', cals: '385 kcal' },
-                    ].map(p => (
+                      { id: 'tostadas_aguacate', label: 'Tostadas Aguacate', cals: '395 kcal' },
+                      { id: 'ensalada_quinoa', label: 'Bowl Quinoa', cals: '430 kcal' },
+                      { id: 'bowl_avena', label: 'Porridge Avena', cals: '385 kcal' },
+                    ].map(preset => (
                       <button
-                        key={p.id}
+                        key={preset.id}
                         type="button"
-                        onClick={() => handleParsePhoto(p.id as any)}
-                        className="p-3 rounded-2xl border text-left bg-slate-50 hover:bg-emerald-50/80 hover:border-emerald-600 transition-all flex flex-col justify-between"
+                        onClick={() => handleSelectPhotoPreset(preset.id as any)}
+                        className={`p-3 rounded-2xl border text-center transition-all ${
+                          photoPreset === preset.id
+                            ? 'border-emerald-600 bg-emerald-50 text-emerald-900 font-bold'
+                            : 'border-slate-200 hover:bg-slate-50 text-slate-700'
+                        }`}
                       >
-                        <div>
-                          <strong className="block text-slate-900 text-xs">{p.label}</strong>
-                          <span className="text-[10px] text-slate-500 line-clamp-2">{p.desc}</span>
-                        </div>
-                        <Badge variant="outline" className="mt-2 text-[10px] font-mono text-emerald-900 font-bold self-start">
-                          {p.cals}
-                        </Badge>
+                        <Camera className="h-5 w-5 mx-auto mb-1 text-emerald-800" />
+                        <span className="block text-[11px] leading-tight">{preset.label}</span>
+                        <span className="text-[10px] text-slate-400 font-mono">{preset.cals}</span>
                       </button>
                     ))}
                   </div>
                 </div>
               )}
 
-              {/* 4. MODO CÓDIGO DE BARRAS */}
+              {/* 4. MODO CÓDIGO EAN */}
               {activeMode === 'barcode' && (
-                <div className="p-4 rounded-2xl bg-slate-50 border space-y-3">
-                  <div className="flex items-center gap-2 text-slate-700">
-                    <Barcode className="h-5 w-5 text-emerald-800" />
-                    <strong>Escáner de Código EAN</strong>
-                  </div>
+                <div className="space-y-3">
+                  <p className="text-[11px] text-slate-500">
+                    Introduce el código EAN del producto biológico:
+                  </p>
                   <div className="flex gap-2">
                     <Input
                       value={barcodeInput}
                       onChange={(e) => setBarcodeInput(e.target.value)}
-                      placeholder="8437004123019"
-                      className="rounded-xl h-10 font-mono text-xs bg-white"
+                      placeholder="Ej: 8437004123019"
+                      className="rounded-xl h-11 text-xs font-mono"
                     />
                     <Button
-                      onClick={handleBarcodeLookup}
-                      className="bg-emerald-900 hover:bg-emerald-800 text-white rounded-xl px-4 font-bold text-xs"
+                      onClick={() => {
+                        const res = fastFoodParser.parseNaturalText('lentejas pardinas bio', 'barcode');
+                        setParsedResult(res);
+                      }}
+                      className="bg-emerald-900 hover:bg-emerald-800 text-white rounded-xl px-4 font-bold"
                     >
                       Escanear
                     </Button>
                   </div>
-                  <span className="text-[10px] text-slate-500 block">
-                    Conectado con más de 1.000 productos ecológicos certificados de Ecoland.
-                  </span>
                 </div>
               )}
 
-              {/* 5. MODO CATÁLOGO */}
+              {/* 5. MODO CATÁLOGO DIRECTO */}
               {activeMode === 'catalog' && (
                 <div className="space-y-3">
-                  <div className="relative">
-                    <Search className="h-4 w-4 text-slate-400 absolute left-3 top-3" />
-                    <Input
-                      placeholder="Buscar producto ecológico (ej: avena, garbanzos, kéfir)..."
-                      value={catalogSearch}
-                      onChange={(e) => setCatalogSearch(e.target.value)}
-                      className="pl-9 rounded-xl h-10 text-xs"
-                    />
-                  </div>
+                  <Input
+                    value={catalogSearch}
+                    onChange={(e) => setCatalogSearch(e.target.value)}
+                    placeholder="Buscar avena, kéfir, garbanzos en catálogo..."
+                    className="rounded-xl h-11 text-xs"
+                  />
                   <div className="max-h-48 overflow-y-auto space-y-1.5">
                     {allCatalogProducts
                       .filter(p => !catalogSearch || p.name.toLowerCase().includes(catalogSearch.toLowerCase()))
                       .slice(0, 5)
                       .map(p => (
                         <div
-                          key={p.id}
-                          onClick={() => handleSelectCatalogProduct(p)}
-                          className="p-2.5 rounded-xl border bg-slate-50 hover:bg-emerald-50 hover:border-emerald-600 cursor-pointer flex items-center justify-between transition-all"
+                          key={p.slug}
+                          onClick={() => {
+                            const res = fastFoodParser.parseNaturalText(p.name.split('–')[0], 'catalog');
+                            setParsedResult(res);
+                          }}
+                          className="p-2.5 rounded-xl border hover:bg-emerald-50 cursor-pointer flex items-center justify-between text-xs"
                         >
-                          <div className="truncate pr-2">
-                            <strong className="block text-slate-900 text-xs truncate">{p.name.split('–')[0]}</strong>
-                            <span className="text-[10px] text-slate-500">{p.brand} · {p.price.toFixed(2)}€</span>
-                          </div>
-                          <Badge className="bg-emerald-900 text-white text-[10px] shrink-0">+ Añadir</Badge>
+                          <span className="font-bold text-slate-900 truncate pr-2">{p.name.split('–')[0]}</span>
+                          <span className="text-[10px] text-emerald-800 font-bold shrink-0">Seleccionar</span>
                         </div>
                       ))}
                   </div>
                 </div>
               )}
+
             </div>
           )}
 
-          {/* VISTA PRELIMINAR / EDICIÓN ANTES DE GUARDAR */}
+          {/* VISTA PRELIMINAR / EDICIÓN CON CONFIANZA IA (P1-A Punto 6) */}
           {parsedResult && (
             <div className="space-y-4">
               <div className="flex items-center justify-between border-b pb-2">
                 <span className="font-bold text-slate-900 text-xs flex items-center gap-1.5">
                   <Check className="h-4 w-4 text-emerald-700" />
-                  Alimentos Detectados
+                  Alimentos Detectados & Nivel de Confianza
                 </span>
                 <button
                   onClick={() => setParsedResult(null)}
@@ -459,33 +542,84 @@ export const FastFoodModal = ({
               </div>
 
               {/* Aviso de Estimación Orientativa */}
-              <div className="p-3 rounded-2xl bg-amber-50/90 border border-amber-200/80 text-[11px] text-amber-950 flex items-start gap-2">
-                <AlertCircle className="h-4 w-4 text-amber-700 shrink-0 mt-0.5" />
-                <span>{parsedResult.confidenceNotice}</span>
+              <div className={`p-3 rounded-2xl border text-[11px] flex items-start gap-2 ${
+                parsedResult.requiresReview 
+                  ? 'bg-amber-50/90 border-amber-300 text-amber-950' 
+                  : 'bg-emerald-50/90 border-emerald-300 text-emerald-950'
+              }`}>
+                {parsedResult.requiresReview ? (
+                  <AlertCircle className="h-4 w-4 text-amber-700 shrink-0 mt-0.5" />
+                ) : (
+                  <CheckCircle2 className="h-4 w-4 text-emerald-700 shrink-0 mt-0.5" />
+                )}
+                <div className="space-y-0.5">
+                  <strong className="block text-[11px]">
+                    {parsedResult.requiresReview ? 'Revísalo antes de registrar:' : 'Estimación de alta precisión:'}
+                  </strong>
+                  <span className="leading-tight block">{parsedResult.confidenceNotice}</span>
+                </div>
               </div>
 
-              {/* Lista de alimentos reconocidos */}
+              {/* Lista de alimentos reconocidos con ajuste rápido */}
               <div className="space-y-2">
                 {parsedResult.items.map((item) => (
                   <div 
                     key={item.id}
-                    className="p-3 rounded-2xl border bg-slate-50/80 flex items-center justify-between text-xs"
+                    className="p-3 rounded-2xl border bg-slate-50/80 space-y-2 text-xs"
                   >
-                    <div>
-                      <strong className="block text-slate-900 text-xs">{item.name}</strong>
-                      <span className="text-[11px] text-slate-500">{item.quantityDescription}</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="text-right">
-                        <span className="font-mono font-bold text-slate-900 text-xs">{item.calories} kcal</span>
-                        <span className="text-[10px] text-slate-500 block">P: {item.protein}g · F: {item.fiber}g</span>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <strong className="text-slate-900 text-xs">{item.name}</strong>
+                          <span className={`text-[9px] px-1.5 py-0.2 rounded-md font-bold uppercase ${
+                            item.confidence === 'high' 
+                              ? 'bg-emerald-100 text-emerald-800' 
+                              : item.confidence === 'medium'
+                                ? 'bg-amber-100 text-amber-900'
+                                : 'bg-rose-100 text-rose-900'
+                          }`}>
+                            {item.confidence === 'high' ? 'Alta' : item.confidence === 'medium' ? 'Media' : 'Baja'}
+                          </span>
+                        </div>
+                        <span className="text-[11px] text-slate-500">{item.quantityDescription}</span>
+                        {item.confidenceReason && (
+                          <span className="text-[10px] text-amber-800 font-medium block mt-0.5">
+                            ⚠️ {item.confidenceReason}
+                          </span>
+                        )}
                       </div>
+
+                      <div className="flex items-center gap-3">
+                        <div className="text-right">
+                          <span className="font-mono font-bold text-slate-900 text-xs">{item.calories} kcal</span>
+                          <span className="text-[10px] text-slate-500 block">P: {item.protein}g · F: {item.fiber}g</span>
+                        </div>
+                        <button
+                          onClick={() => removeParsedItem(item.id)}
+                          className="text-slate-400 hover:text-rose-600 transition-colors p-1"
+                          title="Eliminar alimento"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Botones de micro-ajuste de ración */}
+                    <div className="flex items-center justify-end gap-1.5 pt-1 border-t border-slate-200/60 text-[10px]">
+                      <span className="text-slate-400 text-[10px]">Ajustar ración:</span>
                       <button
-                        onClick={() => removeParsedItem(item.id)}
-                        className="text-slate-400 hover:text-rose-600 transition-colors p-1"
-                        title="Eliminar alimento"
+                        type="button"
+                        onClick={() => adjustItemQuantity(item.id, 0.8)}
+                        className="px-2 py-0.5 rounded-md bg-white border border-slate-300 hover:bg-slate-100 font-medium"
                       >
-                        <Trash2 className="h-3.5 w-3.5" />
+                        -20%
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => adjustItemQuantity(item.id, 1.25)}
+                        className="px-2 py-0.5 rounded-md bg-white border border-slate-300 hover:bg-slate-100 font-medium"
+                      >
+                        +25%
                       </button>
                     </div>
                   </div>
@@ -516,6 +650,30 @@ export const FastFoodModal = ({
                     <strong className="font-mono text-xs text-amber-300">{parsedResult.totalFiber}g</strong>
                   </div>
                 </div>
+              </div>
+
+              {/* CHECKBOX: GUARDAR COMO COMIDA HABITUAL FAVORITA (P1-A Punto 5) */}
+              <div className="p-3 rounded-2xl border border-slate-200 bg-slate-50 space-y-2">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={shouldSaveAsMeal}
+                    onChange={(e) => setShouldSaveAsMeal(e.target.checked)}
+                    className="rounded text-emerald-800 focus:ring-emerald-700 w-4 h-4"
+                  />
+                  <span className="font-bold text-slate-800 text-xs flex items-center gap-1.5">
+                    <Bookmark className="w-3.5 h-3.5 text-emerald-700" />
+                    Guardar esta combinación como comida guardada favorita
+                  </span>
+                </label>
+                {shouldSaveAsMeal && (
+                  <Input
+                    placeholder="Nombre del plato (ej: Mi desayuno bio, Poke rápido)..."
+                    value={savedMealName}
+                    onChange={(e) => setSavedMealName(e.target.value)}
+                    className="text-xs bg-white rounded-xl h-9"
+                  />
+                )}
               </div>
 
               {/* Botón de Confirmación */}

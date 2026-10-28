@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Sparkles, ChefHat, ShoppingBag, Clock, Check, AlertTriangle, 
-  X, ArrowRight, Utensils, Heart, ChevronDown, ChevronUp
+  X, ArrowRight, Utensils, Heart, ChevronDown, ChevronUp, CheckCircle2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -51,8 +51,8 @@ export const CompleteMyDayCard = ({ onRecipeCooked }: CompleteMyDayCardProps) =>
     );
 
     toast({
-      title: "¡Receta cocinada y registrada!",
-      description: `Se ha guardado "${activeSuggestion.title}" (${Math.round(activeSuggestion.calories * servings)} kcal) en tu cena de hoy.`,
+      title: "¡Receta registrada en tu cena!",
+      description: `Añadido "${activeSuggestion.title}" (${Math.round(activeSuggestion.calories * servings)} kcal).`,
     });
 
     setShowCookingSteps(false);
@@ -65,8 +65,8 @@ export const CompleteMyDayCard = ({ onRecipeCooked }: CompleteMyDayCardProps) =>
       <div className="flex items-start justify-between gap-3">
         <div className="space-y-1">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-800/80 text-emerald-200 text-[10px] font-bold">
-            <Sparkles className="h-3.5 w-3.5" />
-            <span>COMPLETA TU DÍA DE FORMA NATURAL</span>
+            <Sparkles className="h-3.5 w-3.5 text-emerald-300" />
+            <span>COMPLETA TU DÍA 2.0 · DESPENSA PRIMERO</span>
           </div>
           <h3 className="font-display text-base sm:text-lg font-bold">
             ¿Qué te apetece cenar hoy?
@@ -77,10 +77,11 @@ export const CompleteMyDayCard = ({ onRecipeCooked }: CompleteMyDayCardProps) =>
         </div>
       </div>
 
-      {/* Selector de sugerencias contextuales */}
+      {/* Selector de sugerencias contextuales ordenadas: Despensa primero */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
         {data.suggestions.map((sug, idx) => {
           const isSelected = selectedSuggestionIndex === idx;
+          const isOptionA = idx === 0 && sug.allPantryAvailable;
           return (
             <button
               key={sug.id}
@@ -96,35 +97,77 @@ export const CompleteMyDayCard = ({ onRecipeCooked }: CompleteMyDayCardProps) =>
               }`}
             >
               <div className="flex items-center justify-between text-[10px] text-emerald-300 font-medium mb-1">
+                <span className="font-bold uppercase tracking-wider text-[9px] text-emerald-300">
+                  {isOptionA ? '⭐ Opción A (Tienes todo)' : `Opción ${String.fromCharCode(65 + idx)}`}
+                </span>
                 <span>⏱ {sug.timeMinutes} min</span>
-                <span className="font-mono font-bold">{sug.calories} kcal</span>
               </div>
-              <strong className="block text-white text-xs font-bold leading-tight">
+              <strong className="block text-white text-xs font-bold leading-tight line-clamp-2">
                 {sug.title}
               </strong>
+              <div className="flex items-center justify-between mt-2 pt-1 border-t border-emerald-800/60 text-[10px]">
+                <span className="font-mono text-emerald-300">{sug.calories} kcal</span>
+                {sug.allPantryAvailable ? (
+                  <span className="text-emerald-400 font-bold flex items-center gap-0.5">
+                    <Check className="w-3 h-3" /> 0€ a comprar
+                  </span>
+                ) : (
+                  <span className="text-amber-300 font-mono">Falta {sug.missingCost.toFixed(2)}€</span>
+                )}
+              </div>
             </button>
           );
         })}
       </div>
 
       {/* Tarjeta Detallada de la Receta Seleccionada */}
-      <div className="bg-emerald-900/50 rounded-2xl p-4 border border-emerald-800/80 space-y-3 text-xs">
+      <div className="bg-emerald-900/50 rounded-2xl p-4 border border-emerald-800/80 space-y-3.5 text-xs">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-emerald-800 pb-3">
           <div>
-            <h4 className="font-bold text-white text-sm">
-              {activeSuggestion.title}
-            </h4>
+            <div className="flex items-center gap-2 mb-0.5">
+              <h4 className="font-bold text-white text-sm">
+                {activeSuggestion.title}
+              </h4>
+              {activeSuggestion.allPantryAvailable && (
+                <Badge className="bg-emerald-500 text-emerald-950 text-[9px] font-black">
+                  TIENES TODO
+                </Badge>
+              )}
+            </div>
             <span className="text-[11px] text-emerald-200">
               {activeSuggestion.reason}
             </span>
           </div>
-          <div className="flex items-center gap-2">
+
+          <div className="flex items-center gap-1.5 shrink-0">
             <Badge className="bg-emerald-800 text-emerald-100 text-[10px]">
               Proteína: {activeSuggestion.protein}g
             </Badge>
             <Badge className="bg-amber-800/80 text-amber-200 text-[10px]">
               Fibra: {activeSuggestion.fiber}g
             </Badge>
+          </div>
+        </div>
+
+        {/* EFECTO ESTIMADO ANTES VS DESPUÉS (Requisito Punto 7) */}
+        <div className="p-3 rounded-xl bg-emerald-950/70 border border-emerald-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px]">
+          <div className="flex items-center gap-2 text-emerald-300">
+            <span className="text-[10px] uppercase font-bold text-slate-400">Impacto estimado en tu día:</span>
+          </div>
+          <div className="flex items-center gap-4 font-mono">
+            <div className="flex items-center gap-1.5">
+              <span className="text-slate-400">Antes:</span>
+              <span>Prot {activeSuggestion.effectBefore?.protein || 0}g</span>
+              <span>·</span>
+              <span>Fibra {activeSuggestion.effectBefore?.fiber || 0}g</span>
+            </div>
+            <ArrowRight className="h-3.5 w-3.5 text-emerald-400" />
+            <div className="flex items-center gap-1.5 text-emerald-300 font-bold">
+              <span className="text-emerald-400">Después:</span>
+              <span>Prot ~{activeSuggestion.effectAfter?.protein || 0}g</span>
+              <span>·</span>
+              <span>Fibra ~{activeSuggestion.effectAfter?.fiber || 0}g</span>
+            </div>
           </div>
         </div>
 
@@ -170,13 +213,22 @@ export const CompleteMyDayCard = ({ onRecipeCooked }: CompleteMyDayCardProps) =>
             {showCookingSteps ? <ChevronUp className="h-3.5 w-3.5 ml-auto" /> : <ChevronDown className="h-3.5 w-3.5 ml-auto" />}
           </Button>
 
+          <Button
+            onClick={handleLogCookedRecipe}
+            className="flex-1 bg-emerald-700 hover:bg-emerald-600 text-white font-bold py-5 rounded-xl text-xs gap-1.5 shadow-sm border border-emerald-600"
+          >
+            <CheckCircle2 className="h-4 w-4" />
+            <span>Registrar en mi cena</span>
+          </Button>
+
           {activeSuggestion.missingProducts.length > 0 && (
             <Button
               onClick={handleAddMissingToCart}
-              className="flex-1 bg-emerald-800 hover:bg-emerald-700 text-white font-bold py-5 rounded-xl text-xs gap-1.5 shadow-sm border border-emerald-600"
+              variant="outline"
+              className="flex-1 bg-emerald-950/80 hover:bg-emerald-900 text-emerald-200 hover:text-white font-bold py-5 rounded-xl text-xs gap-1.5 shadow-sm border border-emerald-700"
             >
               <ShoppingBag className="h-4 w-4" />
-              <span>Añadir faltantes ({activeSuggestion.missingCost.toFixed(2)}€)</span>
+              <span>Añadir faltante ({activeSuggestion.missingCost.toFixed(2)}€)</span>
             </Button>
           )}
         </div>
@@ -192,7 +244,7 @@ export const CompleteMyDayCard = ({ onRecipeCooked }: CompleteMyDayCardProps) =>
             >
               <div className="space-y-2">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-300 block">
-                  Pasos de preparación (15 min):
+                  Pasos de preparación ({activeSuggestion.timeMinutes} min):
                 </span>
                 <ol className="space-y-1.5 list-decimal list-inside text-[11px] text-emerald-100">
                   {activeSuggestion.recipeSteps.map((step, idx) => (
@@ -203,12 +255,12 @@ export const CompleteMyDayCard = ({ onRecipeCooked }: CompleteMyDayCardProps) =>
                 </ol>
               </div>
 
-              {/* Registro directo de la receta cocinada en el diario */}
+              {/* Selector de raciones */}
               <div className="p-3 rounded-xl bg-emerald-950/80 border border-emerald-700 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="text-[11px] text-emerald-200">Raciones consumidas:</span>
+                  <span className="text-[11px] text-emerald-200">Raciones preparadas:</span>
                   <div className="flex items-center gap-1">
-                    {[1, 2, 3].map(n => (
+                    {[1, 2, 3, 4].map(n => (
                       <button
                         key={n}
                         type="button"
@@ -226,9 +278,9 @@ export const CompleteMyDayCard = ({ onRecipeCooked }: CompleteMyDayCardProps) =>
                 <Button
                   onClick={handleLogCookedRecipe}
                   size="sm"
-                  className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl"
+                  className="bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-black text-xs rounded-xl shadow-xs"
                 >
-                  ✓ Registrar en mi cena
+                  Confirmar y Guardar
                 </Button>
               </div>
             </motion.div>

@@ -1,19 +1,24 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Sparkles, Plus, Droplet, Clock, Flame, Apple, Heart, 
-  Utensils, ChevronRight, Barcode, Camera, Mic, Keyboard, 
-  Calendar, ArrowRight, ShieldCheck, Trash2, CheckCircle2,
-  SlidersHorizontal, ChevronDown, BookOpen, ShoppingBag
+  Sparkles, Calendar, Clock, Plus, Flame, Droplet, 
+  ChevronDown, Check, SlidersHorizontal, Trash2, Camera, Mic,
+  Repeat, ArrowRight, Bookmark, AlertTriangle, ChefHat, Scale,
+  CheckCircle2, ArrowUpDown, ShieldCheck, Heart
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import { 
   dailyNutritionStore, 
   DailyMealEntry, 
+  DailyGoals, 
   MealType, 
   NUTRITIONAL_GOALS_CATALOG,
-  DailyGoals
+  PantryItem,
+  SavedMeal,
+  PantryDeductionProposal,
+  WeightRecord
 } from '@/services/dailyNutritionStore';
 import { FastFoodModal } from '@/components/daily/FastFoodModal';
 import { HabitualMealsRow } from '@/components/daily/HabitualMealsRow';
@@ -29,20 +34,46 @@ export const EcolandHoy = () => {
   const [logs, setLogs] = useState<DailyMealEntry[]>(() => dailyNutritionStore.getTodayLogs());
   const [goals, setGoals] = useState<DailyGoals>(() => dailyNutritionStore.getGoals());
   const [waterGlasses, setWaterGlasses] = useState<number>(() => dailyNutritionStore.getWaterGlasses());
+  const [savedMeals, setSavedMeals] = useState<SavedMeal[]>(() => dailyNutritionStore.getSavedMeals());
+  const [expiringPantry, setExpiringPantry] = useState<PantryItem[]>(() => dailyNutritionStore.getExpiringPantryItems());
 
   // Diálogos modales
   const [isFastModalOpen, setIsFastModalOpen] = useState(false);
   const [fastModalMeal, setFastModalMeal] = useState<MealType>('desayuno');
   const [isWeeklyTrendOpen, setIsWeeklyTrendOpen] = useState(false);
   const [isGoalSelectorOpen, setIsGoalSelectorOpen] = useState(false);
+  const [activePantryProposal, setActivePantryProposal] = useState<PantryDeductionProposal | null>(null);
 
-  // Saludo según la hora del día
+  // Registro opcional de peso (P1-F Punto 17)
+  const [isWeightEnabled, setIsWeightEnabled] = useState<boolean>(() => dailyNutritionStore.isWeightTrackingEnabled());
+  const [weightHistory, setWeightHistory] = useState<WeightRecord[]>(() => dailyNutritionStore.getWeightHistory());
+  const [newWeightInput, setNewWeightInput] = useState<string>('');
+
+  // Saludo contextual según la hora del día (P1-A Punto 1)
   const currentHour = new Date().getHours();
+  let timeSlot: 'desayuno' | 'comida' | 'tarde' | 'cena' = 'desayuno';
   let greetingTime = 'Buenos días';
-  if (currentHour >= 13 && currentHour < 20) greetingTime = 'Buenas tardes';
-  else if (currentHour >= 20 || currentHour < 6) greetingTime = 'Buenas noches';
+  let contextTip = 'Prioriza un desayuno equilibrado e hidrátate bien para empezar con energía.';
 
-  const userName = 'Carlos';
+  if (currentHour >= 5 && currentHour < 12) {
+    timeSlot = 'desayuno';
+    greetingTime = 'Buenos días';
+    contextTip = 'Momento del desayuno: anota tu primera comida o repite tu hábito habitual en 1 clic.';
+  } else if (currentHour >= 12 && currentHour < 16) {
+    timeSlot = 'comida';
+    greetingTime = 'Buenas tardes';
+    contextTip = 'Mediodía: registra tu comida del almuerzo para ver el balance de tu día.';
+  } else if (currentHour >= 16 && currentHour < 20) {
+    timeSlot = 'tarde';
+    greetingTime = 'Buenas tardes';
+    contextTip = 'Media tarde: balance provisional. Prevé una cena ligera basada en tu despensa.';
+  } else {
+    timeSlot = 'cena';
+    greetingTime = 'Buenas noches';
+    contextTip = 'Noche: completa tu día de forma suave aprovechando lo que ya tienes en casa.';
+  }
+
+  const userName = 'Patricia';
 
   // Recálculo de totales
   const totalCalories = logs.reduce((acc, it) => acc + it.calories, 0);
@@ -58,6 +89,9 @@ export const EcolandHoy = () => {
     setLogs(dailyNutritionStore.getTodayLogs());
     setGoals(dailyNutritionStore.getGoals());
     setWaterGlasses(dailyNutritionStore.getWaterGlasses());
+    setSavedMeals(dailyNutritionStore.getSavedMeals());
+    setExpiringPantry(dailyNutritionStore.getExpiringPantryItems());
+    setWeightHistory(dailyNutritionStore.getWeightHistory());
   };
 
   const handleOpenAddModal = (meal: MealType) => {
@@ -86,82 +120,251 @@ export const EcolandHoy = () => {
     });
   };
 
+  // Acciones de Repetición (P1-A Punto 4)
+  const handleRepeatYesterday = (meal: MealType) => {
+    const added = dailyNutritionStore.repeatMealFromYesterday(meal);
+    if (added.length > 0) {
+      refreshData();
+      toast({
+        title: `¡${meal.charAt(0).toUpperCase() + meal.slice(1)} de ayer repetido!`,
+        description: `Se han anotado ${added.length} alimentos en tu día. Puedes editarlos en cualquier momento.`,
+      });
+    } else {
+      toast({
+        title: "Sin registros previos",
+        description: `No había registros de ${meal} en el día de ayer.`,
+      });
+    }
+  };
+
+  const handleCopyYesterdayEntirely = () => {
+    const added = dailyNutritionStore.copyYesterdayEntirely();
+    if (added.length > 0) {
+      refreshData();
+      toast({
+        title: "¡Día anterior copiado al completo!",
+        description: `Se han transferido ${added.length} platos a tu día de hoy.`,
+      });
+    }
+  };
+
+  // Confirmación de Deducción Despensa ↔ Diario (P1-C Punto 9)
+  const handleConfirmPantryProposal = () => {
+    if (!activePantryProposal) return;
+    dailyNutritionStore.confirmPantryDeduction(activePantryProposal.pantryId, activePantryProposal.servingsToDeduct);
+    toast({
+      title: "Despensa actualizada",
+      description: `Se han restado las raciones de ${activePantryProposal.pantryName}.`,
+    });
+    setActivePantryProposal(null);
+    refreshData();
+  };
+
+  // Registro de peso opcional (P1-F Punto 17)
+  const handleAddWeight = () => {
+    const num = parseFloat(newWeightInput.replace(',', '.'));
+    if (isNaN(num) || num < 30 || num > 300) {
+      toast({ title: "Introduce un peso válido en kg (ej: 69.8)", variant: "destructive" });
+      return;
+    }
+    dailyNutritionStore.addWeightEntry(num);
+    setNewWeightInput('');
+    setWeightHistory(dailyNutritionStore.getWeightHistory());
+    toast({
+      title: "Peso anotado",
+      description: `Tendencia suavizada actualizada a ${dailyNutritionStore.getWeightHistory().slice(-1)[0].smoothedTrendKg} kg.`,
+    });
+  };
+
   return (
     <div className="min-h-screen bg-slate-50/70 pb-24 pt-4 sm:pt-6">
       <div className="container-eco max-w-4xl space-y-6">
 
-        {/* 1. CABECERA: SALUDO & SELECTOR DE OBJETIVOS AMABLES */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-5 sm:p-6 rounded-3xl border shadow-2xs">
-          <div>
-            <div className="flex items-center gap-2 text-xs text-slate-500 mb-1">
-              <span>{new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}</span>
-              <span>•</span>
-              <span className="text-emerald-800 font-bold">Ecoland Hoy</span>
+        {/* 1. CABECERA CONTEXTUAL ADAPTADA POR HORARIO (P1-A Punto 1) */}
+        <div className="bg-white p-5 sm:p-6 rounded-3xl border shadow-2xs space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <div className="flex items-center gap-2 text-xs text-slate-500 mb-1">
+                <span>{new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}</span>
+                <span>•</span>
+                <span className="text-emerald-800 font-bold">Ecoland Hoy</span>
+                <Badge variant="outline" className="text-[10px] font-bold border-emerald-300 text-emerald-800 capitalize">
+                  {timeSlot === 'desayuno' ? '🌅 Mañana' : timeSlot === 'comida' ? '☀️ Mediodía' : timeSlot === 'tarde' ? '🌤️ Tarde' : '🌙 Noche'}
+                </Badge>
+              </div>
+              <h1 className="font-display text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                {greetingTime}, <span className="text-emerald-800">{userName}</span>
+              </h1>
+              <p className="text-xs text-slate-600 mt-1 leading-relaxed">
+                {contextTip}
+              </p>
             </div>
-            <h1 className="font-display text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-              {greetingTime}, <span className="text-emerald-800">{userName}</span>
-            </h1>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Tu espacio diario para comer equilibrado, aprovechar tu despensa y cuidar tu salud bio.
-            </p>
-          </div>
 
-          {/* Selector de Objetivo Personalizado */}
-          <div className="relative">
-            <button
-              onClick={() => setIsGoalSelectorOpen(!isGoalSelectorOpen)}
-              className="flex items-center gap-2 p-2.5 sm:p-3 rounded-2xl bg-slate-50 hover:bg-emerald-50/80 border border-slate-200 hover:border-emerald-300 text-left transition-all"
-            >
-              <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-900 flex items-center justify-center shrink-0">
-                <SlidersHorizontal className="h-4 w-4" />
-              </div>
-              <div>
-                <span className="text-[10px] text-slate-400 block font-semibold uppercase">Tu Objetivo Activo</span>
-                <span className="text-xs font-bold text-slate-800 truncate block max-w-[190px]">
-                  {goals.goalTitle}
-                </span>
-              </div>
-              <ChevronDown className="h-4 w-4 text-slate-400 ml-1 shrink-0" />
-            </button>
-
-            {/* Dropdown de 10 Objetivos */}
-            <AnimatePresence>
-              {isGoalSelectorOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: 8, scale: 0.98 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 8, scale: 0.98 }}
-                  className="absolute right-0 top-full mt-2 w-80 bg-white rounded-3xl border shadow-2xl p-3 z-30 space-y-1 text-xs"
-                >
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2 block mb-1">
-                    Elige lo que quieres conseguir:
+            {/* Selector de Objetivo Personalizado */}
+            <div className="relative">
+              <button
+                onClick={() => setIsGoalSelectorOpen(!isGoalSelectorOpen)}
+                className="flex items-center gap-2 p-2.5 sm:p-3 rounded-2xl bg-slate-50 hover:bg-emerald-50/80 border border-slate-200 hover:border-emerald-300 text-left transition-all"
+              >
+                <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-900 flex items-center justify-center shrink-0">
+                  <SlidersHorizontal className="h-4 w-4" />
+                </div>
+                <div>
+                  <span className="text-[10px] text-slate-400 block font-semibold uppercase">Tu Objetivo Activo</span>
+                  <span className="text-xs font-bold text-slate-800 truncate block max-w-[190px]">
+                    {goals.goalTitle}
                   </span>
-                  <div className="max-h-64 overflow-y-auto space-y-1">
-                    {NUTRITIONAL_GOALS_CATALOG.map(g => (
-                      <button
-                        key={g.id}
-                        type="button"
-                        onClick={() => handleSelectGoal(g.id)}
-                        className={`w-full p-2.5 rounded-xl text-left transition-all flex items-center justify-between ${
-                          goals.activeGoalId === g.id
-                            ? 'bg-emerald-50 text-emerald-950 font-bold border border-emerald-300'
-                            : 'hover:bg-slate-50 text-slate-700'
-                        }`}
-                      >
-                        <span className="truncate pr-2">{g.title}</span>
-                        <Badge variant="outline" className="text-[10px] font-mono shrink-0">
-                          {g.cals} kcal
-                        </Badge>
-                      </button>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                </div>
+                <ChevronDown className="h-4 w-4 text-slate-400 ml-1 shrink-0" />
+              </button>
+
+              {/* Dropdown de 10 Objetivos */}
+              <AnimatePresence>
+                {isGoalSelectorOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -5 }}
+                    className="absolute right-0 top-full mt-2 w-80 bg-white rounded-2xl border shadow-xl p-2 z-30 space-y-1"
+                  >
+                    <span className="text-[10px] uppercase font-bold text-slate-400 px-3 py-1 block">
+                      Elige tu enfoque de salud:
+                    </span>
+                    <div className="max-h-64 overflow-y-auto space-y-1">
+                      {NUTRITIONAL_GOALS_CATALOG.map((g) => (
+                        <button
+                          key={g.id}
+                          onClick={() => handleSelectGoal(g.id)}
+                          className={`w-full p-2.5 rounded-xl text-left text-xs font-semibold transition-all flex items-center justify-between ${
+                            goals.activeGoalId === g.id
+                              ? 'bg-emerald-800 text-white font-bold'
+                              : 'hover:bg-slate-50 text-slate-700'
+                          }`}
+                        >
+                          <span className="truncate pr-2">{g.title}</span>
+                          <Badge variant="outline" className="text-[10px] font-mono shrink-0">
+                            {g.cals} kcal
+                          </Badge>
+                        </button>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
         </div>
 
-        {/* 2. TARJETA PRINCIPAL: BALANCE ENERGÉTICO & MACRONUTRIENTES */}
+        {/* 2. BARRA DE ACCIONES RÁPIDAS: REPETIR AYER & COPIAR DÍA (P1-A Punto 4) */}
+        <div className="bg-emerald-50/60 border border-emerald-200/80 rounded-2xl p-3 flex flex-wrap items-center justify-between gap-2 text-xs">
+          <div className="flex items-center gap-1.5 text-emerald-950 font-bold">
+            <Repeat className="w-3.5 h-3.5 text-emerald-800" />
+            <span>Repetir con 1 toque:</span>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-1.5">
+            <button
+              onClick={() => handleRepeatYesterday('desayuno')}
+              className="px-2.5 py-1 bg-white hover:bg-emerald-100 border border-emerald-200 rounded-xl text-slate-700 hover:text-emerald-950 text-[11px] font-semibold transition-colors shadow-2xs"
+            >
+              Desayuno de ayer
+            </button>
+            <button
+              onClick={() => handleRepeatYesterday('comida')}
+              className="px-2.5 py-1 bg-white hover:bg-emerald-100 border border-emerald-200 rounded-xl text-slate-700 hover:text-emerald-950 text-[11px] font-semibold transition-colors shadow-2xs"
+            >
+              Comida de ayer
+            </button>
+            <button
+              onClick={() => handleRepeatYesterday('cena')}
+              className="px-2.5 py-1 bg-white hover:bg-emerald-100 border border-emerald-200 rounded-xl text-slate-700 hover:text-emerald-950 text-[11px] font-semibold transition-colors shadow-2xs"
+            >
+              Cena de ayer
+            </button>
+            <button
+              onClick={handleCopyYesterdayEntirely}
+              className="px-2.5 py-1 bg-emerald-800 hover:bg-emerald-900 text-white rounded-xl text-[11px] font-bold transition-colors shadow-2xs"
+            >
+              Copiar día completo
+            </button>
+          </div>
+        </div>
+
+        {/* 3. PROPUESTA DE ACTUALIZACIÓN DESPENSA ↔ DIARIO (P1-C Punto 9) */}
+        <AnimatePresence>
+          {activePantryProposal && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="p-4 rounded-2xl bg-amber-50 border border-amber-300 text-amber-950 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-sm"
+            >
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-amber-200 text-amber-900 flex items-center justify-center font-bold">
+                  📦
+                </div>
+                <div>
+                  <strong className="text-xs block">
+                    {activePantryProposal.pantryName}: ¿actualizar cantidad en tu despensa?
+                  </strong>
+                  <span className="text-[11px] text-amber-800">
+                    Tenías {activePantryProposal.currentEstimatedServings} raciones. Has registrado una comida: nueva estimación ~{activePantryProposal.newEstimatedServings} raciones.
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0">
+                <Button
+                  onClick={handleConfirmPantryProposal}
+                  size="sm"
+                  className="bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-bold rounded-xl"
+                >
+                  Actualizar despensa
+                </Button>
+                <Button
+                  onClick={() => setActivePantryProposal(null)}
+                  variant="outline"
+                  size="sm"
+                  className="text-xs rounded-xl"
+                >
+                  No cambiar
+                </Button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* 4. TARJETA DESPENSA: "ÚSALO PRONTO / QUÉ CONSUMIR PRIMERO" (P1-B Punto 8) */}
+        {expiringPantry.length > 0 && (
+          <div className="bg-amber-50/70 border border-amber-200 rounded-3xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-2xs">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-amber-100 text-amber-900 flex items-center justify-center shrink-0">
+                <AlertTriangle className="w-5 h-5 text-amber-700" />
+              </div>
+              <div>
+                <span className="text-[10px] font-black uppercase text-amber-800 tracking-wider block">
+                  Evita Desperdicio · Úsalo Pronto
+                </span>
+                <span className="text-xs text-slate-800 font-bold block">
+                  {expiringPantry.map(p => `${p.name} (~${p.daysToConsumeBeforePreferred} días)`).join(', ')}
+                </span>
+              </div>
+            </div>
+
+            <Button
+              asChild
+              size="sm"
+              className="bg-amber-900 hover:bg-amber-800 text-white text-xs font-bold rounded-xl gap-1.5 shrink-0"
+            >
+              <Link to="/blog">
+                <ChefHat className="w-3.5 h-3.5" />
+                <span>Dame ideas con estos alimentos</span>
+              </Link>
+            </Button>
+          </div>
+        )}
+
+        {/* 5. TARJETA PRINCIPAL: BALANCE ENERGÉTICO & MACRONUTRIENTES (FIBRA LIMPIA) */}
         <div className="bg-white p-5 sm:p-6 rounded-3xl border shadow-2xs space-y-5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b pb-4">
             <div>
@@ -199,7 +402,7 @@ export const EcolandHoy = () => {
             />
           </div>
 
-          {/* Cuadrante de Macronutrientes y Fibra */}
+          {/* Cuadrante de Macronutrientes y Fibra (P1-A Punto 2: "Fibra" sin asumir prebiótica) */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
             <div className="p-3.5 rounded-2xl bg-slate-50 border space-y-1">
               <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Proteína</span>
@@ -245,8 +448,8 @@ export const EcolandHoy = () => {
 
             <div className="p-3.5 rounded-2xl bg-emerald-50/80 border border-emerald-200 space-y-1">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] text-emerald-900 font-bold uppercase tracking-wider block">Fibra Prebiótica</span>
-                <span className="text-[9px] bg-emerald-200/80 text-emerald-950 px-1.5 py-0.2 rounded-md font-bold">Clave</span>
+                <span className="text-[10px] text-emerald-900 font-bold uppercase tracking-wider block">Fibra</span>
+                <span className="text-[9px] bg-emerald-200/80 text-emerald-950 px-1.5 py-0.2 rounded-md font-bold">Digestiva</span>
               </div>
               <div className="flex items-baseline justify-between">
                 <strong className="font-mono text-base text-emerald-950 font-bold">{totalFiber}g</strong>
@@ -295,7 +498,7 @@ export const EcolandHoy = () => {
           </div>
         </div>
 
-        {/* 3. LANZADOR DE REGISTRO RÁPIDO */}
+        {/* 6. LANZADOR DE REGISTRO RÁPIDO */}
         <div className="flex flex-col sm:flex-row items-center gap-2 bg-emerald-900 text-white p-4 rounded-3xl shadow-lg">
           <Button
             onClick={() => handleOpenAddModal('desayuno')}
@@ -324,78 +527,127 @@ export const EcolandHoy = () => {
               onClick={() => { setFastModalMeal('cena'); setIsFastModalOpen(true); }}
               className="flex-1 sm:flex-none p-2.5 rounded-xl bg-emerald-800/80 hover:bg-emerald-800 text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-colors"
             >
-              <Barcode className="h-3.5 w-3.5 text-emerald-300" />
-              <span>Código</span>
+              <span>Cena</span>
             </button>
           </div>
         </div>
 
-        {/* 4. COMIDAS HABITUALES EN 1 TOQUE */}
+        {/* 7. COMIDAS HABITUALES EN 1 SOLO CLIC */}
         <HabitualMealsRow onLogged={refreshData} />
 
-        {/* 5. TIMELINE DIARIO: DESAYUNO, COMIDA, CENA Y SNACKS */}
+        {/* 8. COMIDAS GUARDADAS FAVORITAS (P1-A Punto 5) */}
+        {savedMeals.length > 0 && (
+          <div className="space-y-2.5">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                <Bookmark className="w-3.5 h-3.5 text-emerald-700" />
+                Tus Comidas Guardadas ({savedMeals.length})
+              </span>
+              <span className="text-[10px] text-slate-400">Tus platos personalizados</span>
+            </div>
+
+            <div className="grid sm:grid-cols-3 gap-2">
+              {savedMeals.map((saved) => (
+                <div
+                  key={saved.id}
+                  className="p-3 bg-white border border-slate-200 hover:border-emerald-300 rounded-2xl flex flex-col justify-between shadow-2xs transition-all"
+                >
+                  <div>
+                    <div className="flex items-center justify-between text-[10px] mb-1">
+                      <Badge variant="outline" className="capitalize text-emerald-800 border-emerald-300 text-[9px]">
+                        {saved.meal}
+                      </Badge>
+                      <span className="font-mono font-bold text-slate-700">{saved.calories} kcal</span>
+                    </div>
+                    <strong className="text-xs text-slate-900 block truncate">{saved.name}</strong>
+                    <span className="text-[10px] text-slate-500 block line-clamp-1">{saved.description}</span>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-2 mt-2 border-t border-slate-100">
+                    <span className="text-[9px] text-slate-400">P: {saved.protein}g · F: {saved.fiber}g</span>
+                    <Button
+                      onClick={() => {
+                        dailyNutritionStore.logSavedMeal(saved.id);
+                        refreshData();
+                        toast({ title: "Comida guardada registrada en tu día" });
+                      }}
+                      size="sm"
+                      className="h-6 px-2.5 text-[10px] bg-emerald-800 hover:bg-emerald-900 text-white rounded-lg font-bold"
+                    >
+                      + Anotar
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* 9. LÍNEA TEMPORAL DE COMIDAS REGISTRADAS HOY */}
         <div className="space-y-3">
-          <div className="flex items-center justify-between text-xs font-bold text-slate-800">
-            <span>Tus Comidas de Hoy</span>
-            <span className="text-[10px] text-slate-400">{logs.length} alimentos anotados</span>
+          <div className="flex items-center justify-between">
+            <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+              Lo que llevas anotado hoy:
+            </h4>
+            <span className="text-xs font-mono text-slate-400">
+              {logs.length} {logs.length === 1 ? 'plato' : 'platos'}
+            </span>
           </div>
 
           {(['desayuno', 'comida', 'cena', 'snacks'] as MealType[]).map((mealKey) => {
-            const mealItems = logs.filter(l => l.meal === mealKey);
-            const mealCals = mealItems.reduce((acc, it) => acc + it.calories, 0);
+            const mealEntries = logs.filter(l => l.meal === mealKey);
+            const mealCals = mealEntries.reduce((acc, it) => acc + it.calories, 0);
 
             return (
-              <div 
-                key={mealKey}
-                className="bg-white rounded-3xl p-4 sm:p-5 border shadow-2xs space-y-3"
-              >
-                <div className="flex items-center justify-between border-b pb-2.5">
+              <div key={mealKey} className="bg-white rounded-2xl border p-3.5 sm:p-4 space-y-2.5 shadow-2xs">
+                <div className="flex items-center justify-between border-b pb-2">
                   <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-700" />
-                    <h4 className="font-bold text-slate-900 text-xs uppercase tracking-wider capitalize">
-                      {mealKey}
-                    </h4>
-                    <span className="text-[11px] text-slate-400 font-mono font-medium">
-                      {mealCals > 0 ? `${mealCals} kcal` : 'Sin registros'}
-                    </span>
+                    <span className="font-bold text-xs capitalize text-slate-800">{mealKey}</span>
+                    {mealEntries.length > 0 && (
+                      <span className="text-[10px] text-slate-400 font-mono">
+                        ({mealCals} kcal)
+                      </span>
+                    )}
                   </div>
 
-                  <button
+                  <Button
                     onClick={() => handleOpenAddModal(mealKey)}
-                    className="text-[11px] text-emerald-800 font-bold hover:underline flex items-center gap-1"
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 text-xs text-emerald-800 hover:text-emerald-900 hover:bg-emerald-50 rounded-lg gap-1 font-bold"
                   >
-                    <Plus className="h-3 w-3" />
+                    <Plus className="h-3.5 w-3.5" />
                     <span>Añadir</span>
-                  </button>
+                  </Button>
                 </div>
 
-                {/* Lista de alimentos en esta comida */}
-                {mealItems.length > 0 ? (
-                  <div className="space-y-2">
-                    {mealItems.map((item) => (
-                      <div 
-                        key={item.id}
-                        className="p-3 rounded-2xl bg-slate-50 border flex items-center justify-between text-xs"
+                {mealEntries.length === 0 ? (
+                  <p className="text-[11px] text-slate-400 italic py-1">
+                    Nada registrado todavía en {mealKey}.
+                  </p>
+                ) : (
+                  <div className="space-y-1.5">
+                    {mealEntries.map((entry) => (
+                      <div
+                        key={entry.id}
+                        data-testid="meal-entry"
+                        className="flex items-center justify-between p-2 rounded-xl bg-slate-50 hover:bg-slate-100/80 transition-colors text-xs"
                       >
-                        <div className="truncate pr-3">
-                          <strong className="block text-slate-900 text-xs truncate">{item.name}</strong>
-                          <div className="flex items-center gap-2 text-[10px] text-slate-400 mt-0.5">
-                            <span>{item.timeString}</span>
-                            <span>•</span>
-                            <span>P: {item.protein}g</span>
-                            <span>•</span>
-                            <span>F: {item.fiber}g</span>
-                          </div>
+                        <div className="truncate pr-2">
+                          <span className="font-semibold text-slate-800 truncate block">{entry.name}</span>
+                          <span className="text-[10px] text-slate-400 font-mono">
+                            {entry.timeString} • {entry.protein}g prot • {entry.fiber}g fibra
+                          </span>
                         </div>
 
-                        <div className="flex items-center gap-3 shrink-0">
+                        <div className="flex items-center gap-2.5 shrink-0">
                           <span className="font-mono font-bold text-slate-900 text-xs">
-                            {item.calories} kcal
+                            {entry.calories} kcal
                           </span>
                           <button
-                            onClick={() => handleRemoveLog(item.id)}
+                            onClick={() => handleRemoveLog(entry.id)}
                             className="text-slate-400 hover:text-rose-600 p-1 transition-colors"
-                            title="Eliminar"
+                            title="Eliminar plato"
                           >
                             <Trash2 className="h-3.5 w-3.5" />
                           </button>
@@ -403,38 +655,93 @@ export const EcolandHoy = () => {
                       </div>
                     ))}
                   </div>
-                ) : (
-                  <div className="p-3.5 rounded-2xl bg-slate-50/60 border border-dashed border-slate-200 text-center text-[11px] text-slate-400">
-                    Aún no has anotado nada en tu {mealKey}. Pulsa en «Añadir» para registrar en segundos.
-                  </div>
                 )}
               </div>
             );
           })}
         </div>
 
-        {/* 6. COMPLETA MI DÍA — RECOMENDACIÓN CONTEXTUAL CON DESPENSA */}
+        {/* 10. COMPLETA MI DÍA 2.0 (Despensa primero, efecto antes/después) */}
         <CompleteMyDayCard onRecipeCooked={refreshData} />
 
-        {/* 7. BOTÓN RESUMEN SEMANAL AMABLE Y ACCESOS A OTRAS HERRAMIENTAS */}
+        {/* 11. REGISTRO OPCIONAL DE PESO CON TENDENCIA SUAVIZADA (P1-F Punto 17) */}
+        <div className="bg-white rounded-3xl p-5 border shadow-2xs space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center font-bold">
+                <Scale className="w-4 h-4 text-emerald-800" />
+              </div>
+              <div>
+                <strong className="text-xs text-slate-900 block">Evolución y Tendencia de Peso (Opcional)</strong>
+                <span className="text-[10px] text-slate-500">Tendencia suavizada que ignora las fluctuaciones diarias de líquidos</span>
+              </div>
+            </div>
+
+            <button
+              onClick={() => {
+                const next = !isWeightEnabled;
+                setIsWeightEnabled(next);
+                dailyNutritionStore.toggleWeightTracking(next);
+              }}
+              className="text-[11px] font-bold text-emerald-800 hover:underline"
+            >
+              {isWeightEnabled ? 'Desactivar' : 'Activar registro'}
+            </button>
+          </div>
+
+          {isWeightEnabled && (
+            <div className="pt-2 border-t border-slate-100 space-y-3">
+              <div className="flex items-center gap-2 max-w-sm">
+                <Input
+                  value={newWeightInput}
+                  onChange={(e) => setNewWeightInput(e.target.value)}
+                  placeholder="Peso de hoy en kg (ej: 69.8)"
+                  className="rounded-xl h-9 text-xs"
+                />
+                <Button
+                  onClick={handleAddWeight}
+                  size="sm"
+                  className="bg-emerald-800 hover:bg-emerald-900 text-white rounded-xl text-xs font-bold"
+                >
+                  Anotar
+                </Button>
+              </div>
+
+              {weightHistory.length > 0 && (
+                <div className="flex items-center gap-4 text-xs font-mono bg-slate-50 p-2.5 rounded-xl border">
+                  <div>
+                    <span className="text-[10px] text-slate-400 block uppercase">Último peso:</span>
+                    <strong className="text-slate-900">{weightHistory.slice(-1)[0].weightKg} kg</strong>
+                  </div>
+                  <div className="border-l pl-4">
+                    <span className="text-[10px] text-slate-400 block uppercase">Tendencia suavizada:</span>
+                    <strong className="text-emerald-800">{weightHistory.slice(-1)[0].smoothedTrendKg} kg</strong>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* 12. ACCESOS CLAVE: MI SEMANA (PLANIFICADOR) & RESUMEN SEMANAL */}
         <div className="flex flex-col sm:flex-row gap-3 pt-2">
+          <Button
+            asChild
+            className="flex-1 py-6 rounded-2xl bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs gap-2 shadow-xs"
+          >
+            <Link to="/semana">
+              <Calendar className="h-4 w-4 text-emerald-300" />
+              <span>📅 Planificar "Mi Semana" & Lista de Compra ➔</span>
+            </Link>
+          </Button>
+
           <Button
             onClick={() => setIsWeeklyTrendOpen(true)}
             variant="outline"
             className="flex-1 py-6 rounded-2xl border-slate-300 hover:bg-emerald-50 hover:border-emerald-500 font-bold text-xs text-slate-800 gap-2 shadow-2xs"
           >
-            <Calendar className="h-4 w-4 text-emerald-800" />
+            <Sparkles className="h-4 w-4 text-emerald-800" />
             <span>📊 Ver Mi Semana en Ecoland (Tendencias)</span>
-          </Button>
-
-          <Button
-            asChild
-            className="flex-1 py-6 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs gap-2 shadow-2xs"
-          >
-            <Link to="/ecohealth">
-              <Sparkles className="h-4 w-4 text-emerald-400" />
-              <span>Plato Harvard & Calculadora TDEE ➔</span>
-            </Link>
           </Button>
         </div>
 
@@ -446,6 +753,7 @@ export const EcolandHoy = () => {
         onClose={() => setIsFastModalOpen(false)}
         defaultMeal={fastModalMeal}
         onLoggedSuccess={refreshData}
+        onPantryProposalTriggered={(prop) => setActivePantryProposal(prop)}
       />
 
       <WeeklyTrendDialog

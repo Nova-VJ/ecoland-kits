@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { 
   X, Sparkles, Calendar, TrendingUp, Apple, Droplet, 
-  ChefHat, Heart, Award, ShieldCheck 
+  ChefHat, Heart, Award, ShieldCheck, ArrowRight, Lightbulb
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -58,6 +58,37 @@ export const WeeklyTrendDialog = ({ isOpen, onClose }: WeeklyTrendDialogProps) =
             </p>
           </div>
 
+          {/* RESUMEN SEMANAL 2.0: 3 PREGUNTAS CLAVE (P1-F Punto 18) */}
+          <div className="space-y-2.5">
+            <div className="p-3 bg-slate-50 rounded-2xl border space-y-1">
+              <span className="text-[10px] uppercase font-black text-slate-500 tracking-wider block">
+                1. ¿Qué hiciste esta semana?
+              </span>
+              <p className="text-[11px] text-slate-700 leading-relaxed">
+                Registraste tus comidas {summary.daysLogged} días y preparaste {summary.pantryMealsCooked} platos aprovechando ingredientes de tu despensa, ahorrando ~{summary.estimatedEuroSavedAntiWaste.toFixed(2)}€ en comida no desperdiciada.
+              </p>
+            </div>
+
+            <div className="p-3 bg-slate-50 rounded-2xl border space-y-1">
+              <span className="text-[10px] uppercase font-black text-emerald-800 tracking-wider block">
+                2. ¿Qué cambió respecto a tu propia media?
+              </span>
+              <p className="text-[11px] text-slate-700 leading-relaxed">
+                Tu ingesta de fibra subió a <strong>{summary.averageFiber}g/día</strong> (frente a tus {summary.previousWeekAverageFiber}g anteriores). Probaste <strong>{summary.plantDiversityCount} plantas diferentes</strong> entre frutas, verduras, legumbres y cereales integrales.
+              </p>
+            </div>
+
+            <div className="p-3 bg-emerald-50/70 border border-emerald-200 rounded-2xl space-y-1">
+              <span className="text-[10px] uppercase font-black text-emerald-900 tracking-wider flex items-center gap-1">
+                <Lightbulb className="w-3.5 h-3.5 text-amber-600" />
+                3. ¿Qué puedes probar la próxima semana?
+              </span>
+              <p className="text-[11px] text-emerald-950 leading-relaxed">
+                Una idea sencilla: añade una ración de legumbres bio (lentejas o garbanzos) en dos comidas de mediodía para consolidar tu energía de la tarde.
+              </p>
+            </div>
+          </div>
+
           {/* Grid de Métricas Clave */}
           <div className="grid grid-cols-2 gap-2.5">
             <div className="p-3.5 rounded-2xl bg-slate-50 border space-y-1">
@@ -74,12 +105,12 @@ export const WeeklyTrendDialog = ({ isOpen, onClose }: WeeklyTrendDialogProps) =
             <div className="p-3.5 rounded-2xl bg-slate-50 border space-y-1">
               <span className="text-[11px] text-slate-500 flex items-center gap-1">
                 <Apple className="h-3.5 w-3.5 text-emerald-800" />
-                Variedad Vegetal
+                Variedad de Plantas
               </span>
               <strong className="block text-xl font-black text-slate-900">
                 {summary.plantDiversityCount} plantas
               </strong>
-              <span className="text-[10px] text-slate-500 block">Objetivo: 20-30 / semana</span>
+              <span className="text-[10px] text-slate-500 block">Legumbres, frutas, granos, semillas</span>
             </div>
 
             <div className="p-3.5 rounded-2xl bg-slate-50 border space-y-1">
@@ -90,7 +121,7 @@ export const WeeklyTrendDialog = ({ isOpen, onClose }: WeeklyTrendDialogProps) =
               <strong className="block text-xl font-black text-slate-900">
                 {summary.averageFiber}g <span className="text-xs font-normal text-slate-400">/día</span>
               </strong>
-              <span className="text-[10px] text-emerald-800 font-semibold block">Óptima para microbiota</span>
+              <span className="text-[10px] text-emerald-800 font-semibold block">Óptima para digestión</span>
             </div>
 
             <div className="p-3.5 rounded-2xl bg-slate-50 border space-y-1">
@@ -105,22 +136,10 @@ export const WeeklyTrendDialog = ({ isOpen, onClose }: WeeklyTrendDialogProps) =
             </div>
           </div>
 
-          {/* Hidratación y Energía */}
-          <div className="p-4 rounded-2xl bg-slate-50 border space-y-2 text-slate-600">
-            <div className="flex justify-between items-center text-xs">
-              <span className="font-semibold text-slate-800">Promedio calórico diario:</span>
-              <span className="font-mono font-bold text-slate-900">{summary.averageCalories} kcal</span>
-            </div>
-            <div className="flex justify-between items-center text-xs">
-              <span className="font-semibold text-slate-800">Ingesta media de agua:</span>
-              <span className="font-mono font-bold text-emerald-900">{summary.waterAverageGlasses} vasos / día</span>
-            </div>
-          </div>
-
           {/* Filosofía */}
           <div className="p-3.5 rounded-2xl bg-slate-100 text-[11px] text-slate-500 flex items-center gap-2">
             <Heart className="h-4 w-4 text-emerald-800 shrink-0" />
-            <span>Un día incompleto no borra tu progreso. La salud es un patrón a largo plazo.</span>
+            <span>Un día incompleto no borra tu progreso. La salud es un hábito constante a largo plazo.</span>
           </div>
 
           <Button
