@@ -19,6 +19,8 @@ import { allCatalogProducts } from '@/data/catalog/individual-products';
 import { useToast } from '@/hooks/use-toast';
 import { OfflineIndicatorBar } from '@/components/offline/OfflineIndicatorBar';
 import { zeroFrictionPantryService } from '@/services/zeroFrictionPantryService';
+import { HouseholdBudgetModal } from '@/components/budget/HouseholdBudgetModal';
+import { Wallet } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export const MiSemana = () => {
@@ -29,6 +31,7 @@ export const MiSemana = () => {
   const [selectedMode, setSelectedMode] = useState<'cenas' | 'comidas_cenas' | 'completa'>(plan.mode);
   const [numPersons, setNumPersons] = useState<number>(plan.numPersons);
   const [isShoppingListOpen, setIsShoppingListOpen] = useState(false);
+  const [isBudgetModalOpen, setIsBudgetModalOpen] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [showPrepPlan, setShowPrepPlan] = useState(false);
   const batchPrepPlan = dailyNutritionStore.getBatchPrepPlan();
@@ -113,12 +116,21 @@ export const MiSemana = () => {
 
           <div className="flex flex-col sm:flex-row items-center gap-2 shrink-0">
             <Button
+              onClick={() => setIsBudgetModalOpen(true)}
+              variant="outline"
+              className="w-full sm:w-auto border-slate-300 text-slate-700 hover:bg-slate-50 font-bold py-6 px-4 rounded-2xl shadow-2xs gap-1.5 text-xs"
+            >
+              <Wallet className="w-4 h-4 text-emerald-800" />
+              <span>Presupuesto Familiar</span>
+            </Button>
+
+            <Button
               onClick={() => setIsImportModalOpen(true)}
               variant="outline"
-              className="w-full sm:w-auto border-emerald-300 text-emerald-900 hover:bg-emerald-50 font-bold py-6 px-5 rounded-2xl shadow-2xs gap-2 text-xs"
+              className="w-full sm:w-auto border-emerald-300 text-emerald-900 hover:bg-emerald-50 font-bold py-6 px-4 rounded-2xl shadow-2xs gap-1.5 text-xs"
             >
               <Download className="w-4 h-4 text-emerald-700" />
-              <span>Importar Receta Externa</span>
+              <span>Importar Receta</span>
             </Button>
 
             <Button
@@ -299,11 +311,21 @@ export const MiSemana = () => {
                 key={day.dayIndex} 
                 className="bg-white rounded-2xl border p-3 space-y-3 flex flex-col justify-between shadow-2xs hover:border-emerald-300 transition-colors"
               >
-                <div className="flex items-center justify-between border-b pb-1.5">
+                <div className="flex items-center justify-between border-b pb-1.5 gap-1">
                   <strong className="text-xs text-slate-900 font-black">{day.dayName}</strong>
-                  <span className="text-[9px] bg-emerald-50 text-emerald-800 font-bold px-1.5 py-0.2 rounded-md">
-                    Día {day.dayIndex + 1}
-                  </span>
+                  <select
+                    value={day.dayType || 'PLANIFICADO'}
+                    onChange={(e) => {
+                      const updated = dailyNutritionStore.setDayFlexibilityType(day.dayIndex, e.target.value as any);
+                      setPlan({ ...updated });
+                    }}
+                    className="text-[9px] font-bold bg-slate-100 border border-slate-200 rounded-md px-1 py-0.5 text-slate-700"
+                  >
+                    <option value="PLANIFICADO">Planificado</option>
+                    <option value="COMER_FUERA">🍽️ Comer fuera</option>
+                    <option value="DIA_SOBRAS">🍲 Sobras</option>
+                    <option value="DIA_LIBRE">🥑 Día libre</option>
+                  </select>
                 </div>
 
                 <div className="space-y-2.5 flex-1">
@@ -474,6 +496,12 @@ export const MiSemana = () => {
             </div>
           )}
         </AnimatePresence>
+
+        {/* Modal de Presupuesto Familiar Inteligente */}
+        <HouseholdBudgetModal
+          isOpen={isBudgetModalOpen}
+          onClose={() => setIsBudgetModalOpen(false)}
+        />
 
       </div>
     </div>

@@ -144,6 +144,7 @@ export interface WeeklyMealPlanDay {
   dayName: string;
   almuerzo: WeeklyPlanRecipe;
   cena: WeeklyPlanRecipe;
+  dayType?: 'PLANIFICADO' | 'COMER_FUERA' | 'DIA_SOBRAS' | 'DIA_LIBRE' | 'BATCH_COOKING';
 }
 
 export interface WeeklyMealPlan {
@@ -1101,6 +1102,16 @@ class DailyNutritionStore {
     } catch {}
     this.trackEvent('weekly_plan_saved', { mode: plan.mode, numPersons: plan.numPersons });
     productInsightsService.recordMeaningfulAction('weekly_plan_updated');
+  }
+
+  public setDayFlexibilityType(dayIndex: number, dayType: 'PLANIFICADO' | 'COMER_FUERA' | 'DIA_SOBRAS' | 'DIA_LIBRE' | 'BATCH_COOKING'): WeeklyMealPlan {
+    const plan = this.getWeeklyPlan();
+    const day = plan.days.find(d => d.dayIndex === dayIndex);
+    if (day) {
+      day.dayType = dayType;
+      this.saveWeeklyPlan(plan);
+    }
+    return plan;
   }
 
   // ==========================================

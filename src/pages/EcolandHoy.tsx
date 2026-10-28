@@ -33,6 +33,10 @@ import { Bot, Users, HelpCircle, Package } from 'lucide-react';
 import { OfflineIndicatorBar } from '@/components/offline/OfflineIndicatorBar';
 import { ZeroFrictionPantryModal } from '@/components/pantry/ZeroFrictionPantryModal';
 import { RecipeInboxModal } from '@/components/recipes/RecipeInboxModal';
+import { CommandPaletteModal } from '@/components/common/CommandPaletteModal';
+import { HouseholdBudgetModal } from '@/components/budget/HouseholdBudgetModal';
+import { NutritionalExportModal } from '@/components/export/NutritionalExportModal';
+import { Wallet, FileSpreadsheet, Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 
@@ -52,6 +56,9 @@ export const EcolandHoy = () => {
   const [isHouseholdModalOpen, setIsHouseholdModalOpen] = useState(false);
   const [isPantryModalOpen, setIsPantryModalOpen] = useState(false);
   const [isRecipeModalOpen, setIsRecipeModalOpen] = useState(false);
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+  const [isBudgetModalOpen, setIsBudgetModalOpen] = useState(false);
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
 
   // Diálogos modales
   const [isFastModalOpen, setIsFastModalOpen] = useState(false);
@@ -89,6 +96,17 @@ export const EcolandHoy = () => {
     greetingTime = 'Buenas noches';
     contextTip = 'Noche: completa tu día de forma suave aprovechando lo que ya tienes en casa.';
   }
+
+    useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setIsCommandPaletteOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const userName = 'Patricia';
 
@@ -268,6 +286,36 @@ export const EcolandHoy = () => {
               <ChefHat className="w-3.5 h-3.5 text-emerald-800" />
               <span>Recetas & Cocina</span>
             </Button>
+
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setIsBudgetModalOpen(true)}
+              className="border-amber-300 text-amber-900 bg-amber-50/50 hover:bg-amber-100 font-semibold text-xs rounded-xl h-8 px-3 gap-1.5"
+            >
+              <Wallet className="w-3.5 h-3.5 text-amber-800" />
+              <span>Presupuesto</span>
+            </Button>
+
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setIsExportModalOpen(true)}
+              className="border-blue-300 text-blue-900 bg-blue-50/50 hover:bg-blue-100 font-semibold text-xs rounded-xl h-8 px-3 gap-1.5"
+            >
+              <FileSpreadsheet className="w-3.5 h-3.5 text-blue-800" />
+              <span>Exportar Informe</span>
+            </Button>
+
+            <button
+              onClick={() => setIsCommandPaletteOpen(true)}
+              className="flex items-center gap-2 px-3 py-1 bg-slate-100 hover:bg-slate-200 border border-slate-300/80 rounded-xl text-slate-600 text-xs font-medium transition-colors shadow-2xs"
+              title="Comando universal (Ctrl+K o Cmd+K)"
+            >
+              <Search className="w-3.5 h-3.5 text-slate-500" />
+              <span>Buscar o comando</span>
+              <kbd className="px-1.5 py-0.5 text-[10px] bg-white border border-slate-300 rounded shadow-2xs font-mono text-slate-500 font-bold">⌘K</kbd>
+            </button>
           </div>
 
           <OfflineIndicatorBar />
@@ -933,6 +981,28 @@ export const EcolandHoy = () => {
         isOpen={isRecipeModalOpen}
         onClose={() => setIsRecipeModalOpen(false)}
         onCookRecipeSuccess={() => refreshData()}
+      />
+
+      <CommandPaletteModal
+        isOpen={isCommandPaletteOpen}
+        onClose={() => setIsCommandPaletteOpen(false)}
+        onOpenSmartLogger={() => setIsSmartLoggerOpen(true)}
+        onOpenPantry={() => setIsPantryModalOpen(true)}
+        onOpenRecipes={() => setIsRecipeModalOpen(true)}
+        onOpenBudget={() => setIsBudgetModalOpen(true)}
+        onOpenExport={() => setIsExportModalOpen(true)}
+        onOpenHousehold={() => setIsHouseholdModalOpen(true)}
+        onOpenWhatCanIDo={() => setIsWhatCanIDoOpen(true)}
+      />
+
+      <HouseholdBudgetModal
+        isOpen={isBudgetModalOpen}
+        onClose={() => setIsBudgetModalOpen(false)}
+      />
+
+      <NutritionalExportModal
+        isOpen={isExportModalOpen}
+        onClose={() => setIsExportModalOpen(false)}
       />
     </div>
   );
