@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ShoppingBag, CheckCircle2, ArrowRight, ShieldCheck, Truck, 
   MapPin, CreditCard, Lock, Sparkles, AlertCircle, ChevronLeft,
-  Store, Leaf, FileText, Check
+  Store, Leaf, FileText, Check, TreeDeciduous
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,6 +19,7 @@ export const Checkout = () => {
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [deliveryMethod, setDeliveryMethod] = useState<'domicilio' | 'click_and_collect'>('domicilio');
   const [zeroWastePackaging, setZeroWastePackaging] = useState(true);
+  const [plantTree, setPlantTree] = useState(true);
 
   // Form Data
   const [formData, setFormData] = useState({
@@ -39,8 +40,9 @@ export const Checkout = () => {
   const [orderConfirmed, setOrderConfirmed] = useState<string | null>(null);
 
   const shippingCost = deliveryMethod === 'click_and_collect' ? 0 : totalPrice >= 45 ? 0 : 4.90;
-  const finalTotal = totalPrice + shippingCost;
-  const estimatedCo2 = (totalPrice * 0.16).toFixed(1);
+  const treeCost = plantTree ? 0.80 : 0;
+  const finalTotal = totalPrice + shippingCost + treeCost;
+  const estimatedCo2 = (totalPrice * 0.16 + (plantTree ? 22 : 0)).toFixed(1);
   const ecoPointsEarned = Math.floor(finalTotal);
 
   const handleInputChange = (field: string, val: string) => {
@@ -81,7 +83,6 @@ export const Checkout = () => {
     }, 1200);
   };
 
-  // Si no hay artículos y no está confirmado, mostrar aviso
   if (items.length === 0 && !orderConfirmed) {
     return (
       <div className="section-padding min-h-[70vh] flex items-center justify-center">
@@ -140,7 +141,9 @@ export const Checkout = () => {
             </div>
             <div className="flex justify-between items-center border-b pb-2">
               <span className="text-slate-500">Impacto ecológico:</span>
-              <strong className="text-emerald-700 font-bold">~{estimatedCo2} kg CO₂ evitado · +{ecoPointsEarned} EcoPuntos</strong>
+              <strong className="text-emerald-700 font-bold">
+                ~{estimatedCo2} kg CO₂ evitado {plantTree && '· 🌳 +1 Árbol financiado'} · +{ecoPointsEarned} EcoPuntos
+              </strong>
             </div>
             <div className="flex justify-between items-center pt-1 font-bold">
               <span>Importe total pagado:</span>
@@ -174,7 +177,7 @@ export const Checkout = () => {
           <span className="text-slate-900 font-bold">Proceso de Checkout Seguro</span>
         </div>
 
-        {/* Indicador de Pasos Numerados (Página 4 del Informe) */}
+        {/* Indicador de Pasos Numerados */}
         <div className="bg-white rounded-2xl p-4 border shadow-2xs flex items-center justify-between text-xs font-bold text-slate-600">
           <div className={`flex items-center gap-2 ${step >= 1 ? 'text-emerald-900' : 'text-slate-400'}`}>
             <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
@@ -368,6 +371,22 @@ export const Checkout = () => {
                     />
                   </div>
 
+                  {/* Compensación Tentree / Reforestación Local (+1 Árbol) */}
+                  <div className="p-3 rounded-2xl bg-teal-50/70 border border-teal-200 text-xs flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <TreeDeciduous className="h-4 w-4 text-teal-800 shrink-0" />
+                      <span className="text-slate-700 text-[11px]">
+                        <strong>Plantar 1 árbol con tu pedido (+0.80€):</strong> Proyecto de bosque autóctono en Castilla y León (estilo Tentree).
+                      </span>
+                    </div>
+                    <input 
+                      type="checkbox" 
+                      checked={plantTree} 
+                      onChange={(e) => setPlantTree(e.target.checked)}
+                      className="rounded text-teal-800 focus:ring-teal-700 shrink-0 ml-2"
+                    />
+                  </div>
+
                   <Button 
                     onClick={() => {
                       if (validateStep1()) setStep(2);
@@ -432,7 +451,6 @@ export const Checkout = () => {
                   ))}
                 </div>
 
-                {/* Campos de Tarjeta si está seleccionada */}
                 {paymentMethod === 'tarjeta' && (
                   <div className="p-4 rounded-2xl bg-slate-50 border space-y-3 text-xs">
                     <div>
@@ -452,7 +470,6 @@ export const Checkout = () => {
                   </div>
                 )}
 
-                {/* Garantía de Seguridad */}
                 <div className="flex items-center gap-2 p-3 rounded-xl bg-slate-50 text-[11px] text-slate-500 border">
                   <Lock className="h-4 w-4 text-emerald-800 shrink-0" />
                   <span>Entorno seguro garantizado. Tus datos financieros viajan encriptados de extremo a extremo.</span>
@@ -510,7 +527,7 @@ export const Checkout = () => {
               })}
             </div>
 
-            {/* Impacto Ambiental Sostenible (Allbirds / Patagonia) */}
+            {/* Impacto Ambiental Sostenible */}
             <div className="p-3.5 rounded-2xl bg-emerald-950 text-white space-y-2 text-xs">
               <span className="text-[10px] uppercase font-bold text-emerald-400 block tracking-wider">
                 Impacto Positivo de tu Compra
@@ -521,8 +538,8 @@ export const Checkout = () => {
                   <strong className="font-mono text-white text-xs">~{estimatedCo2} kg CO₂e</strong>
                 </div>
                 <div className="bg-emerald-900/60 p-2 rounded-xl border border-emerald-800">
-                  <span className="text-emerald-300 block text-[10px]">Zero Waste</span>
-                  <strong className="text-white text-xs">Sin plástico</strong>
+                  <span className="text-emerald-300 block text-[10px]">Reforestación</span>
+                  <strong className="text-white text-xs">{plantTree ? '🌳 +1 Árbol' : 'Sin árbol'}</strong>
                 </div>
               </div>
             </div>
@@ -539,6 +556,12 @@ export const Checkout = () => {
                   {shippingCost === 0 ? 'GRATIS' : `${shippingCost.toFixed(2)}€`}
                 </span>
               </div>
+              {plantTree && (
+                <div className="flex justify-between text-teal-800 font-medium">
+                  <span>Plantar 1 árbol (Castilla y León)</span>
+                  <span className="font-mono">+0.80€</span>
+                </div>
+              )}
               <div className="flex justify-between text-slate-500 text-[11px]">
                 <span>IVA incluido (10%)</span>
                 <span className="font-mono">{(finalTotal * 0.091).toFixed(2)}€</span>
