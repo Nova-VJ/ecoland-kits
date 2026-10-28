@@ -17,6 +17,8 @@ import {
 import { useCart } from '@/context/CartContext';
 import { allCatalogProducts } from '@/data/catalog/individual-products';
 import { useToast } from '@/hooks/use-toast';
+import { OfflineIndicatorBar } from '@/components/offline/OfflineIndicatorBar';
+import { zeroFrictionPantryService } from '@/services/zeroFrictionPantryService';
 import { Link } from 'react-router-dom';
 
 export const MiSemana = () => {
@@ -97,10 +99,13 @@ export const MiSemana = () => {
                 P1 Intelligence
               </Badge>
             </div>
-            <h1 className="font-display text-2xl md:text-3xl font-black text-slate-900 tracking-tight flex items-center gap-2.5">
-              <Calendar className="h-7 w-7 text-emerald-800" />
-              Mi Semana en Ecoland
-            </h1>
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <h1 className="font-display text-2xl md:text-3xl font-black text-slate-900 tracking-tight flex items-center gap-2.5">
+                <Calendar className="h-7 w-7 text-emerald-800" />
+                Mi Semana en Ecoland
+              </h1>
+              <OfflineIndicatorBar />
+            </div>
             <p className="text-xs md:text-sm text-slate-500 leading-relaxed">
               Planifica de forma flexible, aprovecha los ingredientes que ya tienes en casa y genera tu lista de la compra comprando solo lo que realmente te falta.
             </p>

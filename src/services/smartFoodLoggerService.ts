@@ -94,9 +94,18 @@ export interface UniversalEanProduct {
   };
   compatibility: {
     status: CompatibilityStatus;
+    badgeText: string;
     reason: string;
     matchedWarnings: string[];
   };
+}
+
+export interface LabelOCRResult {
+  detectedText: string;
+  status: 'PARTIAL / DEVICE VALIDATION REQUIRED';
+  confidenceScore: number;
+  extractedNutrients: Partial<Record<'calories' | 'protein' | 'carbs' | 'fat' | 'fiber', number>>;
+  disclaimer: 'Requiere validación visual en dispositivo antes de confirmar.';
 }
 
 export interface MenuScanDish {
@@ -109,6 +118,8 @@ export interface MenuScanDish {
   estimatedCalories: number;
   estimatedProtein: number;
   isLightOption: boolean;
+  lightOptionLabel?: string;
+  proteinSourceLabel?: string;
   compatibility: CompatibilityStatus;
 }
 
@@ -187,6 +198,7 @@ class SmartFoodLoggerService {
 
   public evaluateCompatibility(ingredientsText: string, declaredAllergens: string[] = []): {
     status: CompatibilityStatus;
+    badgeText: string;
     reason: string;
     matchedWarnings: string[];
   } {
@@ -252,6 +264,9 @@ class SmartFoodLoggerService {
       const isSevere = warnings.some(w => w.includes('alergia declarada') || w.includes('cereal con gluten'));
       return {
         status: isSevere ? 'NO_COMPATIBLE' : 'REVISAR',
+        badgeText: isSevere 
+          ? '⛔ No compatible según tu configuración · Verifica siempre la etiqueta'
+          : '⚠ Revisar · Verifica siempre la etiqueta',
         reason: warnings.join('. '),
         matchedWarnings: warnings
       };
@@ -259,7 +274,8 @@ class SmartFoodLoggerService {
 
     return {
       status: 'COMPATIBLE',
-      reason: 'Compatible con tu configuración actual de Food Fingerprint.',
+      badgeText: '✅ Compatible según datos disponibles · Verifica siempre la etiqueta',
+      reason: 'Compatible con tu configuración actual de Food Fingerprint. Verifica siempre la etiqueta.',
       matchedWarnings: []
     };
   }
@@ -450,6 +466,7 @@ class SmartFoodLoggerService {
         estimatedCalories: 340,
         estimatedProtein: 14,
         isLightOption: true,
+        lightOptionLabel: 'Estimación comparativa: parece relativamente más ligero',
         compatibility: this.evaluateCompatibility('Lentejas, aguacate, mostaza, nueces', ['mostaza', 'frutos_secos']).status
       },
       {
@@ -462,6 +479,8 @@ class SmartFoodLoggerService {
         estimatedCalories: 480,
         estimatedProtein: 38,
         isLightOption: true,
+        lightOptionLabel: 'Estimación comparativa: parece relativamente más ligero',
+        proteinSourceLabel: 'probablemente mayor fuente proteica',
         compatibility: this.evaluateCompatibility('Lubina, patatas, cebolla, aceite', ['pescado']).status
       },
       {
@@ -474,6 +493,7 @@ class SmartFoodLoggerService {
         estimatedCalories: 890,
         estimatedProtein: 44,
         isLightOption: false,
+        proteinSourceLabel: 'probablemente mayor fuente proteica',
         compatibility: this.evaluateCompatibility('Carne de buey, pan brioche, queso, bacon, patatas', ['gluten', 'lactosa']).status
       },
       {

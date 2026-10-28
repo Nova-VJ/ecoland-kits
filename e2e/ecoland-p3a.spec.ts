@@ -75,8 +75,8 @@ test.describe('Ecoland Daily — P3-A Zero-Friction Logging & Smart Food Logger 
 
     // Comprobar producto, fuente y Food Fingerprint
     await expect(page.locator('text=Copos de Avena Integral Ecológica 500g').first()).toBeVisible();
-    await expect(page.locator('text=Fuente: ECOLAND_VERIFIED').first()).toBeVisible();
-    await expect(page.locator('text=Food Fingerprint:').first()).toBeVisible();
+    await expect(page.locator('text=Fuente: VERIFIED_BY_ECOLAND').first()).toBeVisible();
+    await expect(page.locator('text=Compatible según datos disponibles').first()).toBeVisible();
   });
 
   test('4. Escáner de Carta (MenuScan) experimental con opciones ligeras y advertencia médica', async ({ page }) => {
@@ -96,9 +96,9 @@ test.describe('Ecoland Daily — P3-A Zero-Friction Logging & Smart Food Logger 
     // Advertencia médica obligatoria
     await expect(page.locator('text=Consulta siempre al personal del restaurante').first()).toBeVisible();
 
-    // Platos extraídos y opción ligera
+    // Platos extraídos y opción comparativamente ligera
     await expect(page.locator('text=Lubina salvaje al horno').first()).toBeVisible();
-    await expect(page.locator('text=Opción Ligera').first()).toBeVisible();
+    await expect(page.locator('text=Estimación comparativa: parece relativamente más ligero').first()).toBeVisible();
   });
 
   test('5. Registro 1-tap habitual guarda en /hoy y actualiza ingestas', async ({ page }) => {

@@ -29,7 +29,9 @@ import { IncompleteDayBanner } from '@/components/daily/IncompleteDayBanner';
 import { WhatCanIDoNowModal } from '@/components/daily/WhatCanIDoNowModal';
 import { HouseholdSettingsModal } from '@/components/household/HouseholdSettingsModal';
 import { ExperienceMode } from '@/services/dailyNutritionStore';
-import { Bot, Users, HelpCircle } from 'lucide-react';
+import { Bot, Users, HelpCircle, Package } from 'lucide-react';
+import { OfflineIndicatorBar } from '@/components/offline/OfflineIndicatorBar';
+import { ZeroFrictionPantryModal } from '@/components/pantry/ZeroFrictionPantryModal';
 import { Link } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 
@@ -47,6 +49,7 @@ export const EcolandHoy = () => {
   const [experienceMode, setExperienceMode] = useState<ExperienceMode>(() => dailyNutritionStore.getExperienceMode());
   const [isWhatCanIDoOpen, setIsWhatCanIDoOpen] = useState(false);
   const [isHouseholdModalOpen, setIsHouseholdModalOpen] = useState(false);
+  const [isPantryModalOpen, setIsPantryModalOpen] = useState(false);
 
   // Diálogos modales
   const [isFastModalOpen, setIsFastModalOpen] = useState(false);
@@ -243,7 +246,19 @@ export const EcolandHoy = () => {
               <Users className="w-3.5 h-3.5 text-slate-600" />
               <span>Hogar Ecoland</span>
             </Button>
+
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setIsPantryModalOpen(true)}
+              className="border-emerald-300 text-emerald-900 bg-emerald-50/50 hover:bg-emerald-100 font-semibold text-xs rounded-xl h-8 px-3 gap-1.5"
+            >
+              <Package className="w-3.5 h-3.5 text-emerald-800" />
+              <span>Mi Despensa</span>
+            </Button>
           </div>
+
+          <OfflineIndicatorBar />
 
           {/* Toggle Modo Simple vs Nutrición (P2-F) */}
           <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-xl">
@@ -894,6 +909,12 @@ export const EcolandHoy = () => {
       <HouseholdSettingsModal
         isOpen={isHouseholdModalOpen}
         onClose={() => setIsHouseholdModalOpen(false)}
+      />
+
+      <ZeroFrictionPantryModal
+        isOpen={isPantryModalOpen}
+        onClose={() => setIsPantryModalOpen(false)}
+        onItemConsumedToDaily={() => refreshData()}
       />
     </div>
   );

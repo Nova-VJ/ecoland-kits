@@ -442,7 +442,7 @@ export const SmartFoodLoggerModal = ({
                         <span className="text-[11px] text-slate-500">{eanProduct.brand} · Ración: {eanProduct.servingSize}</span>
                       </div>
                       <Badge className="bg-slate-900 text-white font-mono text-[10px]">
-                        Fuente: {eanProduct.provenance.source}
+                        Fuente: {eanProduct.provenance.source === 'ECOLAND_VERIFIED' ? 'VERIFIED_BY_ECOLAND' : eanProduct.provenance.source}
                       </Badge>
                     </div>
 
@@ -450,6 +450,8 @@ export const SmartFoodLoggerModal = ({
                     <div className={`p-2.5 rounded-xl border flex items-center gap-2 ${
                       eanProduct.compatibility.status === 'COMPATIBLE' 
                         ? 'bg-emerald-50 border-emerald-300 text-emerald-950'
+                        : eanProduct.compatibility.status === 'NO_COMPATIBLE'
+                        ? 'bg-rose-50 border-rose-300 text-rose-950'
                         : 'bg-amber-50 border-amber-300 text-amber-950'
                     }`}>
                       {eanProduct.compatibility.status === 'COMPATIBLE' ? (
@@ -458,8 +460,16 @@ export const SmartFoodLoggerModal = ({
                         <AlertTriangle className="w-4 h-4 text-amber-700 shrink-0" />
                       )}
                       <div className="text-[11px] leading-tight">
-                        <strong>Food Fingerprint: {eanProduct.compatibility.status}</strong>
-                        <p>{eanProduct.compatibility.reason}</p>
+                        <strong className="block mb-0.5">
+                          {eanProduct.compatibility.badgeText || (
+                            eanProduct.compatibility.status === 'COMPATIBLE'
+                              ? '✅ Compatible según datos disponibles · Verifica siempre la etiqueta'
+                              : eanProduct.compatibility.status === 'NO_COMPATIBLE'
+                              ? '⛔ No compatible según tu configuración · Verifica siempre la etiqueta'
+                              : '⚠ Revisar · Verifica siempre la etiqueta'
+                          )}
+                        </strong>
+                        <p className="text-[10px] text-slate-600">{eanProduct.compatibility.reason}</p>
                       </div>
                     </div>
 
@@ -527,14 +537,19 @@ export const SmartFoodLoggerModal = ({
                             </span>
                           </div>
 
-                          <div className="flex items-center gap-2 mt-2 pt-1.5 border-t text-[10px]">
+                          <div className="flex flex-wrap items-center gap-1.5 mt-2 pt-1.5 border-t text-[10px]">
                             <Badge variant={dish.isLightOption ? 'outline' : 'secondary'} className="font-mono">
                               ~{dish.estimatedCalories} kcal
                             </Badge>
                             <span className="font-mono text-slate-600">~{dish.estimatedProtein}g proteína</span>
-                            {dish.isLightOption && (
-                              <Badge className="bg-emerald-100 text-emerald-900 border-none font-bold">
-                                Opción Ligera
+                            {dish.lightOptionLabel && (
+                              <Badge className="bg-emerald-100 text-emerald-900 border-none font-medium">
+                                {dish.lightOptionLabel}
+                              </Badge>
+                            )}
+                            {dish.proteinSourceLabel && (
+                              <Badge className="bg-blue-100 text-blue-900 border-none font-medium">
+                                {dish.proteinSourceLabel}
                               </Badge>
                             )}
                           </div>
