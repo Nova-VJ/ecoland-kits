@@ -1,131 +1,168 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Menu, X, ShoppingBag, User, Package, Store, ClipboardList, Repeat, BookOpen, Crown, MapPin, Heart } from 'lucide-react';
+import { 
+  Sparkles, Menu, X, ShoppingBag, User, Package, Store, 
+  ClipboardList, Repeat, BookOpen, Crown, MapPin, Heart, Search 
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/CartContext';
 import logoEcoland from '@/assets/logo-ecoland-2.jpg';
-const navLinks = [{
-  to: '/tienda',
-  label: 'Tienda',
-  icon: Store
-}, {
-  to: '/ecohealth',
-  label: 'EcoHealth',
-  icon: Sparkles
-}, {
-  to: '/packs',
-  label: 'Packs',
-  icon: Package
-}, {
-  to: '/quiz',
-  label: 'Test',
-  icon: ClipboardList
-}, {
-  to: '/suscripcion',
-  label: 'Suscripción',
-  icon: Repeat
-}, {
-  to: '/blog',
-  label: 'Recetas',
-  icon: BookOpen
-}, {
-  to: '/club',
-  label: 'Club',
-  icon: Crown
-}, {
-  to: '/donde-estamos',
-  label: 'Dónde estamos',
-  icon: MapPin
-}, {
-  to: '/importancia-y-mision',
-  label: 'Misión',
-  icon: Heart
-}];
+import { QuickSearchModal } from '@/components/layout/QuickSearchModal';
+
+const navLinks = [
+  { to: '/tienda', label: 'Tienda', icon: Store },
+  { to: '/ecohealth', label: 'EcoHealth', icon: Sparkles },
+  { to: '/packs', label: 'Packs', icon: Package },
+  { to: '/quiz', label: 'Test', icon: ClipboardList },
+  { to: '/suscripcion', label: 'Suscripción', icon: Repeat },
+  { to: '/blog', label: 'Recetas', icon: BookOpen },
+  { to: '/club', label: 'Club', icon: Crown },
+  { to: '/donde-estamos', label: 'Dónde estamos', icon: MapPin },
+  { to: '/importancia-y-mision', label: 'Misión', icon: Heart },
+];
+
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const location = useLocation();
-  const {
-    totalItems,
-    setIsOpen
-  } = useCart();
-  return <>
-    <header className="sticky top-0 z-50 glass border-b border-border/50">
-      <div className="container-eco">
-        <div className="flex items-center justify-between h-16 md:h-20">
+  const { totalItems, setIsOpen } = useCart();
+
+  return (
+    <>
+      <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border/50">
+        <div className="container-eco flex items-center justify-between h-16 md:h-20">
+          
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2">
-            <img alt="Ecoland" className="h-10 md:h-12 w-auto rounded-lg" src={logoEcoland} />
+          <Link to="/" className="flex items-center gap-3 group">
+            <img 
+              src={logoEcoland} 
+              alt="Ecoland" 
+              className="h-10 md:h-12 w-auto rounded-lg object-contain transition-transform group-hover:scale-105" 
+            />
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-6">
-            {navLinks.map(link => <Link key={link.to} to={link.to} className={`flex items-center gap-1.5 text-sm font-medium transition-colors hover:text-primary ${location.pathname === link.to ? 'text-primary' : 'text-foreground/70'}`}>
-                <link.icon className="h-4 w-4" />
-                {link.label}
-              </Link>)}
+          <nav className="hidden xl:flex items-center gap-1">
+            {navLinks.map((link) => {
+              const Icon = link.icon;
+              const isActive = location.pathname === link.to;
+              return (
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  className={`px-3 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
+                    isActive
+                      ? 'bg-emerald-900 text-white shadow-xs'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'
+                  }`}
+                >
+                  <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-emerald-700'}`} />
+                  {link.label}
+                </Link>
+              );
+            })}
           </nav>
 
-          {/* Actions */}
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" className="relative" onClick={() => setIsOpen(true)}>
-              <ShoppingBag className="h-5 w-5" />
-              {totalItems > 0 && <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center font-medium">
-                  {totalItems}
-                </span>}
+          {/* Actions: Search, User, Cart, Mobile Menu */}
+          <div className="flex items-center gap-1.5 md:gap-2">
+            
+            {/* Buscador Rápido Omnipresente */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsSearchOpen(true)}
+              className="text-slate-700 hover:text-emerald-900 hover:bg-emerald-50 rounded-xl"
+              title="Buscar productos (avena, legumbres, quinoa...)"
+            >
+              <Search className="w-5 h-5" />
             </Button>
+
+            {/* Usuario / Cuenta */}
             <Link to="/cuenta">
-              <Button variant="ghost" size="icon" className="hidden md:flex">
-                <User className="h-5 w-5" />
+              <Button 
+                variant="ghost" 
+                size="icon"
+                className="text-slate-700 hover:text-emerald-900 hover:bg-emerald-50 rounded-xl"
+                title="Mi cuenta"
+              >
+                <User className="w-5 h-5" />
               </Button>
             </Link>
-            <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setIsMenuOpen(true)}>
-              <Menu className="h-6 w-6" />
+
+            {/* Carrito con Contador Dinámico */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsOpen(true)}
+              className="relative text-slate-700 hover:text-emerald-900 hover:bg-emerald-50 rounded-xl"
+              title="Ver cesta de la compra"
+            >
+              <ShoppingBag className="w-5 h-5" />
+              {totalItems > 0 && (
+                <motion.span 
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="absolute -top-1 -right-1 w-5 h-5 bg-emerald-700 text-white text-[11px] font-black rounded-full flex items-center justify-center shadow-xs"
+                >
+                  {totalItems}
+                </motion.span>
+              )}
             </Button>
+
+            {/* Mobile Menu Button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="xl:hidden text-slate-700 rounded-xl"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </Button>
+
           </div>
         </div>
-      </div>
-    </header>
 
-    {/* Mobile Menu - outside header to avoid glass transparency */}
-    <AnimatePresence>
-      {isMenuOpen && <>
-          <motion.div initial={{
-        opacity: 0
-      }} animate={{
-        opacity: 1
-      }} exit={{
-        opacity: 0
-      }} className="fixed inset-0 bg-foreground/20 z-50 lg:hidden" onClick={() => setIsMenuOpen(false)} />
-          <motion.div initial={{
-        x: '100%'
-      }} animate={{
-        x: 0
-      }} exit={{
-        x: '100%'
-      }} transition={{
-        type: 'spring',
-        damping: 25,
-        stiffness: 200
-      }} className="fixed top-0 right-0 bottom-0 w-80 z-50 lg:hidden shadow-xl border-l border-border" style={{ backgroundColor: 'hsl(var(--card))' }}>
-            <div className="p-4 flex justify-end">
-              <Button variant="ghost" size="icon" onClick={() => setIsMenuOpen(false)}>
-                <X className="h-6 w-6" />
-              </Button>
-            </div>
-            <nav className="px-6 py-4 space-y-4">
-              {navLinks.map(link => <Link key={link.to} to={link.to} onClick={() => setIsMenuOpen(false)} className={`block text-lg font-medium py-2 transition-colors ${location.pathname === link.to ? 'text-primary' : 'text-foreground/70'}`}>
-                  {link.label}
-                </Link>)}
-              <div className="pt-4 border-t">
-                <Link to="/cuenta" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-2 text-lg font-medium py-2">
-                  <User className="h-5 w-5" />
-                  Mi cuenta
-                </Link>
-              </div>
-            </nav>
-          </motion.div>
-        </>}
-    </AnimatePresence>
-  </>;
+        {/* Mobile Navigation Dropdown */}
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="xl:hidden border-t bg-background/98 backdrop-blur-lg px-4 py-4 space-y-1 shadow-lg"
+            >
+              {navLinks.map((link) => {
+                const Icon = link.icon;
+                const isActive = location.pathname === link.to;
+                return (
+                  <Link
+                    key={link.to}
+                    to={link.to}
+                    onClick={() => setIsMenuOpen(false)}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
+                      isActive
+                        ? 'bg-emerald-900 text-white'
+                        : 'text-muted-foreground hover:bg-muted'
+                    }`}
+                  >
+                    <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-emerald-700'}`} />
+                    {link.label}
+                  </Link>
+                );
+              })}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </header>
+
+      {/* Modal de Búsqueda Rápida Omnipresente */}
+      <QuickSearchModal 
+        isOpen={isSearchOpen} 
+        onClose={() => setIsSearchOpen(false)} 
+      />
+    </>
+  );
 };
+
+export default Header;
