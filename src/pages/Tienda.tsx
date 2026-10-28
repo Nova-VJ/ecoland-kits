@@ -14,6 +14,8 @@ import {
   CatalogPack 
 } from '@/data/catalog';
 import { useCart } from '@/context/CartContext';
+import { useCatalog } from '@/context/CatalogContext';
+import { RefreshCw, Radio } from 'lucide-react';
 
 const productTags = [
   { id: 'bio', label: 'Bio' },
@@ -40,15 +42,29 @@ const packCategories = [
 ];
 
 const Tienda = () => {
+  const { products, isLiveSync, isSyncing, refreshCatalog } = useCatalog();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [selectedTags, setSelectedTags] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('ecoland-diet-tags');
+      return saved ? JSON.parse(saved) : [];
+    } catch { return []; }
+  });
   const [showFilters, setShowFilters] = useState(false);
+
+  const handleDietToggle = (tagId: string) => {
+    setSelectedTags(prev => {
+      const updated = prev.includes(tagId) ? prev.filter(t => t !== tagId) : [...prev, tagId];
+      try { localStorage.setItem('ecoland-diet-tags', JSON.stringify(updated)); } catch {}
+      return updated;
+    });
+  };
   const [activeTab, setActiveTab] = useState<'productos' | 'packs'>('productos');
   const { addCatalogProduct, addCatalogPack } = useCart();
 
   const filteredProducts = useMemo(() => {
-    return allCatalogProducts.filter(product => {
+    return products.filter(product => {
       const matchesSearch = searchQuery === '' || 
         product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         product.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -124,7 +140,7 @@ const Tienda = () => {
               Tienda <span className="gradient-text">Ecológica</span>
             </h1>
             <p className="text-muted-foreground text-lg">
-              Más de 120 productos ecológicos y 24 packs temáticos para tu bienestar
+              Más de 1.000 productos ecológicos certificados y 24 packs temáticos con trazabilidad real
             </p>
           </motion.div>
         </div>
@@ -145,23 +161,23 @@ const Tienda = () => {
         </Tabs>
 
         {/* Search and Filter Bar */}
-        <div className="flex flex-col md:flex-row gap-4 mb-8">
+        <div className="flex flex-col md:flex-row gap-4 mb-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input
-              placeholder={activeTab === 'productos' ? "Buscar productos..." : "Buscar packs..."}
+              placeholder={activeTab === 'productos' ? "Buscar entre más de 1.000 productos bio (ej. avena, matcha, quinoa, lentejas)..." : "Buscar packs temáticos..."}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
+              className="pl-10 h-11 text-base shadow-sm"
             />
           </div>
           <Button
             variant="outline"
             onClick={() => setShowFilters(!showFilters)}
-            className="md:w-auto"
+            className="md:w-auto h-11"
           >
             <Filter className="h-4 w-4 mr-2" />
-            Filtros
+            Filtros avanzados
             {hasActiveFilters && (
               <Badge className="ml-2 bg-primary text-primary-foreground">
                 {(selectedCategory ? 1 : 0) + selectedTags.length}
@@ -169,10 +185,46 @@ const Tienda = () => {
             )}
           </Button>
           {hasActiveFilters && (
-            <Button variant="ghost" onClick={clearFilters}>
+            <Button variant="ghost" onClick={() => { clearFilters(); try { localStorage.removeItem('ecoland-diet-tags'); } catch {} }} className="h-11">
               <X className="h-4 w-4 mr-2" />
-              Limpiar
+              Limpiar filtros
             </Button>
+          )}
+        </div>
+
+        {/* Barra de Perfil Alimentario / Dietas Rápidas */}
+        <div className="mb-8 p-3 rounded-2xl bg-primary/5 border border-primary/10 flex flex-wrap items-center gap-2">
+          <span className="text-xs font-semibold text-primary uppercase tracking-wider flex items-center gap-1.5 mr-2">
+            🌱 Mi Perfil Alimentario:
+          </span>
+          {[
+            { id: 'sin-gluten', label: '🌾 Sin Gluten', desc: 'Apto celíacos' },
+            { id: 'vegano', label: '🌱 100% Vegano', desc: 'Plant-based' },
+            { id: 'proteina', label: '💪 Rico en Proteína', desc: 'Fuerza y saciedad' },
+            { id: 'sin-azucar', label: '🚫 Sin Azúcar Añadido', desc: 'Índice glucémico bajo' },
+            { id: 'bio', label: '✨ 100% Bio Certificado', desc: 'Euro-hoja' }
+          ].map(diet => {
+            const isActive = selectedTags.includes(diet.id);
+            return (
+              <button
+                key={diet.id}
+                onClick={() => handleDietToggle(diet.id)}
+                className={`text-xs px-3 py-1.5 rounded-full font-medium transition-all duration-200 border flex items-center gap-1 ${
+                  isActive 
+                    ? 'bg-primary text-primary-foreground border-primary shadow-sm scale-105' 
+                    : 'bg-background hover:bg-muted text-muted-foreground border-muted-foreground/20'
+                }`}
+                title={diet.desc}
+              >
+                {diet.label}
+                {isActive && <span className="ml-1 text-[10px]">✓</span>}
+              </button>
+            );
+          })}
+          {selectedTags.length > 0 && (
+            <span className="text-xs text-muted-foreground ml-auto hidden sm:inline">
+              Filtro persistente activo ({selectedTags.length} seleccionados)
+            </span>
           )}
         </div>
 

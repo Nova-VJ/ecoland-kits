@@ -128,6 +128,16 @@ const AdminDashboard = () => {
             </div>
           </div>
 
+          <div className="mb-6 flex justify-end">
+            <Button
+              onClick={() => navigate('/admin/product-insights')}
+              className="bg-emerald-900 hover:bg-emerald-800 text-white rounded-xl font-bold text-xs gap-2"
+            >
+              <TrendingUp className="h-4 w-4" />
+              <span>Laboratorio Product Insights (P2.5)</span>
+            </Button>
+          </div>
+
           {/* Stats Cards */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             <div className="bg-card rounded-xl p-6 border">

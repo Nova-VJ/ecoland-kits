@@ -1,0 +1,53 @@
+import { describe, it, expect, beforeEach } from 'vitest';
+import { ecoCoachService } from './ecoCoachService';
+import { dailyNutritionStore } from './dailyNutritionStore';
+
+describe('EcoCoach Contextual Service (P2-A)', () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  it('1. Responde a "¿Qué debería consumir antes de que se estropee?" priorizando alimentos que vencen pronto', () => {
+    const res = ecoCoachService.queryCoach({ text: '¿Qué debería consumir antes de que se estropee?' });
+    expect(res).toBeDefined();
+    expect(res.infoType).toBe('SUGERENCIA');
+    expect(res.dataGrounding).toContain('despensa');
+    expect(res.recipeCard).toBeDefined();
+    expect(res.actions.some(a => a.type === 'use_pantry' || a.type === 'cook')).toBe(true);
+  });
+
+  it('2. Evalúa balance proteico cuando se pregunta "¿Tengo suficiente proteína hoy?" sin inventar datos', () => {
+    const res = ecoCoachService.queryCoach({ text: '¿Tengo suficiente proteína hoy?' });
+    expect(res).toBeDefined();
+    expect(['DATO', 'SUGERENCIA']).toContain(res.infoType);
+    expect(res.dataGrounding).toContain('diario');
+  });
+
+  it('3. Resuelve consultas de tiempo limitado: "Me quedan 15 minutos, ¿qué hago?"', () => {
+    const res = ecoCoachService.queryCoach({ text: 'Me quedan 15 minutos, ¿qué hago?' });
+    expect(res.recipeCard).toBeDefined();
+    expect(res.recipeCard?.prepTimeMinutes).toBeLessThanOrEqual(15);
+    expect(res.recipeCard?.allPantryAvailable).toBe(true);
+  });
+
+  it('4. Ejecuta acción [REGISTRAR EN MI DÍA] cerrando el bucle en el diario', () => {
+    const initialLogsCount = dailyNutritionStore.getTodayLogs().length;
+    const actionResult = ecoCoachService.executeAction({
+      id: 'test_act',
+      label: 'Registrar en mi día',
+      type: 'log_diary',
+      payload: { title: 'Plato Test EcoCoach', cals: 350, prot: 15, fiber: 8, meal: 'cena' }
+    });
+
+    expect(actionResult.success).toBe(true);
+    const newLogs = dailyNutritionStore.getTodayLogs();
+    expect(newLogs.length).toBe(initialLogsCount + 1);
+    expect(newLogs.some(log => log.name.includes('Plato Test EcoCoach'))).toBe(true);
+  });
+
+  it('5. Sugiere tres cenas baratas calculando ingredientes de despensa para coste extra 0€', () => {
+    const res = ecoCoachService.queryCoach({ text: 'Ayúdame a planificar tres cenas baratas' });
+    expect(res.message).toContain('0,00 €');
+    expect(res.actions.some(a => a.type === 'add_to_plan')).toBe(true);
+  });
+});

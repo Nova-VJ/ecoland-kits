@@ -72,8 +72,8 @@ const Terminos = () => {
 
               <h3 className="text-xl font-semibold mt-6 mb-3">Costes de envío</h3>
               <ul className="list-disc pl-6 text-muted-foreground space-y-2">
-                <li><strong>Península:</strong> 4,95€ (gratis a partir de 49€)</li>
-                <li><strong>Baleares:</strong> 7,95€ (gratis a partir de 69€)</li>
+                <li><strong>Península:</strong> 4,90€ (gratis a partir de 49€)</li>
+                <li><strong>Baleares:</strong> 8,90€ (gratis a partir de 85€, solo no perecederos)</li>
                 <li><strong>Canarias, Ceuta y Melilla:</strong> Consultar</li>
               </ul>
 
