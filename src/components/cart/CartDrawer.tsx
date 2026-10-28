@@ -37,6 +37,30 @@ export const CartDrawer = () => {
               </Button>
             </div>
 
+            {/* Envío gratis progress bar */}
+            {items.length > 0 && (
+              <div className="bg-primary/5 px-4 py-2.5 border-b text-xs">
+                {totalPrice >= 45 ? (
+                  <div className="flex items-center gap-2 text-primary font-medium">
+                    <span>✨ ¡Enhorabuena! Tienes <strong>Envío Gratuito</strong> a domicilio o tienda física.</span>
+                  </div>
+                ) : (
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between items-center text-muted-foreground">
+                      <span>Te faltan <strong className="text-foreground">{(45 - totalPrice).toFixed(2)}€</strong> para <strong>Envío Gratis</strong></span>
+                      <span className="font-semibold text-primary">{Math.min(100, Math.round((totalPrice / 45) * 100))}%</span>
+                    </div>
+                    <div className="w-full bg-muted rounded-full h-1.5 overflow-hidden">
+                      <div 
+                        className="bg-primary h-full rounded-full transition-all duration-300" 
+                        style={{ width: `${Math.min(100, (totalPrice / 45) * 100)}%` }} 
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Items */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
               {items.length === 0 ? (
@@ -213,26 +237,47 @@ export const CartDrawer = () => {
 
             {/* Footer */}
             {items.length > 0 && (
-              <div className="p-4 border-t space-y-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground">Subtotal</span>
-                  <span className="text-xl font-display font-semibold">
+              <div className="p-4 border-t space-y-3 bg-muted/20">
+                <div className="p-2.5 rounded-lg bg-background border text-xs space-y-1 text-muted-foreground">
+                  <div className="flex justify-between items-center font-medium text-foreground">
+                    <span className="flex items-center gap-1.5">🌱 100% Ecológico Certificado</span>
+                    <span className="text-primary font-semibold">+{Math.floor(totalPrice)} EcoPuntos</span>
+                  </div>
+                  <p className="text-[11px] leading-tight">Garantía de frescura bio directa de tienda física y productores locales.</p>
+                </div>
+
+                <div className="flex justify-between items-center pt-1">
+                  <span className="text-muted-foreground text-sm">Subtotal estimado</span>
+                  <span className="text-2xl font-display font-bold text-foreground">
                     {totalPrice.toFixed(2)}€
                   </span>
                 </div>
+
                 <Button 
-                  className="w-full btn-hero"
+                  className="w-full btn-hero text-base py-6 shadow-md"
                   onClick={() => setIsOpen(false)}
                   asChild
                 >
-                  <Link to="/checkout">Finalizar compra</Link>
+                  <Link to="/checkout">Finalizar compra segura ➔</Link>
                 </Button>
+
+                <div className="flex items-center justify-center gap-3 text-[11px] text-muted-foreground pt-1">
+                  <span>🔒 Pago seguro SSL</span>
+                  <span>•</span>
+                  <span>⚡ Bizum</span>
+                  <span>•</span>
+                  <span>🍏 Apple Pay</span>
+                  <span>•</span>
+                  <span>💳 Tarjeta</span>
+                </div>
+
                 <Button 
-                  variant="outline" 
-                  className="w-full"
+                  variant="ghost" 
+                  size="sm"
+                  className="w-full text-xs text-muted-foreground hover:text-foreground"
                   onClick={() => setIsOpen(false)}
                 >
-                  Seguir comprando
+                  ← Seguir explorando la tienda
                 </Button>
               </div>
             )}
