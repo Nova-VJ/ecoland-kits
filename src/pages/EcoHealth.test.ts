@@ -1,8 +1,13 @@
 import { describe, it, expect } from 'vitest';
 
-describe('EcoHealth Calculations & Boundaries (Auditoría Médica y Nutricional)', () => {
-  // Fórmula Mifflin-St Jeor implementada en EcoHealth
-  const calculateMifflinStJeor = (
+describe('EcoHealth — Estimaciones Energéticas y Protección contra Ingestas Restrictivas', () => {
+  /**
+   * Cálculo de estimación de gasto energético (Mifflin-St Jeor).
+   * No prescribe dietas extremas ni fija fronteras médicas universales.
+   * Si la ingesta estimada es potencialmente muy restrictiva, genera advertencia y
+   * recomienda consultar a un profesional sanitario colegiado.
+   */
+  const evaluateEnergeticEstimate = (
     gender: 'hombre' | 'mujer',
     weightKg: number,
     heightCm: number,
@@ -17,53 +22,62 @@ describe('EcoHealth Calculations & Boundaries (Auditoría Médica y Nutricional)
     const tdee = Math.round(bmr * activityFactor);
 
     let target = tdee;
-    if (goal === 'perder') target = Math.round(tdee - 400);
-    if (goal === 'ganar') target = Math.round(tdee + 350);
+    if (goal === 'perder') target = Math.round(tdee - 350); // Déficit moderado prudente
+    if (goal === 'ganar') target = Math.round(tdee + 300);
 
-    // Límite de seguridad fisiológica para evitar dietas de inanición
-    const safetyFloor = gender === 'hombre' ? 1400 : 1200;
+    // Detección de ingesta potencialmente muy restrictiva
+    const isPotentiallyRestrictive = 
+      (gender === 'hombre' && target < 1500) ||
+      (gender === 'mujer' && target < 1200) ||
+      (tdee - target > 500);
+
     return {
       bmr,
       tdee,
-      target: Math.max(safetyFloor, target)
+      estimatedTarget: target,
+      isPotentiallyRestrictive,
+      recommendation: isPotentiallyRestrictive
+        ? 'Aviso: La ingesta estimada resultante puede ser excesivamente restrictiva. Se recomienda consultar con un médico o dietista-nutricionista colegiado.'
+        : 'Estimación orientativa de mantenimiento o ajuste moderado.'
     };
   };
 
-  it('should calculate accurate BMR and TDEE for male profile', () => {
-    // Hombre, 75kg, 180cm, 30 años, actividad moderada (1.55)
-    // BMR = 10*75 + 6.25*180 - 5*30 + 5 = 750 + 1125 - 150 + 5 = 1730 kcal
-    // TDEE = 1730 * 1.55 = 2681.5 -> 2682 kcal
-    const res = calculateMifflinStJeor('hombre', 75, 180, 30, 1.55, 'mantener');
+  it('debe calcular estimaciones precisas de BMR y TDEE para perfil masculino', () => {
+    const res = evaluateEnergeticEstimate('hombre', 75, 180, 30, 1.55, 'mantener');
     expect(res.bmr).toBe(1730);
     expect(res.tdee).toBe(2682);
-    expect(res.target).toBe(2682);
+    expect(res.isPotentiallyRestrictive).toBe(false);
   });
 
-  it('should calculate accurate BMR and TDEE for female profile', () => {
-    // Mujer, 60kg, 165cm, 28 años, actividad ligera (1.375)
-    // BMR = 10*60 + 6.25*165 - 5*28 - 161 = 600 + 1031.25 - 140 - 161 = 1330.25 -> 1330 kcal
-    // TDEE = 1330 * 1.375 = 1828.75 -> 1829 kcal
-    const res = calculateMifflinStJeor('mujer', 60, 165, 28, 1.375, 'mantener');
+  it('debe calcular estimaciones precisas de BMR y TDEE para perfil femenino', () => {
+    const res = evaluateEnergeticEstimate('mujer', 60, 165, 28, 1.375, 'mantener');
     expect(res.bmr).toBe(1330);
     expect(res.tdee).toBe(1829);
+    expect(res.isPotentiallyRestrictive).toBe(false);
   });
 
-  it('should apply controlled deficit and protect against unsafe caloric floors', () => {
-    // Mujer muy sedentaria con bajo peso
-    const res = calculateMifflinStJeor('mujer', 45, 150, 40, 1.2, 'perder');
-    // Incluso con déficit de 400 kcal, nunca debe prescribir menos de 1200 kcal
-    expect(res.target).toBeGreaterThanOrEqual(1200);
+  it('debe detectar ingesta potencialmente muy restrictiva y generar aviso de consulta profesional en lugar de fijar un límite rígido', () => {
+    // Caso de persona sedentaria con bajo peso intentando un déficit
+    const res = evaluateEnergeticEstimate('mujer', 44, 150, 42, 1.2, 'perder');
+    
+    // TDEE = 10*44 + 6.25*150 - 5*42 - 161 = 440 + 937.5 - 210 - 161 = 1006.5 * 1.2 = 1208 kcal
+    // Al restar 350, daría ~858 kcal -> Ingesta severamente restrictiva
+    expect(res.isPotentiallyRestrictive).toBe(true);
+    expect(res.recommendation).toContain('médico o dietista-nutricionista colegiado');
   });
 
-  it('should validate Harvard Plate macronutrient quadrant targets', () => {
-    const harvardRatios = {
+  it('debe mantener las proporciones visuales del Plato Saludable (50% / 25% / 25%) como referencia de composición', () => {
+    const visualPlateProportions = {
       vegetablesFruits: 0.50,
       wholeGrains: 0.25,
       healthyProteins: 0.25
     };
 
-    const sum = harvardRatios.vegetablesFruits + harvardRatios.wholeGrains + harvardRatios.healthyProteins;
+    const sum = visualPlateProportions.vegetablesFruits + 
+                visualPlateProportions.wholeGrains + 
+                visualPlateProportions.healthyProteins;
+
     expect(sum).toBe(1.0);
-    expect(harvardRatios.vegetablesFruits).toBe(0.50);
+    expect(visualPlateProportions.vegetablesFruits).toBe(0.50);
   });
 });

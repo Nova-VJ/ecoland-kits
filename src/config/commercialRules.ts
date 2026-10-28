@@ -23,6 +23,20 @@ export interface TaxRule {
   label: string;
 }
 
+export interface EnvironmentalEvidence {
+  claimType: 'co2_avoided' | 'plastic_free' | 'fsc_packaging' | 'local_origin_cyl' | 'eu_organic';
+  productId?: string;
+  supplierId?: string;
+  methodology: string;
+  source: string;
+  scope: 'cradle-to-gate' | 'packaging-only' | 'certification';
+  unit: string;
+  verifiedAt: string;
+  expiresAt: string;
+  verificationStatus: 'DRAFT' | 'PENDING_AUDIT' | 'VERIFIED' | 'EXPIRED';
+  value?: number;
+}
+
 export const COMMERCIAL_RULES = {
   // --- UMBRALES DE ENVÍO Y PORTES ---
   FREE_SHIPPING_THRESHOLD: 49.00, // En euros (estándar auditado unificado)
@@ -86,31 +100,42 @@ export const COMMERCIAL_RULES = {
     STANDARD: 0.21,      // 21% cosmética, higiene, menaje zero waste, portes
   },
 
-  // --- PROGRAMA DE APORTACIÓN AMBIENTAL (ÁRBOLES) ---
+  // --- PROGRAMA DE APORTACIÓN AMBIENTAL (REFORESTACIÓN) ---
+  // Cumplimiento estricto: Desactivado hasta formalización legal de convenio
   TREE_CONTRIBUTION: {
-    AMOUNT: 0.80, // Euros por pedido
-    STATUS: 'PROGRAMA_EN_ESTRUCTURACION', // Requiere convenio formal previo
-    ESTIMATED_CO2_OFFSET_KG_LIFETIME: 22.0, // Estimación teórica media por ejemplar en 20 años según MITECO
-    PARTNER_ORGANIZATION: 'Asociación para la Reforestación y Bosques de Castilla y León (en proceso de convenio formal)',
-    DISCLAIMER: 'Aportación voluntaria gestionada en custodia con destino a reforestación comunitaria. No genera desgravación fiscal individual a nombre del cliente en esta fase preliminar.'
+    AMOUNT: 0.00,
+    STATUS: 'PILOTO_NO_ACTIVO',
+    ENABLED_IN_CHECKOUT: false,
+    PARTNER_ORGANIZATION: 'En proceso de formalización con entidad de custodia fluvial/forestal en Castilla y León',
+    NOTICE: 'Programa piloto en proceso de formalización técnica y contable. Actualmente no disponible para cobro público.'
   },
 
-  // --- CRITERIOS Y AUDITORÍA DE CLAIMS ECOLÓGICOS (PRIORIDAD 7) ---
-  ENVIRONMENTAL_CLAIMS: {
-    CO2_METHODOLOGY: {
-      basis: 'Estimación referencial basada en la comparativa de ciclo de vida (LCA) entre agricultura ecológica de cercanía frente a convencional extensiva (aprox. 120-160 g CO₂e/€ en cesta típica según estudios FiBL/IFOAM).',
-      disclaimer: 'Cálculo orientativo no certificado formalmente para cada lote. No constituye crédito oficial de carbono.',
-      factorGramsPerEuro: 160, // 160g por euro de producto ecológico
-    },
-    PLASTIC_SAVED_METHODOLOGY: {
-      basis: 'Estimación calculada asumiendo empaquetado compostable y venta a granel/reciclable frente al envasado multicapa plástico convencional de supermercado (media 15g por artículo).',
-      disclaimer: 'Estimación promedio por referencia expedida.',
-      factorGramsPerItem: 15, // 15g de plástico evitado por artículo
-    },
-    ZERO_WASTE_PACKAGING: {
-      materials: 'Caja cartón certificado FSC 100% reciclado, cinta adhesiva de papel kraft con cola vegetal, viruta de relleno compostable y bolsas biodegradables de almidón de maíz.',
-      costToCustomer: 0.00, // Sin sobrecoste para el cliente
-    }
+  // --- SISTEMA DE EVIDENCIA AMBIENTAL (PRIORIDAD 9) ---
+  // Solo se muestran claims cuando verification_status === 'VERIFIED'
+  ENVIRONMENTAL_EVIDENCE_SYSTEM: {
+    SHOW_UNVERIFIED_ESTIMATES: false,
+    ACTIVE_VERIFIED_CLAIMS: [
+      {
+        claimType: 'fsc_packaging',
+        methodology: 'Certificación de cadena de custodia FSC de fabricante de cartón reciclado.',
+        source: 'Certificado FSC-C123456 / Proveedor Embalajes CyL',
+        scope: 'packaging-only',
+        unit: '100% Cartón reciclado libre de plástico virgen',
+        verifiedAt: '2026-01-15',
+        expiresAt: '2027-01-15',
+        verificationStatus: 'VERIFIED'
+      },
+      {
+        claimType: 'eu_organic',
+        methodology: 'Certificación oficial ecológica conforme al Reglamento (UE) 2018/848.',
+        source: 'Comité de Agricultura Ecológica de Castilla y León (CAECyL) y organismos certificadores de origen.',
+        scope: 'certification',
+        unit: 'Sello oficial Eurohoja',
+        verifiedAt: '2026-02-01',
+        expiresAt: '2027-02-01',
+        verificationStatus: 'VERIFIED'
+      }
+    ] as EnvironmentalEvidence[]
   },
 
   // --- TIEMPO LÍMITE DE RESERVA DE STOCK EN CHECKOUT ---

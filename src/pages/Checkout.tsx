@@ -539,28 +539,18 @@ export const Checkout = () => {
                     />
                   </div>
 
-                  <div className="flex items-center justify-between p-3 rounded-2xl bg-teal-50/70 border border-teal-200/60 text-xs">
+                  <div className="flex items-center justify-between p-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs">
                     <div className="flex items-center gap-2">
-                      <TreeDeciduous className="h-4 w-4 text-teal-700 shrink-0" />
+                      <TreeDeciduous className="h-4 w-4 text-slate-500 shrink-0" />
                       <div>
-                        <strong className="block text-slate-900 text-xs">Aportación voluntaria a reforestación (+{COMMERCIAL_RULES.TREE_CONTRIBUTION.AMOUNT.toFixed(2)}€)</strong>
-                        <span className="text-[11px] text-teal-900 leading-snug block">
-                          Programa piloto de custodia comunitaria en Castilla y León.
+                        <strong className="block text-slate-700 text-xs">Reforestación Comunitaria en Castilla y León</strong>
+                        <span className="text-[11px] text-slate-500 leading-snug block">
+                          {COMMERCIAL_RULES.TREE_CONTRIBUTION.NOTICE}
                         </span>
                       </div>
                     </div>
-                    <input 
-                      type="checkbox" 
-                      checked={plantTree} 
-                      onChange={(e) => setPlantTree(e.target.checked)}
-                      className="rounded text-teal-800 focus:ring-teal-700 shrink-0 ml-2"
-                    />
+                    <Badge variant="outline" className="text-[10px] text-slate-500 font-normal">Piloto en trámite</Badge>
                   </div>
-                  {plantTree && (
-                    <p className="text-[10px] text-slate-400 italic px-2">
-                      *{COMMERCIAL_RULES.TREE_CONTRIBUTION.DISCLAIMER}
-                    </p>
-                  )}
 
                   <Button 
                     onClick={() => {
@@ -722,24 +712,27 @@ export const Checkout = () => {
               })}
             </div>
 
-            {/* Impacto Ambiental Sostenible (Auditado) */}
+            {/* Garantías de Sostenibilidad Oficialmente Verificadas (Prioridad 9) */}
             <div className="p-3.5 rounded-2xl bg-emerald-950 text-white space-y-2 text-xs">
               <span className="text-[10px] uppercase font-bold text-emerald-400 block tracking-wider">
-                Impacto Positivo Estimado
+                Garantías de Sostenibilidad Verificadas
               </span>
-              <div className="grid grid-cols-2 gap-2 text-[11px]">
-                <div className="bg-emerald-900/60 p-2 rounded-xl border border-emerald-800">
-                  <span className="text-emerald-300 block text-[10px]">CO₂ evitado (est.)</span>
-                  <strong className="font-mono text-white text-xs">~{estimatedCo2} kg CO₂e</strong>
+              <div className="space-y-1.5 text-[11px]">
+                <div className="bg-emerald-900/60 p-2 rounded-xl border border-emerald-800 flex items-center gap-2">
+                  <ShieldCheck className="h-4 w-4 text-emerald-300 shrink-0" />
+                  <div>
+                    <strong className="block text-white text-[11px]">100% Certificación Bio Oficial (Eurohoja)</strong>
+                    <span className="text-[10px] text-emerald-300">Reglamento (UE) 2018/848 sin transgénicos ni pesticidas sintéticos.</span>
+                  </div>
                 </div>
-                <div className="bg-emerald-900/60 p-2 rounded-xl border border-emerald-800">
-                  <span className="text-emerald-300 block text-[10px]">Reforestación</span>
-                  <strong className="text-white text-xs">{plantTree ? '🌳 +1 Árbol' : 'Sin aportación'}</strong>
+                <div className="bg-emerald-900/60 p-2 rounded-xl border border-emerald-800 flex items-center gap-2">
+                  <Leaf className="h-4 w-4 text-emerald-300 shrink-0" />
+                  <div>
+                    <strong className="block text-white text-[11px]">Embalaje FSC 100% Libre de Plástico Virgen</strong>
+                    <span className="text-[10px] text-emerald-300">Cartón reciclado y viruta vegetal compostable certificada.</span>
+                  </div>
                 </div>
               </div>
-              <p className="text-[9px] text-emerald-300/80 leading-tight">
-                *Metodología de estimación basada en estudios comparativos de ciclo de vida agroecológico (LCA).
-              </p>
             </div>
 
             {/* Desglose Económico Centralizado */}

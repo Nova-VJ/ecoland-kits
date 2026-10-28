@@ -593,7 +593,7 @@ export const HarvardPlateInteractive = ({ onGoToStore }: HarvardPlateProps) => {
               </h3>
             </div>
             <p className="text-xs text-slate-500 mt-1">
-              Selecciona el periodo que deseas calcular. El plato dimensionará los kilos y raciones que tu hogar necesita para estar 100% cubierto.
+              Estimación de aprovisionamiento de Ecoland basada en las preferencias y cantidades configuradas por el usuario. La proporción visual 50% vegetales, 25% cereales y 25% proteínas sirve como guía de composición culinaria, no como prescripción médica individual.
             </p>
           </div>
 

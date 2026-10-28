@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Minus, Trash2, ShoppingBag, Leaf, ShieldCheck, Check, Info } from 'lucide-react';
+import { X, Plus, Minus, Trash2, ShoppingBag, Leaf, ShieldCheck, Check, Info, Box } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart, PackCartItem, ProductCartItem, CatalogProductCartItem, CatalogPackCartItem } from '@/context/CartContext';
 import { Link } from 'react-router-dom';
@@ -15,9 +15,8 @@ export const CartDrawer = () => {
   const freeThreshold = COMMERCIAL_RULES.FREE_SHIPPING_THRESHOLD;
   const progressPercent = Math.min(100, Math.round((totalPrice / freeThreshold) * 100));
 
-  // Estimación ambiental auditada según metodología documental (Prioridad 7)
-  const estimatedCo2SavedKg = ((totalPrice * COMMERCIAL_RULES.ENVIRONMENTAL_CLAIMS.CO2_METHODOLOGY.factorGramsPerEuro) / 1000).toFixed(1);
-  const estimatedPlasticSavedGrams = totalItems * COMMERCIAL_RULES.ENVIRONMENTAL_CLAIMS.PLASTIC_SAVED_METHODOLOGY.factorGramsPerItem;
+  // Evidencias ambientales verificadas (Prioridad 9: solo claims VERIFIED)
+  const verifiedClaims = COMMERCIAL_RULES.ENVIRONMENTAL_EVIDENCE_SYSTEM.ACTIVE_VERIFIED_CLAIMS;
 
   return (
     <AnimatePresence>
@@ -331,32 +330,34 @@ export const CartDrawer = () => {
             {/* Footer */}
             {items.length > 0 && (
               <div className="p-4 border-t bg-card space-y-3">
-                {/* Environmental Impact Box (Prioridad 7: Claim auditado y metodología declarada) */}
+                {/* Environmental Evidence Box (Prioridad 9: Solo claims con verification_status = VERIFIED) */}
                 <div className="p-3 rounded-2xl bg-emerald-50/80 border border-emerald-200/60 space-y-2">
                   <div className="flex items-center justify-between text-xs">
                     <span className="font-bold text-emerald-950 flex items-center gap-1.5">
                       <Leaf className="h-4 w-4 text-emerald-700" />
-                      Impacto Estimado de tu Cesta
+                      Garantías Ecológicas Verificadas
                     </span>
                     <span className="text-emerald-800 font-mono text-[11px] bg-emerald-100 px-2 py-0.5 rounded-full font-bold">
                       +{Math.floor(totalPrice)} EcoPuntos
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2 pt-1 text-[11px]">
-                    <div className="p-2 rounded-xl bg-white/80 border border-emerald-100">
-                      <span className="text-slate-500 block text-[10px]">CO₂ evitado (est.)*</span>
-                      <strong className="text-emerald-950 font-mono">~{estimatedCo2SavedKg} kg CO₂e</strong>
+                  <div className="space-y-1.5 pt-1 text-[11px]">
+                    <div className="p-2 rounded-xl bg-white/90 border border-emerald-100 flex items-center gap-2">
+                      <Box className="h-4 w-4 text-emerald-700 shrink-0" />
+                      <div>
+                        <strong className="block text-slate-800 text-[10px]">Embalaje 100% Sostenible FSC</strong>
+                        <span className="text-[10px] text-slate-500">Cartón reciclado y viruta vegetal compostable (Sin plástico virgen).</span>
+                      </div>
                     </div>
-                    <div className="p-2 rounded-xl bg-white/80 border border-emerald-100">
-                      <span className="text-slate-500 block text-[10px]">Plástico evitado*</span>
-                      <strong className="text-emerald-950 font-mono">~{estimatedPlasticSavedGrams}g virgen</strong>
+                    <div className="p-2 rounded-xl bg-white/90 border border-emerald-100 flex items-center gap-2">
+                      <ShieldCheck className="h-4 w-4 text-emerald-700 shrink-0" />
+                      <div>
+                        <strong className="block text-slate-800 text-[10px]">Alimentación Certificada UE (Eurohoja)</strong>
+                        <span className="text-[10px] text-slate-500">Garantía oficial libre de pesticidas sintéticos y transgénicos.</span>
+                      </div>
                     </div>
                   </div>
-
-                  <p className="text-[9px] text-slate-400 leading-tight">
-                    *Estimación orientativa (LCA FiBL/IFOAM 160g CO₂e/€ y 15g plástico/artículo). No constituye certificación individual de compensación.
-                  </p>
 
                   {/* Opción Packaging 100% Sin Plástico */}
                   <label className="flex items-center gap-2 pt-1.5 cursor-pointer text-[11px] text-slate-700 border-t border-emerald-100">
@@ -366,7 +367,7 @@ export const CartDrawer = () => {
                       onChange={(e) => setZeroWastePackaging(e.target.checked)}
                       className="rounded border-slate-300 text-emerald-800 focus:ring-emerald-700"
                     />
-                    <span>Empaque Zero Waste: cartón reciclado FSC y sin factura en papel (Gratis)</span>
+                    <span>Empaque Zero Waste: preparado en caja reciclada y sin albarán en papel</span>
                   </label>
                 </div>
 

@@ -504,7 +504,19 @@ export const EcoHealth = () => {
                   </div>
                 </div>
 
-                <Button 
+                {((userGender === 'hombre' && targetCaloriesCalculated < 1500) || (userGender === 'mujer' && targetCaloriesCalculated < 1200) || (tdee - targetCaloriesCalculated > 500)) && (
+                    <div className="p-3 rounded-2xl bg-amber-950/80 border border-amber-600/80 text-amber-200 text-[11px] space-y-1">
+                      <div className="flex items-center gap-1.5 font-bold text-amber-300">
+                        <AlertCircle className="h-4 w-4" />
+                        <span>Aviso de Precaución Nutricional</span>
+                      </div>
+                      <p className="leading-snug">
+                        Tu selección produce una ingesta estimada potencialmente muy restrictiva. Ecoland no optimiza dietas extremas ni promueve déficits agresivos. Te recomendamos consultar con un médico especialista o dietista-nutricionista colegiado para una pauta segura.
+                      </p>
+                    </div>
+                  )}
+
+                  <Button 
                   onClick={applyCalculatedCalories}
                   className="w-full bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-black h-11 text-xs shadow-md"
                 >
