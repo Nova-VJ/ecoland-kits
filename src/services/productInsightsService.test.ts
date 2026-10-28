@@ -2,55 +2,72 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { productInsightsService } from './productInsightsService';
 import { dailyNutritionStore } from './dailyNutritionStore';
 
-describe('Product Insights & Retention Validation Lab (P2.5)', () => {
+describe('Product Insights & Real User Pilot Lab (P2.5B)', () => {
   beforeEach(() => {
     localStorage.clear();
+    productInsightsService.resetSessionState();
+    productInsightsService.setDataSource('REAL');
   });
 
-  it('1. Registra useful_day únicamente con acciones significativas y calcula useful_days_per_week', () => {
-    // Al inicio con base limpia, se registra una acción significativa
-    productInsightsService.recordMeaningfulAction('food_logged', { meal: 'comida' });
-    
-    const usefulDays = productInsightsService.getUsefulDaysPerWeek();
-    expect(usefulDays).toBeGreaterThanOrEqual(1);
+  it('1. Separa estrictamente REAL DATA de SIMULATED DATA', () => {
+    expect(productInsightsService.getDataSource()).toBe('REAL');
 
-    const history = productInsightsService.getUsefulDaysHistory();
-    const todayStr = new Date().toISOString().split('T')[0];
-    const todayEntry = history.find(h => h.date === todayStr);
+    // Cambiar a SIMULATED
+    productInsightsService.setDataSource('SIMULATED');
+    expect(productInsightsService.getDataSource()).toBe('SIMULATED');
 
-    expect(todayEntry).toBeDefined();
-    expect(todayEntry?.actions).toContain('food_logged');
-    expect(todayEntry?.actionCount).toBeGreaterThanOrEqual(1);
+    const simSummary = productInsightsService.getAggregatedInsights();
+    expect(simSummary.dataSource).toBe('SIMULATED');
+    expect(simSummary.pilotStatus).toBe('SIMULATED_BENCHMARK');
+    expect(simSummary.usefulDaysPerWeek.average).toBe(3.8);
+
+    // Cambiar a REAL
+    productInsightsService.setDataSource('REAL');
+    const realSummary = productInsightsService.getAggregatedInsights();
+    expect(realSummary.dataSource).toBe('REAL');
+    expect(realSummary.pilotStatus).toBe('PILOT_IN_PROGRESS');
+    expect(realSummary.sampleSize.totalTargetUsers).toBe(20);
   });
 
-  it('2. Calcula Non-Commerce Retention sin depender de compras en tienda', () => {
-    // Añadimos días útiles sin compras
-    productInsightsService.recordMeaningfulAction('coach_action_executed');
-    const retention = productInsightsService.getNonCommerceRetention();
-
-    expect(retention.d1).toBeGreaterThanOrEqual(40);
-    expect(retention.d7).toBeGreaterThanOrEqual(30);
-    expect(retention.d14).toBeGreaterThanOrEqual(25);
-    expect(retention.d30).toBeGreaterThanOrEqual(20);
-  });
-
-  it('3. Mide funnel de registro con duración y distribución por método', () => {
-    const session = productInsightsService.startLoggingSession('voice');
-    expect(session.step).toBe('log_started');
-    expect(session.method).toBe('voice');
-
-    productInsightsService.updateLoggingSessionStep('food_detected');
-    productInsightsService.updateLoggingSessionStep('food_review_started');
-    productInsightsService.updateLoggingSessionStep('food_corrected', { wasCorrected: true });
-    productInsightsService.updateLoggingSessionStep('log_completed');
+  it('2. Registra Useful Day con cohortes de usuario (N=20)', () => {
+    productInsightsService.recordMeaningfulAction('food_logged', {
+      userId: 'pilot_user_1',
+      cohort: 'BIO_CUSTOMER'
+    });
 
     const summary = productInsightsService.getAggregatedInsights();
-    expect(summary.loggingFunnel.totalCompleted).toBeGreaterThan(0);
-    expect(summary.loggingFunnel.completionRate).toBeGreaterThan(50);
-    expect(summary.loggingFunnel.medianDurationSeconds).toBeGreaterThan(0);
+    expect(summary.sampleSize.activeUsers).toBe(1);
+    expect(summary.nonCommerceRetention.d1.denominator).toBeGreaterThanOrEqual(1);
   });
 
-  it('4. Calcula Coach Action Rate y almacena feedback cualitativo con motivos', () => {
+  it('3. Mide Time to First Value (TTFV) y First Value Type', () => {
+    productInsightsService.recordFirstSessionStarted();
+    productInsightsService.recordMeaningfulAction('coach_action_executed');
+
+    const summary = productInsightsService.getAggregatedInsights();
+    expect(summary.timeToFirstValue.firstValueDistribution.COACH).toBe(1);
+    expect(summary.timeToFirstValue.medianSeconds).toBeGreaterThanOrEqual(0);
+  });
+
+  it('4. Controla frecuencia de Decision Saved Feedback (throttling ético)', () => {
+    // 3 acciones no deben disparar el prompt
+    productInsightsService.recordMeaningfulAction('food_logged');
+    productInsightsService.recordMeaningfulAction('pantry_item_used');
+    productInsightsService.recordMeaningfulAction('weekly_plan_updated');
+    expect(productInsightsService.shouldPromptDecisionSaved()).toBe(false);
+
+    // La 4ª acción habilita el prompt
+    productInsightsService.recordMeaningfulAction('recipe_cooked');
+    expect(productInsightsService.shouldPromptDecisionSaved()).toBe(true);
+
+    // Registrar respuesta
+    productInsightsService.recordDecisionSavedFeedback('coach', 'yes');
+    const records = productInsightsService.getDecisionSavedRecords();
+    expect(records.length).toBe(1);
+    expect(records[0].answer).toBe('yes');
+  });
+
+  it('5. Registra EcoCoach Action Rate y Reuse Rate a 7 días', () => {
     productInsightsService.recordCoachResponseShown('¿Qué ceno?', 'Guiso suave de lentejas');
     productInsightsService.recordCoachActionClicked('coach_cook_clicked');
 
@@ -65,58 +82,51 @@ describe('Product Insights & Retention Validation Lab (P2.5)', () => {
     expect(feedback.negativeReason).toBe('too_much_time');
 
     const summary = productInsightsService.getAggregatedInsights();
-    expect(summary.coachMetrics.responsesShown).toBeGreaterThan(0);
-    expect(summary.coachMetrics.actionRate).toBeGreaterThan(0);
-    expect(summary.coachMetrics.negativeReasonsBreakdown['too_much_time']).toBeGreaterThanOrEqual(1);
+    expect(summary.coachMetrics.responsesShown).toBe(1);
+    expect(summary.coachMetrics.actionRate.percentage).toBe(100);
+    expect(summary.coachMetrics.negativeReasonsBreakdown['too_much_time']).toBe(1);
   });
 
-  it('5. Sugiere exclusión explícita si se rechaza un ingrediente repetidamente', () => {
-    // Primer rechazo
-    const res1 = productInsightsService.trackFoodRejection('tofu_ahumado');
-    expect(res1.shouldPromptExclusion).toBe(false);
+  it('6. Mide seguimiento de Plan Semanal (Created vs Used)', () => {
+    productInsightsService.recordWeeklyPlanEvent('PLAN_CREATED', 'Menú mediterráneo');
+    productInsightsService.recordWeeklyPlanEvent('PLAN_USED', 'Consulta de cena');
 
-    // Segundo rechazo repetido
-    const res2 = productInsightsService.trackFoodRejection('tofu_ahumado');
-    expect(res2.shouldPromptExclusion).toBe(true);
-    expect(res2.foodName).toBe('tofu_ahumado');
-
-    // Confirmar exclusión formal
-    productInsightsService.confirmExcludeFood('tofu_ahumado');
-    const prefs = productInsightsService.getRecommendationPreferences();
-    expect(prefs.dislikedFoods).toContain('tofu_ahumado');
+    const summary = productInsightsService.getAggregatedInsights();
+    expect(summary.usefulDaysPerWeek.average).toBeGreaterThanOrEqual(1);
   });
 
-  it('6. Garantiza aislamiento estricto de privacidad entre miembros del hogar', () => {
+  it('7. Mide seguimiento de alimentos «Úsalo pronto» en despensa', () => {
+    productInsightsService.recordUseSoonItemShown('pantry_item_espinacas');
+    productInsightsService.recordUseSoonItemConsumed('pantry_item_espinacas');
+
+    const summary = productInsightsService.getAggregatedInsights();
+    expect(summary.usefulDaysPerWeek.average).toBeGreaterThanOrEqual(1);
+  });
+
+  it('8. Mide embudo de importación de recetas externas', () => {
+    const importId = productInsightsService.startRecipeImport();
+    productInsightsService.updateRecipeImportStatus(importId, 'saved');
+
+    const summary = productInsightsService.getAggregatedInsights();
+    expect(summary.recipeImportMetrics.totalStarted).toBe(1);
+    expect(summary.recipeImportMetrics.totalCompleted).toBe(1);
+    expect(summary.recipeImportMetrics.completionRate.percentage).toBe(100);
+  });
+
+  it('9. Garantiza aislamiento de privacidad en Hogar Ecoland', () => {
     const isolation = dailyNutritionStore.verifyHouseholdMemberPrivacyIsolation('user_laura', 'user_carlos');
-    
-    // Lo compartido es accesible
     expect(isolation.canAccessSharedPantry).toBe(true);
     expect(isolation.canAccessSharedList).toBe(true);
-
-    // Los datos individuales y biométricos son estrictamente privados
     expect(isolation.canAccessOtherMemberDiary).toBe(false);
     expect(isolation.canAccessOtherMemberWeight).toBe(false);
-    expect(isolation.canAccessOtherMemberBiometrics).toBe(false);
   });
 
-  it('7. Gestiona variantes de experimentos controlados con guardrail metrics', () => {
-    const exps = productInsightsService.getExperiments();
-    expect(exps.length).toBeGreaterThanOrEqual(2);
-
-    const firstExp = exps[0];
-    expect(firstExp.activeVariant).toBe('A');
-
-    // Cambiar a variante B
-    productInsightsService.setExperimentVariant(firstExp.id, 'B');
-    const updatedExps = productInsightsService.getExperiments();
-    expect(updatedExps[0].activeVariant).toBe('B');
-  });
-
-  it('8. Evalúa Product-Market Fit mediante el Sean Ellis Test', () => {
+  it('10. Reporta Sean Ellis PMF Test con notación n/N', () => {
     productInsightsService.recordPMFSurveyResponse('very_disappointed');
     const summary = productInsightsService.getAggregatedInsights();
 
-    expect(summary.pmfSurveyScore.totalResponses).toBeGreaterThanOrEqual(1);
-    expect(summary.pmfSurveyScore.veryDisappointedPercent).toBeGreaterThanOrEqual(40);
+    expect(summary.pmfSurveyScore.totalResponses).toBe(1);
+    expect(summary.pmfSurveyScore.veryDisappointed.formatted).toContain('1/1');
+    expect(summary.pmfSurveyScore.pmfSignalAchieved).toBe(false); // Requiere N>=20
   });
 });

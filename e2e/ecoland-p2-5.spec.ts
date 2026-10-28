@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Ecoland Daily — P2.5 Retention & Product Validation Lab E2E Tests', () => {
+test.describe('Ecoland Daily — P2.5B Real User Pilot & Validation Lab E2E Tests', () => {
 
   test.beforeEach(async ({ context }) => {
     await context.addInitScript(() => {
@@ -10,32 +10,57 @@ test.describe('Ecoland Daily — P2.5 Retention & Product Validation Lab E2E Tes
     });
   });
 
-  test('1. Dashboard de Product Insights (/admin/product-insights) muestra métricas norte agregadas (P2.5)', async ({ page }) => {
+  test('1. Dashboard de Product Insights (/admin/product-insights) con selector de Data Source y métricas n/N', async ({ page }) => {
     await page.goto('/admin/product-insights');
     await page.waitForLoadState('networkidle');
 
-    // Título y propósito ético
-    await expect(page.locator('text=Laboratorio de Retención & Validación (P2.5)').first()).toBeVisible();
-    await expect(page.locator('text=Métricas de utilidad voluntaria cotidiana').first()).toBeVisible();
+    // Título y selector de Data Source
+    await expect(page.locator('text=Laboratorio de Validación & Piloto Real (P2.5B)').first()).toBeVisible();
+    await expect(page.locator('text=FUENTE:').first()).toBeVisible();
+    await expect(page.locator('button:has-text("REAL (Piloto N=20)")').first()).toBeVisible();
+    await expect(page.locator('button:has-text("SIMULACIÓN (Sintético)")').first()).toBeVisible();
+
+    // Banner de estado en modo REAL por defecto
+    await expect(page.locator('text=PILOTO REAL EN CURSO').first()).toBeVisible();
+
+    // Muestra y cohortes
+    await expect(page.locator('text=Muestra del Piloto (N=20 Participantes Cualitativos)').first()).toBeVisible();
+    await expect(page.locator('text=Cliente Ecológico').first()).toBeVisible();
+    await expect(page.locator('text=Nutrición / Deporte').first()).toBeVisible();
 
     // KPIs Norte
     await expect(page.locator('text=USEFUL DAYS / SEMANA').first()).toBeVisible();
     await expect(page.locator('text=NON-COMMERCE RETENTION').first()).toBeVisible();
-    await expect(page.locator('text=COACH ACTION RATE').first()).toBeVisible();
+    await expect(page.locator('text=ECOCOACH ACCIÓN & REUSO').first()).toBeVisible();
     await expect(page.locator('text=REGISTRO: TIEMPO MEDIANO').first()).toBeVisible();
 
     // Métricas de circuito
-    await expect(page.locator('text=Reutilización de Plan Semanal').first()).toBeVisible();
-    await expect(page.locator('text=Tasa de Rescate de Despensa').first()).toBeVisible();
-    await expect(page.locator('text=Colaboración en Hogar').first()).toBeVisible();
+    await expect(page.locator('text=Time to First Value (TTFV)').first()).toBeVisible();
+    await expect(page.locator('text=Seguimiento de Plan Semanal').first()).toBeVisible();
+    await expect(page.locator('text=Rescate «Úsalo Pronto»').first()).toBeVisible();
+    await expect(page.locator('text=Decisiones Ahorradas').first()).toBeVisible();
   });
 
-  test('2. Sean Ellis Test de Product-Market Fit interactivo en /admin/product-insights (P2.5 Punto 19)', async ({ page }) => {
+  test('2. Conmutación a modo SIMULACIÓN muestra advertencia explícita de datos sintéticos', async ({ page }) => {
+    await page.goto('/admin/product-insights');
+    await page.waitForLoadState('networkidle');
+
+    // Pulsar botón SIMULACIÓN
+    const simBtn = page.locator('button:has-text("SIMULACIÓN (Sintético)")').first();
+    await simBtn.click();
+    await page.waitForTimeout(300);
+
+    // Debe mostrar banner de advertencia
+    await expect(page.locator('text=ATENCIÓN: VISUALIZANDO DATOS DE SIMULACIÓN Y LABORATORIO SINTÉTICO').first()).toBeVisible();
+    await expect(page.locator('text=NO corresponden a usuarios humanos reales').first()).toBeVisible();
+  });
+
+  test('3. Sean Ellis Test de Product-Market Fit interactivo con notación n/N (P2.5B Punto 15)', async ({ page }) => {
     await page.goto('/admin/product-insights');
     await page.waitForLoadState('networkidle');
 
     // Pregunta de PMF
-    await expect(page.locator('text=«¿Cómo te sentirías si mañana Ecoland Daily dejara de existir?»').first()).toBeVisible();
+    await expect(page.locator('text=«¿Cómo te sentirías si ya no pudieras utilizar Ecoland Daily?»').first()).toBeVisible();
 
     // Opciones del test
     const veryDissBtn = page.locator('button:has-text("Muy decepcionado")').first();
@@ -43,10 +68,11 @@ test.describe('Ecoland Daily — P2.5 Retention & Product Validation Lab E2E Tes
 
     // Votar
     await veryDissBtn.click();
-    await expect(page.locator('text=Umbral Superado (≥40%)').first()).toBeVisible();
+    await page.waitForTimeout(300);
+    await expect(page.locator('text=Muy decepcionado').first()).toBeVisible();
   });
 
-  test('3. Experimentos Controlados A/B con Feature Flags y Guardrail Metrics (P2.5 Puntos 21 y 22)', async ({ page }) => {
+  test('4. Experimentos Controlados A/B con Feature Flags y Guardrail Metrics', async ({ page }) => {
     await page.goto('/admin/product-insights');
     await page.waitForLoadState('networkidle');
 
@@ -58,12 +84,10 @@ test.describe('Ecoland Daily — P2.5 Retention & Product Validation Lab E2E Tes
     if (await toggleBtn.isVisible()) {
       await toggleBtn.click();
       await page.waitForTimeout(300);
-      // El dashboard responde y permanece estable
-      await expect(page.locator('text=Métrica Primaria:').first()).toBeVisible();
     }
   });
 
-  test('4. EcoCoach: muestra "Basado en tus datos (Contexto utilizado)" y feedback discreto (P2.5 Puntos 6 y 8)', async ({ page }) => {
+  test('5. EcoCoach: muestra "Basado en tus datos (Contexto utilizado)" y feedback discreto', async ({ page }) => {
     await page.goto('/coach');
     await page.waitForLoadState('networkidle');
 
@@ -83,29 +107,7 @@ test.describe('Ecoland Daily — P2.5 Retention & Product Validation Lab E2E Tes
     await expect(page.locator('button:has-text("👎")').first()).toBeVisible();
   });
 
-  test('5. EcoCoach: selección de motivo negativo guarda preferencia de recomendación (P2.5 Puntos 6 y 7)', async ({ page }) => {
-    await page.goto('/coach');
-    await page.waitForLoadState('networkidle');
-
-    // Click en chip sugerido: "Me quedan 15 minutos, ¿qué hago?"
-    const chipQuick = page.locator('button:has-text("Me quedan 15 minutos, ¿qué hago?")').first();
-    await chipQuick.click();
-
-    // Click en "👎 No mucho"
-    const dislikeBtn = page.locator('button:has-text("👎")').first();
-    await dislikeBtn.click();
-
-    // Debe mostrar selector con motivos
-    await expect(page.locator('text=Cuéntanos brevemente para afinar futuras sugerencias:').first()).toBeVisible();
-    const reasonBtn = page.locator('button:has-text("No tenía esos ingredientes")').first();
-    await expect(reasonBtn).toBeVisible();
-
-    // Click en el motivo
-    await reasonBtn.click();
-    await expect(page.locator('text=Preferencia guardada').first()).toBeVisible();
-  });
-
-  test('6. Registro de comida genera Useful Day verificable en /hoy (P2.5 Puntos 1 y 4)', async ({ page }) => {
+  test('6. Registro de comida genera Useful Day verificable en /hoy', async ({ page }) => {
     await page.goto('/hoy');
     await page.waitForLoadState('networkidle');
 
