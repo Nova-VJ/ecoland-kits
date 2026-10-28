@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { fastFoodParser, FoodParseResult, ParsedFoodItem } from '@/services/fastFoodParser';
 import { dailyNutritionStore, MealType, PantryDeductionProposal } from '@/services/dailyNutritionStore';
+import { productInsightsService } from '@/services/productInsightsService';
 import { allCatalogProducts, CatalogProduct } from '@/data/catalog/individual-products';
 import { useToast } from '@/hooks/use-toast';
 
@@ -191,6 +192,8 @@ export const FastFoodModal = ({
     setTextInput('');
     setShouldSaveAsMeal(false);
     setSavedMealName('');
+    productInsightsService.updateLoggingSessionStep('log_completed');
+    productInsightsService.recordMeaningfulAction('food_logged');
     if (onLoggedSuccess) onLoggedSuccess();
     onClose();
   };
@@ -198,6 +201,7 @@ export const FastFoodModal = ({
   // Eliminar un ingrediente del resultado preliminar
   const removeParsedItem = (id: string) => {
     if (!parsedResult) return;
+    productInsightsService.updateLoggingSessionStep('food_corrected', { wasCorrected: true });
     const filtered = parsedResult.items.filter(i => i.id !== id);
     const totalEstimatedCalories = filtered.reduce((acc, it) => acc + it.calories, 0);
     const totalProtein = Math.round(filtered.reduce((acc, it) => acc + it.protein, 0) * 10) / 10;
@@ -242,6 +246,10 @@ export const FastFoodModal = ({
       description: `Añadido ${item.title} (${item.calories} kcal) a tu ${selectedMeal}.`,
     });
 
+    productInsightsService.updateLoggingSessionStep('log_completed');
+    productInsightsService.recordMeaningfulAction('food_logged');
+    productInsightsService.updateLoggingSessionStep('log_completed');
+    productInsightsService.recordMeaningfulAction('habitual_meal_logged');
     if (onLoggedSuccess) onLoggedSuccess();
     onClose();
   };

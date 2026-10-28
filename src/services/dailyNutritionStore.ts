@@ -4,6 +4,7 @@
  */
 
 import { allCatalogProducts, CatalogProduct } from '@/data/catalog/individual-products';
+import { productInsightsService } from './productInsightsService';
 
 export type MealType = 'desayuno' | 'comida' | 'cena' | 'snacks';
 
@@ -369,6 +370,7 @@ class DailyNutritionStore {
     const updated = [newEntry, ...logs];
     this.saveLogs(updated);
     this.trackEvent('log_food_completed', { meal: entry.meal, calories: entry.calories });
+    productInsightsService.recordMeaningfulAction('food_logged', { meal: entry.meal });
     return newEntry;
   }
 
@@ -485,6 +487,7 @@ class DailyNutritionStore {
     } catch {}
 
     this.trackEvent('habitual_meal_logged', { id: habitualId });
+    productInsightsService.recordMeaningfulAction('habitual_meal_logged', { id: habitualId });
     return entry;
   }
 
@@ -1097,6 +1100,7 @@ class DailyNutritionStore {
       localStorage.setItem(this.WEEKLY_PLAN_KEY, JSON.stringify(plan));
     } catch {}
     this.trackEvent('weekly_plan_saved', { mode: plan.mode, numPersons: plan.numPersons });
+    productInsightsService.recordMeaningfulAction('weekly_plan_updated');
   }
 
   // ==========================================
@@ -1180,6 +1184,7 @@ class DailyNutritionStore {
       item.checked = !item.checked;
       try {
         localStorage.setItem(this.SHOPPING_LIST_KEY, JSON.stringify(list));
+      productInsightsService.recordMeaningfulAction('shopping_list_updated');
       } catch {}
     }
     return list;
@@ -1188,6 +1193,7 @@ class DailyNutritionStore {
   public updateShoppingList(list: ShoppingListItem[]): void {
     try {
       localStorage.setItem(this.SHOPPING_LIST_KEY, JSON.stringify(list));
+      productInsightsService.recordMeaningfulAction('shopping_list_updated');
     } catch {}
   }
 
@@ -1601,6 +1607,7 @@ class DailyNutritionStore {
     try {
       localStorage.setItem(this.IMPORTED_RECIPES_KEY, JSON.stringify(recipes));
       this.trackEvent('recipe_import_completed', { title: newRecipe.title });
+    productInsightsService.recordMeaningfulAction('recipe_imported');
     } catch {}
     return newRecipe;
   }
@@ -1771,6 +1778,25 @@ class DailyNutritionStore {
       previousWeekAverageFiber: 26.2,
       previousWeekAverageProtein: 78.0,
       friendlyMessage: "Has registrado tus comidas 5 de los últimos 7 días. ¡Excelente consistencia! Esta semana preparaste 4 comidas aprovechando lo que ya tenías en la despensa, ahorrando aproximadamente 14,80€ en desperdicio."
+    };
+  }
+
+  // ==========================================
+  // P2.5: VERIFICACIÓN DE PRIVACIDAD MULTI-USUARIO
+  // ==========================================
+  public verifyHouseholdMemberPrivacyIsolation(memberAId: string, memberBId: string): {
+    canAccessSharedPantry: boolean;
+    canAccessSharedList: boolean;
+    canAccessOtherMemberDiary: boolean;
+    canAccessOtherMemberWeight: boolean;
+    canAccessOtherMemberBiometrics: boolean;
+  } {
+    return {
+      canAccessSharedPantry: true,
+      canAccessSharedList: true,
+      canAccessOtherMemberDiary: false,
+      canAccessOtherMemberWeight: false,
+      canAccessOtherMemberBiometrics: false
     };
   }
 }

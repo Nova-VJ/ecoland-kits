@@ -29,6 +29,7 @@ import Login from "./pages/auth/Login";
 import Registro from "./pages/auth/Registro";
 import Cuenta from "./pages/auth/Cuenta";
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import ProductInsights from "./pages/admin/ProductInsights";
 import AvisoLegal from "./pages/legal/AvisoLegal";
 import Privacidad from "./pages/legal/Privacidad";
 import Cookies from "./pages/legal/Cookies";
@@ -85,6 +86,7 @@ const App = () => {
                   <Route path="/registro" element={<Registro />} />
                   <Route path="/cuenta" element={<Cuenta />} />
                   <Route path="/admin" element={<AdminDashboard />} />
+                  <Route path="/admin/product-insights" element={<ProductInsights />} />
                   <Route path="/aviso-legal" element={<AvisoLegal />} />
                   <Route path="/privacidad" element={<Privacidad />} />
                   <Route path="/cookies" element={<Cookies />} />
