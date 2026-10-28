@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ChefHat, Sparkles, ShoppingBag, Clock, Flame, CheckCircle2, 
-  Plus, X, ArrowRight, RefreshCw, AlertCircle, Utensils
+  Plus, X, ArrowRight, RefreshCw, AlertCircle, Utensils, Calendar 
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { useCart } from '@/context/CartContext';
 import { allCatalogProducts, CatalogProduct } from '@/data/catalog/individual-products';
 import { useToast } from '@/hooks/use-toast';
+import { dailyNutritionStore, MealType } from '@/services/dailyNutritionStore';
 
 const COMMON_FRIDGE_ITEMS = [
   'Garbanzos', 'Lentejas', 'Avena', 'Tomate', 'Espinacas', 
@@ -40,6 +41,26 @@ export const AiFridgeRecipeGenerator = () => {
   const [dietFilter, setDietFilter] = useState<'todas' | 'vegana' | 'sin-gluten' | 'proteica'>('todas');
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [currentRecipe, setCurrentRecipe] = useState<GeneratedRecipe | null>(null);
+  const [servingsToLog, setServingsToLog] = useState<number>(1);
+  const [selectedMealForLog, setSelectedMealForLog] = useState<MealType>('comida');
+  const [loggedSuccess, setLoggedSuccess] = useState<boolean>(false);
+
+  const handleLogToDiary = () => {
+    if (!currentRecipe) return;
+    dailyNutritionStore.logRecipeToDiary(
+      currentRecipe.title,
+      servingsToLog,
+      currentRecipe.calories,
+      currentRecipe.proteinGrams,
+      selectedMealForLog
+    );
+    setLoggedSuccess(true);
+    toast({
+      title: "¡Receta registrada en tu día!",
+      description: `Añadido "${currentRecipe.title}" (${servingsToLog} ${servingsToLog === 1 ? 'ración' : 'raciones'}) a tu ${selectedMealForLog}.`,
+    });
+    setTimeout(() => setLoggedSuccess(false), 3000);
+  };
 
   const toggleItem = (item: string) => {
     setSelectedItems(prev => 
@@ -333,6 +354,61 @@ export const AiFridgeRecipeGenerator = () => {
                 <div className="border-l pl-4">
                   <strong className="text-emerald-800">{currentRecipe.proteinGrams}g</strong> prot.
                 </div>
+              </div>
+            </div>
+
+            {/* Conexión directa con Ecoland Hoy: Registrar en Diario */}
+            <div className="bg-emerald-50/90 border border-emerald-200 rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-3 shadow-2xs">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-emerald-700 text-white flex items-center justify-center shrink-0 shadow-2xs">
+                  <Calendar className="w-5 h-5" />
+                </div>
+                <div>
+                  <span className="text-xs font-bold text-emerald-950 block">¿Vas a preparar esta receta hoy?</span>
+                  <span className="text-[11px] text-emerald-700">Se registrará automáticamente en tu diario de nutrición con sus calorías y macronutrientes.</span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0 w-full md:w-auto justify-end">
+                <select
+                  value={selectedMealForLog}
+                  onChange={(e) => setSelectedMealForLog(e.target.value as MealType)}
+                  className="text-xs bg-white border border-emerald-300 rounded-xl px-2.5 py-1.5 font-medium text-slate-800 cursor-pointer"
+                >
+                  <option value="desayuno">Desayuno</option>
+                  <option value="comida">Comida</option>
+                  <option value="cena">Cena</option>
+                  <option value="snack">Snack</option>
+                </select>
+
+                <select
+                  value={servingsToLog}
+                  onChange={(e) => setServingsToLog(Number(e.target.value))}
+                  className="text-xs bg-white border border-emerald-300 rounded-xl px-2.5 py-1.5 font-medium text-slate-800 cursor-pointer"
+                >
+                  <option value={1}>1 ración</option>
+                  <option value={2}>2 raciones</option>
+                  <option value={3}>3 raciones</option>
+                  <option value={4}>4 raciones</option>
+                </select>
+
+                <Button
+                  onClick={handleLogToDiary}
+                  size="sm"
+                  className="bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-bold rounded-xl gap-1.5 shadow-xs"
+                >
+                  {loggedSuccess ? (
+                    <>
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-300" />
+                      <span>¡Registrada!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Registrar en mi día</span>
+                    </>
+                  )}
+                </Button>
               </div>
             </div>
 

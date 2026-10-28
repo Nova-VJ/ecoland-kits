@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Store, Sparkles, BookOpen, ShoppingBag, User } from 'lucide-react';
+import { Home, Store, Sparkles, BookOpen, ShoppingBag, User, Calendar } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { motion } from 'framer-motion';
 
@@ -9,9 +9,9 @@ export const BottomNav = () => {
 
   const navItems = [
     { to: '/', label: 'Inicio', icon: Home },
+    { to: '/hoy', label: 'Hoy', icon: Calendar },
     { to: '/tienda', label: 'Tienda', icon: Store },
     { to: '/ecohealth', label: 'EcoHealth', icon: Sparkles },
-    { to: '/blog', label: 'Recetas', icon: BookOpen },
   ];
 
   return (

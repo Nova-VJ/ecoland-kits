@@ -33,6 +33,7 @@ import AvisoLegal from "./pages/legal/AvisoLegal";
 import Privacidad from "./pages/legal/Privacidad";
 import Cookies from "./pages/legal/Cookies";
 import Terminos from "./pages/legal/Terminos";
+import EcolandHoy from "./pages/EcolandHoy";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -60,6 +61,7 @@ const App = () => {
               <Layout>
                 <Routes>
                   <Route path="/" element={<Index />} />
+                  <Route path="/hoy" element={<EcolandHoy />} />
                   <Route path="/packs" element={<Packs />} />
                   <Route path="/packs/:slug" element={<PackDetail />} />
                   <Route path="/blog" element={<Blog />} />
