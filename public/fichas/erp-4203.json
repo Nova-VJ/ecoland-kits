@@ -1,0 +1,40 @@
+{
+  "id": "erp-4203",
+  "titulo": "El Granero Integral – El Granero Integral Formato estándar – Especialidad Ecológica Certificada – 100% Bio",
+  "intro": "El MUESLI ORIGINAL 1K EL GRANERO de El Granero Integral (Formato estándar) es una propuesta nutritiva y equilibrada para iniciar la jornada con la mejor energía de la naturaleza. Elaborado exclusivamente a base de granos enteros y copos de cultivo ecológico certificado, este desayuno preserva la integridad del salvado y el germen del cereal, aportando carbohidratos complejos de absorción lenta que nutren tu cuerpo de manera constante y sin provocar picos bruscos de glucosa.",
+  "secciones": [
+    {
+      "titulo": "Granos enteros seleccionados y riqueza en betaglucanos",
+      "texto": "Los cereales integrales ecológicos destacan por su contenido natural en fibra soluble, especialmente betaglucanos, reconocidos por su capacidad para regular el tránsito intestinal, favorecer el equilibrio del colesterol y prolongar la sensación de plenitud y saciedad durante toda la mañana."
+    },
+    {
+      "titulo": "Tostado suave artesanal sin grasas hidrogenadas ni aditivos",
+      "texto": "A diferencia de los cereales de desayuno convencionales cargados de jarabes de glucosa y aceites refinados de palma, este producto mantiene un perfil transparente y limpio. No contiene conservantes, aromas sintéticos ni colorantes artificiales, permitiendo saborear el matiz tostado auténtico del cereal recién prensado."
+    },
+    {
+      "titulo": "Cultivo biológico que protege los suelos y la biodiversidad",
+      "texto": "Los cereales proceden de tierras agrícolas trabajadas sin herbicidas químicos ni fertilizantes de síntesis, garantizando un alimento limpio, saludable y profundamente respetuoso con el medio ambiente."
+    }
+  ],
+  "versatilidad": {
+    "intro": "Una opción versátil y natural para enriquecer tu cocina de cada día:",
+    "usos": [
+      "Porridge y gachas tradicionales: Cocinar a fuego suave 5 minutos con leche vegetal de avena o almendra, añadiendo una ramita de canela y piel de limón.",
+      "Boles matutinos con fruta fresca: Verter directamente sobre yogur natural bio o kéfir, complementando con arándanos, semillas de chía y un hilo de miel cruda.",
+      "Topping crujiente para postres: Espolvorear sobre compotas de manzana tibia, ensaladas de frutas de temporada o helados saludables de plátano.",
+      "Repostería casera nutritiva: Incorporar en masas de galletas de avena, barritas de cereales al horno o bizcochos rústicos integrales.",
+      "Batidos densos y saciantes: Añadir dos cucharadas a batidos verdes o de frutas para conferirles cuerpo, fibra y energía duradera."
+    ],
+    "cierre": "El formato de Formato estándar garantiza una óptima conservación y la mejor relación calidad-precio para tu despensa."
+  },
+  "compromiso": "El Granero Integral y Ecoland comparten el compromiso irrenunciable con la agricultura regenerativa, la fertilidad de los suelos y la defensa del medio rural sin organismos modificados genéticamente (sin OGM).",
+  "categorias": [
+    "Alimentación Ecológica",
+    "Desayunos",
+    "Apto para Veganos",
+    "El Granero Integral",
+    "Formato estándar"
+  ],
+  "alergenos_texto": "Contiene: cereales con gluten (según el tipo de producto).",
+  "cierre": "Un producto biológico de calidad superior que llena tu mesa de salud, aroma y respeto por la naturaleza. ¡Añádelo a tu cesta y disfruta de la alimentación auténtica!"
+}
