@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CartProvider } from "@/context/CartContext";
 import { CatalogProvider } from "@/context/CatalogContext";
+import { HealthProfileProvider } from "@/context/HealthProfileContext";
 import { Layout } from "@/components/layout/Layout";
 import { IntroSplash } from "@/components/IntroSplash";
 import { CookieConsent } from "@/components/CookieConsent";
@@ -19,6 +20,8 @@ import Suscripcion from "./pages/Suscripcion";
 import Club from "./pages/Club";
 import Tienda from "./pages/Tienda";
 import EcoHealth from "./pages/EcoHealth";
+import Salud from "./pages/Salud";
+import SectionHub from "./pages/SectionHub";
 import ProductDetail from "./pages/ProductDetail";
 import CatalogProductDetail from "./pages/CatalogProductDetail";
 import CatalogPackDetail from "./pages/CatalogPackDetail";
@@ -58,6 +61,7 @@ const App = () => {
         <BrowserRouter>
           <CatalogProvider>
             <CartProvider>
+            <HealthProfileProvider>
               <Toaster />
               <Sonner />
               {showSplash && <IntroSplash onComplete={() => setShowSplash(false)} />}
@@ -76,6 +80,11 @@ const App = () => {
                   <Route path="/club" element={<Club />} />
                   <Route path="/tienda" element={<Tienda />} />
                   <Route path="/ecohealth" element={<EcoHealth />} />
+                  <Route path="/salud" element={<Salud />} />
+                  <Route path="/comprar" element={<SectionHub id="comprar" />} />
+                  <Route path="/cocinar" element={<SectionHub id="cocinar" />} />
+                  <Route path="/organizarme" element={<SectionHub id="organizarme" />} />
+                  <Route path="/cuidarme" element={<SectionHub id="cuidarme" />} />
                   <Route path="/checkout" element={<Checkout />} />
                   <Route path="/tienda/:slug" element={<ProductDetail />} />
                   <Route path="/tienda/producto/:slug" element={<CatalogProductDetail />} />
@@ -95,6 +104,7 @@ const App = () => {
                 </Routes>
               </Layout>
               <CookieConsent />
+            </HealthProfileProvider>
             </CartProvider>
           </CatalogProvider>
         </BrowserRouter>

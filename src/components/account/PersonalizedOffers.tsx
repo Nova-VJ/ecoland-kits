@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useProductViews } from '@/hooks/useProductViews';
 import { allCatalogProducts, catalogPacks } from '@/data/catalog';
 import { useCart } from '@/context/CartContext';
+import { formatPrice } from '@/lib/utils';
 
 export const PersonalizedOffers = () => {
   const { views } = useProductViews();
@@ -87,7 +88,7 @@ export const PersonalizedOffers = () => {
               className="group block bg-card rounded-xl border overflow-hidden hover:shadow-md transition-all relative"
             >
               <div className="absolute top-2 left-2 z-10">
-                <Badge className="bg-primary/90 text-primary-foreground text-[10px] gap-1">
+                <Badge className="bg-primary/90 text-primary-foreground text-xs gap-1">
                   <Tag className="h-2.5 w-2.5" />
                   Para ti
                 </Badge>
@@ -102,7 +103,7 @@ export const PersonalizedOffers = () => {
               </div>
               <div className="p-2">
                 <p className="text-xs font-medium line-clamp-2">{product.name}</p>
-                <p className="text-xs font-bold text-primary mt-1">{product.price.toFixed(2)}€</p>
+                <p className="text-xs font-bold text-primary mt-1">{formatPrice(product.price)}</p>
               </div>
             </Link>
           </motion.div>
@@ -132,7 +133,7 @@ export const PersonalizedOffers = () => {
                 <p className="text-xs text-muted-foreground line-clamp-1">{pack.shortDescription}</p>
               </div>
               <div className="text-right flex-shrink-0">
-                <p className="font-bold text-primary">{pack.price.toFixed(2)}€</p>
+                <p className="font-bold text-primary">{formatPrice(pack.price)}</p>
                 <Button size="sm" variant="outline" className="text-xs mt-1" onClick={(e) => {
                   e.preventDefault();
                   addCatalogPack(pack);

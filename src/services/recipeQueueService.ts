@@ -9,7 +9,7 @@
  */
 
 import { zeroFrictionPantryService, DomesticPantryItem } from './zeroFrictionPantryService';
-import { dailyNutritionStore } from './dailyNutritionStore';
+import { dailyNutritionStore, toMealType } from './dailyNutritionStore';
 
 export type RecipeQueueStatus = 'INBOX' | 'QUEUE' | 'HABITUAL' | 'ARCHIVED';
 
@@ -329,13 +329,13 @@ class RecipeQueueService {
     let loggedToDiary = false;
     if (params.syncToTodayDiary) {
       dailyNutritionStore.addMealLog({
-        meal: params.mealType || 'almuerzo',
+        meal: toMealType(params.mealType || 'almuerzo'),
         name: recipe.title,
         calories: recipe.estimatedCalories,
         protein: recipe.estimatedProtein,
         fiber: recipe.estimatedFiber,
         carbs: 45,
-        fat: 10
+        fats: 10
       });
       loggedToDiary = true;
     }

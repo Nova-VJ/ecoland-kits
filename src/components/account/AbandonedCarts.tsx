@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { useAbandonedCarts } from '@/hooks/useAbandonedCarts';
 import { useCart } from '@/context/CartContext';
 import { useToast } from '@/hooks/use-toast';
+import { formatPrice } from '@/lib/utils';
 
 export const AbandonedCarts = () => {
   const { carts, isLoading, markRecovered, deleteCart } = useAbandonedCarts();
@@ -61,7 +62,7 @@ export const AbandonedCarts = () => {
                       {cart.item_count} artículo{cart.item_count !== 1 ? 's' : ''}
                     </span>
                     <Badge variant="outline" className="text-xs">
-                      {Number(cart.total_price).toFixed(2)}€
+                      {formatPrice(Number(cart.total_price))}
                     </Badge>
                   </div>
                   <div className="flex items-center gap-1 text-muted-foreground">

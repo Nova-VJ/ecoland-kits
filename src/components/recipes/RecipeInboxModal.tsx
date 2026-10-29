@@ -25,6 +25,7 @@ import {
   CheckCircle2,
   AlertTriangle
 } from 'lucide-react';
+import { formatPrice } from '@/lib/utils';
 
 interface RecipeInboxModalProps {
   isOpen: boolean;
@@ -97,7 +98,7 @@ export const RecipeInboxModal: React.FC<RecipeInboxModalProps> = ({
                     <h2 className="text-base sm:text-lg font-bold text-slate-900">
                       Recipe Inbox & Smart Meal Planner
                     </h2>
-                    <Badge variant="outline" className="text-[10px] bg-emerald-50 text-emerald-800 border-emerald-300">
+                    <Badge variant="outline" className="text-xs bg-emerald-50 text-emerald-800 border-emerald-300">
                       P3-B & P3-C
                     </Badge>
                   </div>
@@ -127,7 +128,7 @@ export const RecipeInboxModal: React.FC<RecipeInboxModalProps> = ({
                         ` · Rescata: ${recommendations[0].rescuesExpiringItems.join(', ')}`}
                       {recommendations[0].missingCostEstimateEuro === 0
                         ? ' · 0€ de gasto adicional'
-                        : ` · ~${recommendations[0].missingCostEstimateEuro.toFixed(2)}€ faltante`}
+                        : ` · ~${formatPrice(recommendations[0].missingCostEstimateEuro)} faltante`}
                     </span>
                   </div>
                 </div>
@@ -165,7 +166,7 @@ export const RecipeInboxModal: React.FC<RecipeInboxModalProps> = ({
                 ))}
               </div>
 
-              <span className="text-xs text-slate-400 font-medium">
+              <span className="text-xs text-slate-500 font-medium">
                 {filteredRecipes.length} receta{filteredRecipes.length !== 1 ? 's' : ''}
               </span>
             </div>
@@ -173,7 +174,7 @@ export const RecipeInboxModal: React.FC<RecipeInboxModalProps> = ({
             {/* Listado de Recetas */}
             <div className="p-4 sm:p-6 overflow-y-auto flex-1 space-y-3">
               {filteredRecipes.length === 0 ? (
-                <div className="p-12 text-center text-slate-400 text-xs">
+                <div className="p-12 text-center text-slate-500 text-xs">
                   No hay recetas en esta sección.
                 </div>
               ) : (
@@ -198,7 +199,7 @@ export const RecipeInboxModal: React.FC<RecipeInboxModalProps> = ({
                               className={`p-1.5 rounded-lg border transition-all ${
                                 recipe.isPinned
                                   ? 'bg-amber-100 text-amber-900 border-amber-300'
-                                  : 'text-slate-400 border-slate-200 hover:bg-slate-50'
+                                  : 'text-slate-500 border-slate-200 hover:bg-slate-50'
                               }`}
                             >
                               <Pin className="w-3.5 h-3.5" />
@@ -206,9 +207,9 @@ export const RecipeInboxModal: React.FC<RecipeInboxModalProps> = ({
                           </div>
 
                           {/* Métricas Nutricionales y Tiempo */}
-                          <div className="flex items-center gap-2 text-[11px] font-mono text-slate-600">
+                          <div className="flex items-center gap-2 text-[11px] tabular-nums text-slate-600">
                             <span className="flex items-center gap-1">
-                              <Clock className="w-3 h-3 text-slate-400" />
+                              <Clock className="w-3 h-3 text-slate-500" />
                               {recipe.prepTimeMinutes}m
                             </span>
                             <span>·</span>
@@ -221,7 +222,7 @@ export const RecipeInboxModal: React.FC<RecipeInboxModalProps> = ({
                           <div className="flex flex-wrap items-center gap-1.5 pt-1">
                             <Badge
                               variant="outline"
-                              className={`text-[10px] font-bold ${
+                              className={`text-xs font-bold ${
                                 match.pantryCoveredPercent >= 75
                                   ? 'bg-emerald-50 text-emerald-900 border-emerald-300'
                                   : 'bg-amber-50 text-amber-900 border-amber-300'
@@ -231,17 +232,17 @@ export const RecipeInboxModal: React.FC<RecipeInboxModalProps> = ({
                             </Badge>
 
                             {match.missingCostEstimateEuro === 0 ? (
-                              <Badge className="bg-emerald-100 text-emerald-900 border-none text-[10px] font-bold">
+                              <Badge className="bg-emerald-100 text-emerald-900 border-none text-xs font-bold">
                                 0€ gasto
                               </Badge>
                             ) : (
-                              <Badge variant="secondary" className="text-[10px] font-mono">
-                                +{match.missingCostEstimateEuro.toFixed(2)}€
+                              <Badge variant="secondary" className="text-xs tabular-nums">
+                                +{formatPrice(match.missingCostEstimateEuro)}
                               </Badge>
                             )}
 
                             {match.rescuesExpiringItems.length > 0 && (
-                              <Badge className="bg-purple-100 text-purple-900 border-none text-[9px] font-bold">
+                              <Badge className="bg-purple-100 text-purple-900 border-none text-xs font-bold">
                                 Rescata alimento próximo
                               </Badge>
                             )}
@@ -254,7 +255,7 @@ export const RecipeInboxModal: React.FC<RecipeInboxModalProps> = ({
                             {recipe.queueStatus !== 'QUEUE' && (
                               <button
                                 onClick={() => handleStatusChange(recipe.id, 'QUEUE')}
-                                className="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-[10px] font-medium"
+                                className="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-medium"
                               >
                                 En cola
                               </button>
@@ -262,7 +263,7 @@ export const RecipeInboxModal: React.FC<RecipeInboxModalProps> = ({
                             {recipe.queueStatus !== 'HABITUAL' && (
                               <button
                                 onClick={() => handleStatusChange(recipe.id, 'HABITUAL')}
-                                className="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-[10px] font-medium"
+                                className="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-medium"
                               >
                                 Habitual
                               </button>

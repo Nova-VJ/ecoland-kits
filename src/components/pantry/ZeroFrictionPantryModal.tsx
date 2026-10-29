@@ -29,6 +29,7 @@ import {
   Layers,
   ChefHat
 } from 'lucide-react';
+import { formatPrice } from '@/lib/utils';
 
 interface ZeroFrictionPantryModalProps {
   isOpen: boolean;
@@ -191,7 +192,7 @@ export const ZeroFrictionPantryModal: React.FC<ZeroFrictionPantryModalProps> = (
                   <h2 className="text-base sm:text-lg font-bold text-slate-900">
                     Despensa Zero-Friction
                   </h2>
-                  <Badge variant="outline" className="text-[10px] bg-emerald-50 text-emerald-800 border-emerald-300">
+                  <Badge variant="outline" className="text-xs bg-emerald-50 text-emerald-800 border-emerald-300">
                     P3-D Core
                   </Badge>
                 </div>
@@ -266,7 +267,7 @@ export const ZeroFrictionPantryModal: React.FC<ZeroFrictionPantryModalProps> = (
               {auditItems[currentAuditIdx] && (
                 <div className="bg-white p-5 rounded-2xl border shadow-sm w-full max-w-md space-y-3">
                   <div className="flex items-center justify-between">
-                    <Badge variant="outline" className="text-[10px] font-mono">
+                    <Badge variant="outline" className="text-xs tabular-nums">
                       {auditItems[currentAuditIdx].location}
                     </Badge>
                     <span className="text-xs text-slate-500">
@@ -375,7 +376,7 @@ export const ZeroFrictionPantryModal: React.FC<ZeroFrictionPantryModalProps> = (
                     <div key={sug.itemId} className="p-2.5 bg-white border border-amber-200 rounded-xl flex items-center justify-between gap-2 text-xs">
                       <div>
                         <strong className="text-slate-900 block">{sug.productName}</strong>
-                        <span className="text-[10px] text-amber-700">Motivo: {sug.reason === 'SE_ACABO' ? 'Se acabó en despensa' : 'Queda poco'}</span>
+                        <span className="text-xs text-amber-700">Motivo: {sug.reason === 'SE_ACABO' ? 'Se acabó en despensa' : 'Queda poco'}</span>
                       </div>
                       <div className="flex items-center gap-1">
                         <Button
@@ -384,7 +385,7 @@ export const ZeroFrictionPantryModal: React.FC<ZeroFrictionPantryModalProps> = (
                             zeroFrictionPantryService.handleReplenishmentDecision(sug.itemId, 'ANADIR_A_LISTA');
                             loadData();
                           }}
-                          className="bg-emerald-800 text-white rounded-lg text-[10px] h-6 px-2"
+                          className="bg-emerald-800 text-white rounded-lg text-xs h-6 px-2"
                         >
                           Añadir a lista
                         </Button>
@@ -395,7 +396,7 @@ export const ZeroFrictionPantryModal: React.FC<ZeroFrictionPantryModalProps> = (
                             zeroFrictionPantryService.handleReplenishmentDecision(sug.itemId, 'TENGO_SUFICIENTE');
                             loadData();
                           }}
-                          className="text-[10px] h-6 px-2"
+                          className="text-xs h-6 px-2"
                         >
                           Tengo suficiente
                         </Button>
@@ -407,7 +408,7 @@ export const ZeroFrictionPantryModal: React.FC<ZeroFrictionPantryModalProps> = (
             )}
 
             {filteredItems.length === 0 ? (
-              <div className="p-12 text-center text-slate-400 text-xs">
+              <div className="p-12 text-center text-slate-500 text-xs">
                 No hay productos registrados en esta ubicación.
               </div>
             ) : (
@@ -426,12 +427,12 @@ export const ZeroFrictionPantryModal: React.FC<ZeroFrictionPantryModalProps> = (
                               {item.name}
                             </strong>
                             {item.type === 'LEFTOVER' && (
-                              <Badge className="bg-purple-100 text-purple-900 border-none text-[9px] font-bold">
+                              <Badge className="bg-purple-100 text-purple-900 border-none text-xs font-bold">
                                 Sobra / Tupper
                               </Badge>
                             )}
                           </div>
-                          <span className="text-xs text-slate-500 font-mono">
+                          <span className="text-xs text-slate-500 tabular-nums">
                             {item.quantity} {item.unit} · {item.location}
                           </span>
                         </div>
@@ -439,7 +440,7 @@ export const ZeroFrictionPantryModal: React.FC<ZeroFrictionPantryModalProps> = (
                         {/* Badge de Honestidad de Fechas */}
                         <Badge
                           variant="outline"
-                          className={`text-[10px] font-medium ${
+                          className={`text-xs font-medium ${
                             dateInfo.badgeStyle === 'real'
                               ? 'bg-emerald-50 text-emerald-900 border-emerald-300'
                               : dateInfo.badgeStyle === 'frozen'
@@ -457,7 +458,7 @@ export const ZeroFrictionPantryModal: React.FC<ZeroFrictionPantryModalProps> = (
                           size="sm"
                           variant="outline"
                           onClick={() => handleUpdateStatus(item.id, 'QUEDA_POCO')}
-                          className="rounded-xl h-6 text-[10px] px-2 font-medium border-amber-200 text-amber-900 hover:bg-amber-50"
+                          className="rounded-xl h-6 text-xs px-2 font-medium border-amber-200 text-amber-900 hover:bg-amber-50"
                         >
                           Queda poco
                         </Button>
@@ -465,7 +466,7 @@ export const ZeroFrictionPantryModal: React.FC<ZeroFrictionPantryModalProps> = (
                           size="sm"
                           variant="outline"
                           onClick={() => handleUpdateStatus(item.id, 'CONSUMIDO', true)}
-                          className="rounded-xl h-6 text-[10px] px-2 font-bold bg-emerald-50 text-emerald-900 border-emerald-300 hover:bg-emerald-100"
+                          className="rounded-xl h-6 text-xs px-2 font-bold bg-emerald-50 text-emerald-900 border-emerald-300 hover:bg-emerald-100"
                         >
                           Consumí esto (+diario)
                         </Button>
@@ -473,7 +474,7 @@ export const ZeroFrictionPantryModal: React.FC<ZeroFrictionPantryModalProps> = (
                           size="sm"
                           variant="outline"
                           onClick={() => handleUpdateStatus(item.id, 'CONGELADO')}
-                          className="rounded-xl h-6 text-[10px] px-2 font-medium border-blue-200 text-blue-900 hover:bg-blue-50"
+                          className="rounded-xl h-6 text-xs px-2 font-medium border-blue-200 text-blue-900 hover:bg-blue-50"
                         >
                           Congelar
                         </Button>
@@ -481,7 +482,7 @@ export const ZeroFrictionPantryModal: React.FC<ZeroFrictionPantryModalProps> = (
                           size="sm"
                           variant="ghost"
                           onClick={() => handleUpdateStatus(item.id, 'SE_ACABO')}
-                          className="rounded-xl h-6 text-[10px] px-2 text-rose-700 hover:bg-rose-50"
+                          className="rounded-xl h-6 text-xs px-2 text-rose-700 hover:bg-rose-50"
                         >
                           Se acabó
                         </Button>
@@ -579,14 +580,14 @@ export const ZeroFrictionPantryModal: React.FC<ZeroFrictionPantryModalProps> = (
                         />
                         <div>
                           <strong className="text-slate-900 block">{it.suggestedName}</strong>
-                          <span className="text-[10px] text-slate-500 font-mono">
-                            {it.quantity} {it.unit} · {it.priceEur.toFixed(2)} €
+                          <span className="text-xs text-slate-500 tabular-nums">
+                            {it.quantity} {it.unit} · {formatPrice(it.priceEur)}
                           </span>
                         </div>
                       </label>
                       <Badge
                         variant="outline"
-                        className={`text-[9px] ${
+                        className={`text-xs ${
                           it.categoryType === 'ALIMENTACIÓN'
                             ? 'bg-emerald-100 text-emerald-900 border-none'
                             : it.categoryType === 'HOGAR'
@@ -601,8 +602,8 @@ export const ZeroFrictionPantryModal: React.FC<ZeroFrictionPantryModalProps> = (
                 </div>
 
                 <div className="flex items-center justify-between pt-2 border-t">
-                  <span className="font-mono font-bold text-slate-800">
-                    Total Ticket: {ocrResult.totalEur.toFixed(2)} €
+                  <span className="tabular-nums font-bold text-slate-800">
+                    Total Ticket: {formatPrice(ocrResult.totalEur)}
                   </span>
                   <div className="flex items-center gap-2">
                     <Button size="sm" variant="ghost" onClick={() => setShowOcrModal(false)}>

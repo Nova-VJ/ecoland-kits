@@ -1,6 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Send, Sparkles, Save } from 'lucide-react';
+import { X, Send, Sparkles, Save, Compass, MessageCircle } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
+import { CoachGuide } from './CoachGuide';
+import { COACH_GUIDE_EVENT } from '@/lib/coachGuide';
+import { sectionForPath, type AppSection } from '@/data/appSections';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
@@ -50,8 +54,58 @@ const extractSlugs = (content: string): string[] => {
   return [...matches].map(m => m[2]);
 };
 
+const HINTS_KEY = 'ecoland-coach-pistas-vistas';
+
 export const EcoCoach = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [mode, setMode] = useState<'guia' | 'chat'>('guia');
+  const [guideSection, setGuideSection] = useState<AppSection['id'] | undefined>();
+  const [guideKey, setGuideKey] = useState(0);
+  const [hint, setHint] = useState<AppSection | null>(null);
+  const location = useLocation();
+  const currentSection = sectionForPath(location.pathname, location.search);
+
+  // Otras partes de la app pueden pedir a EcoCoach que explique una sección
+  useEffect(() => {
+    const onGuide = (e: Event) => {
+      const id = (e as CustomEvent<{ sectionId?: AppSection['id'] }>).detail?.sectionId;
+      setGuideSection(id);
+      setGuideKey(k => k + 1);
+      setMode('guia');
+      setIsOpen(true);
+      setHint(null);
+    };
+    window.addEventListener(COACH_GUIDE_EVENT, onGuide);
+    return () => window.removeEventListener(COACH_GUIDE_EVENT, onGuide);
+  }, []);
+
+  // La primera vez que el cliente entra en una sección, EcoCoach se ofrece a explicarla (una sola vez)
+  useEffect(() => {
+    setHint(null);
+    if (!currentSection) return;
+    let seen: string[] = [];
+    try { seen = JSON.parse(localStorage.getItem(HINTS_KEY) || '[]'); } catch { /* sin almacenamiento */ }
+    if (seen.includes(currentSection.id)) return;
+    const timer = setTimeout(() => setHint(currentSection), 1200);
+    return () => clearTimeout(timer);
+  }, [currentSection]);
+
+  const dismissHint = () => {
+    if (!hint) return;
+    try {
+      const seen: string[] = JSON.parse(localStorage.getItem(HINTS_KEY) || '[]');
+      localStorage.setItem(HINTS_KEY, JSON.stringify([...new Set([...seen, hint.id])]));
+    } catch { /* sin almacenamiento */ }
+    setHint(null);
+  };
+
+  const openGuide = (sectionId?: AppSection['id']) => {
+    dismissHint();
+    setGuideSection(sectionId);
+    setGuideKey(k => k + 1);
+    setMode('guia');
+    setIsOpen(true);
+  };
   const [termsAccepted, setTermsAccepted] = useState(() => localStorage.getItem('eco-coach-terms') === 'accepted');
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -289,12 +343,31 @@ export const EcoCoach = () => {
         animate={{ scale: 1 }}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
-        onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 z-40 w-16 h-16 rounded-full shadow-lg overflow-hidden animate-pulse-eco"
+        onClick={() => openGuide(currentSection?.id)}
+        aria-label="Abrir EcoCoach, tu guía"
+        className="fixed bottom-24 right-4 w-14 h-14 xl:bottom-6 xl:right-6 xl:w-16 xl:h-16 z-40 rounded-full shadow-lg overflow-hidden animate-pulse-eco"
         style={{ background: 'linear-gradient(135deg, hsl(113 39% 49%) 0%, hsl(120 31% 32%) 100%)' }}
       >
         <img src={ecoCoachIcon} alt="Eco-Coach" className="w-full h-full object-cover" />
       </motion.button>
+
+      <AnimatePresence>
+        {hint && !isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 8 }}
+            role="status"
+            className="fixed bottom-40 right-4 xl:bottom-24 xl:right-6 z-40 w-64 rounded-2xl border bg-white p-3 text-sm shadow-xl"
+          >
+            <p className="font-semibold text-slate-900">¿Te explico cómo funciona {hint.label}?</p>
+            <div className="mt-2 flex gap-2">
+              <Button size="sm" className="h-8" onClick={() => openGuide(hint.id)}>Sí, explícamelo</Button>
+              <Button size="sm" variant="ghost" className="h-8" onClick={dismissHint}>Ahora no</Button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <AnimatePresence>
         {isOpen && (
@@ -310,9 +383,9 @@ export const EcoCoach = () => {
                 <img src={ecoCoachIcon} alt="Eco-Coach" className="w-full h-full object-cover" />
               </div>
               <div className="flex-1">
-                <h3 className="font-display font-semibold">Eco-Coach IA</h3>
+                <h3 className="font-display font-semibold">EcoCoach</h3>
                 <p className="text-sm text-primary-foreground/80 flex items-center gap-1">
-                  <Sparkles className="h-3 w-3" /> Dietas personalizadas con IA
+                  <Sparkles className="h-3 w-3" /> Tu guía en Ecoland
                 </p>
               </div>
               <Button
@@ -325,7 +398,20 @@ export const EcoCoach = () => {
               </Button>
             </div>
 
-            {!termsAccepted ? (
+            <div className="grid grid-cols-2 gap-1 border-b bg-muted/40 p-1" role="tablist" aria-label="Modo de EcoCoach">
+              <button role="tab" aria-selected={mode === 'guia'} onClick={() => setMode('guia')}
+                className={`flex items-center justify-center gap-1.5 rounded-lg py-2 text-xs font-semibold ${mode === 'guia' ? 'bg-white shadow-xs text-emerald-900' : 'text-slate-600'}`}>
+                <Compass className="h-3.5 w-3.5" aria-hidden="true" /> Guía de la app
+              </button>
+              <button role="tab" aria-selected={mode === 'chat'} onClick={() => setMode('chat')}
+                className={`flex items-center justify-center gap-1.5 rounded-lg py-2 text-xs font-semibold ${mode === 'chat' ? 'bg-white shadow-xs text-emerald-900' : 'text-slate-600'}`}>
+                <MessageCircle className="h-3.5 w-3.5" aria-hidden="true" /> Preguntar
+              </button>
+            </div>
+
+            {mode === 'guia' ? (
+              <CoachGuide key={guideKey} initialSection={guideSection} onNavigate={() => setIsOpen(false)} onChat={() => setMode('chat')} />
+            ) : !termsAccepted ? (
               <EcoCoachTerms onAccept={handleAcceptTerms} />
             ) : (
               <>

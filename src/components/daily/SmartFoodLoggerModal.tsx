@@ -18,6 +18,7 @@ import {
 import { dailyNutritionStore, MealType } from '@/services/dailyNutritionStore';
 import { productInsightsService } from '@/services/productInsightsService';
 import { useToast } from '@/hooks/use-toast';
+import { formatPrice } from '@/lib/utils';
 
 interface SmartFoodLoggerModalProps {
   isOpen: boolean;
@@ -153,9 +154,8 @@ export const SmartFoodLoggerModal = ({
       calories,
       protein,
       carbs,
-      fat,
-      fiber,
-      vegetableServing: 1
+      fats: fat,
+      fiber
     });
 
     productInsightsService.updateLoggingSessionStep('log_completed');
@@ -186,7 +186,7 @@ export const SmartFoodLoggerModal = ({
                 <h2 className="text-lg font-black text-slate-900 tracking-tight">
                   Smart Food Logger 3.0
                 </h2>
-                <Badge variant="outline" className="border-emerald-300 text-emerald-900 font-bold text-[10px]">
+                <Badge variant="outline" className="border-emerald-300 text-emerald-900 font-bold text-xs">
                   Cero Fricción
                 </Badge>
               </div>
@@ -196,7 +196,7 @@ export const SmartFoodLoggerModal = ({
             </div>
             <button
               onClick={onClose}
-              className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-colors"
+              className="p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -204,7 +204,7 @@ export const SmartFoodLoggerModal = ({
 
           {/* Selector de Momento del Día */}
           <div className="px-5 pt-3 pb-2 flex items-center gap-1.5 border-b bg-white text-xs">
-            <span className="text-[11px] font-bold text-slate-400 uppercase mr-1">Momento:</span>
+            <span className="text-[11px] font-bold text-slate-500 uppercase mr-1">Momento:</span>
             {(['desayuno', 'comida', 'merienda', 'cena', 'snack'] as MealType[]).map((meal) => (
               <button
                 key={meal}
@@ -299,7 +299,7 @@ export const SmartFoodLoggerModal = ({
                         </strong>
                         <span className="text-[11px] text-slate-500">{item.desc}</span>
                       </div>
-                      <Badge variant="secondary" className="text-[10px] font-mono group-hover:bg-emerald-100">
+                      <Badge variant="secondary" className="text-xs tabular-nums group-hover:bg-emerald-100">
                         1-Tap
                       </Badge>
                     </button>
@@ -340,7 +340,7 @@ export const SmartFoodLoggerModal = ({
                 <div className="p-3 bg-slate-50 rounded-2xl border space-y-2">
                   <div className="flex items-center justify-between text-xs font-bold text-slate-700">
                     <span>Instrucciones o contexto adicional (Opcional):</span>
-                    <Badge variant="outline" className="text-[9px]">Motor de Confianza</Badge>
+                    <Badge variant="outline" className="text-xs">Motor de Confianza</Badge>
                   </div>
                   <Input
                     placeholder="Ej: era pollo, sin aceite, plato pequeño..."
@@ -364,7 +364,7 @@ export const SmartFoodLoggerModal = ({
                       <strong className="font-bold text-slate-900 text-sm">
                         {photoAnalysis.detectedDishName}
                       </strong>
-                      <Badge className="bg-emerald-800 text-white font-mono text-[10px]">
+                      <Badge className="bg-emerald-800 text-white tabular-nums text-xs">
                         Confianza: {photoAnalysis.confidenceLevel}
                       </Badge>
                     </div>
@@ -375,8 +375,8 @@ export const SmartFoodLoggerModal = ({
                         <div key={i} className="flex items-center justify-between text-[11px] bg-white p-2 rounded-xl border">
                           <span className="font-medium text-slate-800">{ing.name} (~{ing.estimatedGrams}g)</span>
                           <div className="flex items-center gap-2">
-                            <span className="font-mono text-slate-600">{ing.calories} kcal</span>
-                            <Badge variant={ing.confidence === 'ALTA' ? 'outline' : 'secondary'} className="text-[9px] font-mono">
+                            <span className="tabular-nums text-slate-600">{ing.calories} kcal</span>
+                            <Badge variant={ing.confidence === 'ALTA' ? 'outline' : 'secondary'} className="text-xs tabular-nums">
                               {ing.confidence} ({ing.confidencePercent}%)
                             </Badge>
                           </div>
@@ -398,7 +398,7 @@ export const SmartFoodLoggerModal = ({
                         <button
                           key={i}
                           onClick={() => handleApplyPortionScale(btn.mul)}
-                          className={`px-2 py-0.5 rounded-lg text-[10px] font-mono font-bold transition-all ${
+                          className={`px-2 py-0.5 rounded-lg text-xs tabular-nums font-bold transition-all ${
                             portionMultiplier === btn.mul ? 'bg-emerald-900 text-white' : 'bg-white border text-slate-700'
                           }`}
                         >
@@ -407,7 +407,7 @@ export const SmartFoodLoggerModal = ({
                       ))}
                     </div>
 
-                    <div className="pt-2 border-t flex items-center justify-between font-mono font-bold text-emerald-950">
+                    <div className="pt-2 border-t flex items-center justify-between tabular-nums font-bold text-emerald-950">
                       <span>Total estimado:</span>
                       <span>{photoAnalysis.totalCalories} kcal · {photoAnalysis.totalProtein}g P · {photoAnalysis.totalFiber}g Fibra</span>
                     </div>
@@ -426,7 +426,7 @@ export const SmartFoodLoggerModal = ({
                       value={barcodeInput}
                       onChange={(e) => setBarcodeInput(e.target.value)}
                       placeholder="843700000001"
-                      className="text-xs font-mono rounded-xl bg-white"
+                      className="text-xs tabular-nums rounded-xl bg-white"
                     />
                     <Button size="sm" onClick={handleScanBarcode} className="bg-emerald-800 text-white rounded-xl px-3 font-bold">
                       Buscar
@@ -441,7 +441,7 @@ export const SmartFoodLoggerModal = ({
                         <strong className="text-sm font-bold text-slate-900 block">{eanProduct.productName}</strong>
                         <span className="text-[11px] text-slate-500">{eanProduct.brand} · Ración: {eanProduct.servingSize}</span>
                       </div>
-                      <Badge className="bg-slate-900 text-white font-mono text-[10px]">
+                      <Badge className="bg-slate-900 text-white tabular-nums text-xs">
                         Fuente: {eanProduct.provenance.source === 'ECOLAND_VERIFIED' ? 'VERIFIED_BY_ECOLAND' : eanProduct.provenance.source}
                       </Badge>
                     </div>
@@ -469,25 +469,25 @@ export const SmartFoodLoggerModal = ({
                               : '⚠ Revisar · Verifica siempre la etiqueta'
                           )}
                         </strong>
-                        <p className="text-[10px] text-slate-600">{eanProduct.compatibility.reason}</p>
+                        <p className="text-xs text-slate-600">{eanProduct.compatibility.reason}</p>
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-4 gap-1 text-center font-mono text-[11px] pt-1 border-t">
+                    <div className="grid grid-cols-4 gap-1 text-center tabular-nums text-[11px] pt-1 border-t">
                       <div className="p-1 bg-slate-50 rounded-lg">
-                        <span className="text-[9px] text-slate-400 block">Kcal</span>
+                        <span className="text-xs text-slate-500 block">Kcal</span>
                         <strong>{eanProduct.caloriesPer100g}</strong>
                       </div>
                       <div className="p-1 bg-slate-50 rounded-lg">
-                        <span className="text-[9px] text-slate-400 block">Proteína</span>
+                        <span className="text-xs text-slate-500 block">Proteína</span>
                         <strong>{eanProduct.proteinPer100g}g</strong>
                       </div>
                       <div className="p-1 bg-slate-50 rounded-lg">
-                        <span className="text-[9px] text-slate-400 block">Carbos</span>
+                        <span className="text-xs text-slate-500 block">Carbos</span>
                         <strong>{eanProduct.carbsPer100g}g</strong>
                       </div>
                       <div className="p-1 bg-slate-50 rounded-lg">
-                        <span className="text-[9px] text-slate-400 block">Fibra</span>
+                        <span className="text-xs text-slate-500 block">Fibra</span>
                         <strong>{eanProduct.fiberPer100g}g</strong>
                       </div>
                     </div>
@@ -511,7 +511,7 @@ export const SmartFoodLoggerModal = ({
 
                 {menuScanResult && (
                   <div className="space-y-2.5">
-                    <div className="p-2.5 bg-amber-50/70 border border-amber-300 rounded-xl text-[10px] text-amber-950 flex items-start gap-2">
+                    <div className="p-2.5 bg-amber-50/70 border border-amber-300 rounded-xl text-xs text-amber-950 flex items-start gap-2">
                       <AlertCircle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
                       <p>{menuScanResult.disclaimer}</p>
                     </div>
@@ -532,16 +532,16 @@ export const SmartFoodLoggerModal = ({
                               <strong className="text-xs font-bold text-slate-900 block">{dish.name}</strong>
                               <p className="text-[11px] text-slate-500">{dish.description}</p>
                             </div>
-                            <span className="font-mono font-bold text-xs text-slate-800">
-                              {dish.priceEur ? `${dish.priceEur.toFixed(2)} €` : ''}
+                            <span className="tabular-nums font-bold text-xs text-slate-800">
+                              {dish.priceEur ? `${formatPrice(dish.priceEur)}` : ''}
                             </span>
                           </div>
 
-                          <div className="flex flex-wrap items-center gap-1.5 mt-2 pt-1.5 border-t text-[10px]">
-                            <Badge variant={dish.isLightOption ? 'outline' : 'secondary'} className="font-mono">
+                          <div className="flex flex-wrap items-center gap-1.5 mt-2 pt-1.5 border-t text-xs">
+                            <Badge variant={dish.isLightOption ? 'outline' : 'secondary'} className="tabular-nums">
                               ~{dish.estimatedCalories} kcal
                             </Badge>
-                            <span className="font-mono text-slate-600">~{dish.estimatedProtein}g proteína</span>
+                            <span className="tabular-nums text-slate-600">~{dish.estimatedProtein}g proteína</span>
                             {dish.lightOptionLabel && (
                               <Badge className="bg-emerald-100 text-emerald-900 border-none font-medium">
                                 {dish.lightOptionLabel}

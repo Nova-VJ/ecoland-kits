@@ -9,9 +9,15 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { getCatalogProductBySlug, catalogCategories } from '@/data/catalog';
+import { formatPrice } from '@/lib/utils';
 import { useCart } from '@/context/CartContext';
 import { useCatalog } from '@/context/CatalogContext';
 import { useProductViews } from '@/hooks/useProductViews';
+import { CategoryIcon } from '@/components/common/CategoryIcon';
+import { ProductHealthPanel } from '@/components/salud/ProductHealthPanel';
+import euOrganicLogo from '@/assets/logos/eu-organic-logo.png';
+import { useProductFicha, ProductFichaBody, ProductFichaClosing } from '@/components/catalog/ProductFicha';
+import { ProductDietBadges } from '@/components/common/ProductDietBadges';
 
 const productTags = [
   { id: 'bio', label: '100% Bio' },
@@ -32,109 +38,6 @@ const productTags = [
   { id: 'comercio-justo', label: 'Comercio Justo' },
 ];
 
-// Helper to calculate realistic nutritional values based on product category & keywords
-function getNutritionalValues(product: any) {
-  const t = (product.name + ' ' + (product.brand || '') + ' ' + product.category).toLowerCase();
-  
-  if (t.includes('aceite') || t.includes('aove')) {
-    return {
-      energia: '3.700 kJ / 900 kcal',
-      grasas: '100 g',
-      saturadas: '14 g',
-      monoinsaturadas: '78 g',
-      poliinsaturadas: '8 g',
-      hidratos: '0 g',
-      azucares: '0 g',
-      fibra: '0 g',
-      proteinas: '0 g',
-      sal: '0 g'
-    };
-  }
-  if (t.includes('agar') || t.includes('alga')) {
-    return {
-      energia: '720 kJ / 175 kcal',
-      grasas: '0,2 g',
-      saturadas: '0,1 g',
-      hidratos: '10 g',
-      azucares: '0 g',
-      fibra: '78 g (muy alta saciedad)',
-      proteinas: '2,5 g',
-      sal: '0,8 g'
-    };
-  }
-  if (t.includes('proteina') || t.includes('protein')) {
-    return {
-      energia: '1.620 kJ / 385 kcal',
-      grasas: '6,5 g',
-      saturadas: '1,2 g',
-      hidratos: '4,5 g',
-      azucares: '0,8 g',
-      fibra: '9,0 g',
-      proteinas: '72,0 g',
-      sal: '0,5 g'
-    };
-  }
-  if (t.includes('tamari') || t.includes('soja') || t.includes('miso')) {
-    return {
-      energia: '390 kJ / 92 kcal',
-      grasas: '0 g',
-      saturadas: '0 g',
-      hidratos: '7,5 g',
-      azucares: '1,2 g',
-      fibra: '1,5 g',
-      proteinas: '13,5 g',
-      sal: '12,0 g (sal marina ecológica)'
-    };
-  }
-  if (t.includes('lenteja') || t.includes('garbanzo') || t.includes('alubia')) {
-    return {
-      energia: '380 kJ / 90 kcal',
-      grasas: '0,8 g',
-      saturadas: '0,1 g',
-      hidratos: '13,5 g',
-      azucares: '0,6 g',
-      fibra: '5,8 g',
-      proteinas: '6,8 g',
-      sal: '0,6 g'
-    };
-  }
-  if (t.includes('muesli') || t.includes('granola') || t.includes('avena') || t.includes('copos')) {
-    return {
-      energia: '1.540 kJ / 365 kcal',
-      grasas: '7,0 g',
-      saturadas: '1,2 g',
-      hidratos: '58,0 g',
-      azucares: '4,5 g',
-      fibra: '10,5 g (con betaglucanos)',
-      proteinas: '12,5 g',
-      sal: '0,02 g'
-    };
-  }
-  if (t.includes('acai') || t.includes('matcha') || t.includes('spirulina') || t.includes('chlorella')) {
-    return {
-      energia: '1.450 kJ / 345 kcal',
-      grasas: '4,2 g',
-      saturadas: '0,9 g',
-      hidratos: '18,0 g',
-      azucares: '1,5 g',
-      fibra: '22,0 g',
-      proteinas: '55,0 g',
-      sal: '0,4 g'
-    };
-  }
-  // Generic balanced bio food values
-  return {
-    energia: '1.250 kJ / 298 kcal',
-    grasas: '3,5 g',
-    saturadas: '0,6 g',
-    hidratos: '48,0 g',
-    azucares: '3,2 g',
-    fibra: '8,0 g',
-    proteinas: '11,0 g',
-    sal: '0,1 g'
-  };
-}
-
 const CatalogProductDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const { getProductBySlug } = useCatalog();
@@ -144,6 +47,7 @@ const CatalogProductDetail = () => {
   const [quantity, setQuantity] = useState(1);
   const [addedAnimation, setAddedAnimation] = useState(false);
   const [userDietTags, setUserDietTags] = useState<string[]>([]);
+  const ficha = useProductFicha(product?.id);
 
   useEffect(() => {
     try {
@@ -182,7 +86,6 @@ const CatalogProductDetail = () => {
   }
 
   const category = catalogCategories.find(c => c.id === product.category);
-  const nutrition = getNutritionalValues(product);
 
   const handleAddToCart = () => {
     for (let i = 0; i < quantity; i++) {
@@ -199,15 +102,15 @@ const CatalogProductDetail = () => {
         <div className="container-eco">
           <div className="flex items-center gap-2 text-xs md:text-sm text-slate-500">
             <Link to="/" className="hover:text-emerald-800 transition-colors">Inicio</Link>
-            <ChevronRight className="h-3.5 w-3.5 text-slate-400" />
+            <ChevronRight className="h-3.5 w-3.5 text-slate-500" />
             <Link to="/tienda" className="hover:text-emerald-800 transition-colors">Tienda</Link>
             {category && (
               <>
-                <ChevronRight className="h-3.5 w-3.5 text-slate-400" />
+                <ChevronRight className="h-3.5 w-3.5 text-slate-500" />
                 <span className="text-slate-600 font-medium">{category.label}</span>
               </>
             )}
-            <ChevronRight className="h-3.5 w-3.5 text-slate-400" />
+            <ChevronRight className="h-3.5 w-3.5 text-slate-500" />
             <span className="text-slate-900 font-semibold truncate max-w-[200px] md:max-w-xs">{product.brand}</span>
           </div>
         </div>
@@ -215,7 +118,7 @@ const CatalogProductDetail = () => {
 
       <div className="container-eco py-8 md:py-12">
         {/* Main 2-column Layout */}
-        <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
           
           {/* ========================================= */}
           {/* LEFT COLUMN: STICKY PHOTO & RICH WIDGETS */}
@@ -228,15 +131,15 @@ const CatalogProductDetail = () => {
               animate={{ opacity: 1, y: 0 }}
               className="aspect-square rounded-3xl overflow-hidden bg-white p-8 border border-slate-200/90 flex items-center justify-center shadow-xs relative group"
             >
-              {/* EU Organic watermark badge */}
-              <div className="absolute top-4 left-4 bg-emerald-500/10 border border-emerald-500/30 text-emerald-800 text-[11px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-2xs backdrop-blur-xs">
+              {/* EU Organic watermark badge (solo si el producto es ecológico) */}
+              {product.tags.includes('bio') && <div className="absolute top-4 left-4 bg-emerald-500/10 border border-emerald-500/30 text-emerald-800 text-[11px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-2xs backdrop-blur-xs">
                 <Leaf className="h-3 w-3 text-emerald-600" />
-                <span>100% ECOLÓGICO</span>
-              </div>
+                <span>ECOLÓGICO</span>
+              </div>}
 
               {product.tags.includes('sin-gluten') && (
-                <div className="absolute top-4 right-4 bg-amber-500/10 border border-amber-500/30 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded-full">
-                  🌾 SIN GLUTEN
+                <div className="absolute top-4 right-4 bg-amber-500/10 border border-amber-500/30 text-amber-800 text-xs font-bold px-2 py-0.5 rounded-full">
+                  DECLARADO SIN GLUTEN
                 </div>
               )}
 
@@ -245,14 +148,24 @@ const CatalogProductDetail = () => {
                 alt={product.name} 
                 className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300"
               />
+              {product.image.includes('openfoodfacts.org') && (
+                <a
+                  href="https://world.openfoodfacts.org"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="absolute bottom-3 right-3 rounded-full bg-white/90 px-2 py-0.5 text-xs text-slate-500"
+                >
+                  Foto: Open Food Facts (CC BY-SA)
+                </a>
+              )}
             </motion.div>
 
             {/* 2. Floating Quick Buy Box (Price + Add to Cart) */}
             <div className="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-xs space-y-4">
               <div className="flex items-baseline justify-between">
                 <div>
-                  <span className="text-3xl font-extrabold text-emerald-950 font-mono">
-                    {product.price > 0 ? product.price.toFixed(2) + '€' : 'Consultar'}
+                  <span className="text-3xl font-extrabold text-emerald-950 tabular-nums">
+                    {product.price > 0 ? formatPrice(product.price) : 'Consultar'}
                   </span>
                   <span className="text-xs text-slate-500 ml-2 font-medium">
                     IVA incluido (10%) · {product.weight || 'Envase estándar'}
@@ -310,69 +223,12 @@ const CatalogProductDetail = () => {
                 Garantías y Certificados Oficiales
               </h4>
 
-              <div className="grid grid-cols-2 gap-2.5 pt-1 text-xs">
-                <div className="flex items-center gap-2 p-2 rounded-xl bg-emerald-50/60 border border-emerald-100 text-emerald-950 font-medium">
-                  <span className="text-base">🌿</span>
-                  <span>Euro-hoja UE (ES-ECO)</span>
+              <div className="flex items-center gap-4 pt-1">
+                <img src={euOrganicLogo} alt="Logotipo de producción ecológica de la Unión Europea" className="h-14 w-auto rounded-sm shrink-0" />
+                <div className="text-xs text-slate-700 leading-relaxed">
+                  <p className="font-bold text-slate-900">Producción ecológica certificada (UE)</p>
+                  <p>Cultivado y elaborado según el Reglamento (UE) 2018/848: sin pesticidas de síntesis ni OGM.</p>
                 </div>
-                <div className="flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-200/70 text-slate-800 font-medium">
-                  <span className="text-base">🚫</span>
-                  <span>Sin pesticidas ni OGM</span>
-                </div>
-                <div className="flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-200/70 text-slate-800 font-medium">
-                  <span className="text-base">♻️</span>
-                  <span>Envase 100% Reciclable</span>
-                </div>
-                <div className="flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-200/70 text-slate-800 font-medium">
-                  <span className="text-base">🇪🇸</span>
-                  <span>Trazabilidad Nacional</span>
-                </div>
-              </div>
-            </div>
-
-            {/* 4. Nutritional Table (Valores Nutricionales Medios por 100g) */}
-            <div className="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-xs space-y-3">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                <FileText className="h-4 w-4 text-emerald-700" />
-                Información Nutricional (Valores por 100g)
-              </h4>
-
-              <div className="text-xs divide-y divide-slate-100 border border-slate-100 rounded-xl overflow-hidden">
-                <div className="flex justify-between py-2 px-3 bg-slate-50 font-semibold text-slate-800">
-                  <span>Valor energético</span>
-                  <span className="font-mono">{nutrition.energia}</span>
-                </div>
-                <div className="flex justify-between py-1.5 px-3 text-slate-600">
-                  <span>Grasas totales</span>
-                  <span className="font-mono font-medium">{nutrition.grasas}</span>
-                </div>
-                <div className="flex justify-between py-1 px-3 pl-6 text-slate-500 text-[11px]">
-                  <span>de las cuales saturadas</span>
-                  <span className="font-mono">{nutrition.saturadas}</span>
-                </div>
-                <div className="flex justify-between py-1.5 px-3 text-slate-600">
-                  <span>Hidratos de carbono</span>
-                  <span className="font-mono font-medium">{nutrition.hidratos}</span>
-                </div>
-                <div className="flex justify-between py-1 px-3 pl-6 text-slate-500 text-[11px]">
-                  <span>de los cuales azúcares</span>
-                  <span className="font-mono">{nutrition.azucares}</span>
-                </div>
-                <div className="flex justify-between py-1.5 px-3 text-slate-600">
-                  <span>Fibra alimentaria</span>
-                  <span className="font-mono font-medium">{nutrition.fibra}</span>
-                </div>
-                <div className="flex justify-between py-1.5 px-3 text-slate-600">
-                  <span>Proteínas</span>
-                  <span className="font-mono font-medium">{nutrition.proteinas}</span>
-                </div>
-                <div className="flex justify-between py-1.5 px-3 text-slate-600">
-                  <span>Sal</span>
-                  <span className="font-mono font-medium">{nutrition.sal}</span>
-                </div>
-              </div>
-              <div className="text-[10px] text-slate-400 italic">
-                *Valores orientativos basados en materias primas naturales de origen ecológico sin refinar.
               </div>
             </div>
 
@@ -404,15 +260,15 @@ const CatalogProductDetail = () => {
           {/* RIGHT COLUMN: RICH GOURMET EDITORIAL CONTENT */}
           {/* ========================================= */}
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
             className="lg:col-span-7 space-y-6"
           >
             {/* Header: Category & Brand Badges */}
             <div className="flex items-center gap-2 flex-wrap">
               {category && (
                 <Badge variant="secondary" className="text-xs font-bold py-1 px-3 bg-emerald-100 text-emerald-900 border-0">
-                  {category.icon} {category.label}
+                  <CategoryIcon id={category.id} className="inline -mt-0.5 mr-1" />{category.label}
                 </Badge>
               )}
               <Badge variant="outline" className="text-xs font-bold py-1 px-3 text-slate-700 border-slate-300">
@@ -433,8 +289,8 @@ const CatalogProductDetail = () => {
                   <div>
                     <span className="font-bold">Tu Perfil Alimentario: </span>
                     <span>
-                      {userDietTags.includes('sin-gluten') && (product.tags.includes('sin-gluten') ? '✅ Sin gluten verificado • ' : '⚠️ Precaución con gluten • ')}
-                      {userDietTags.includes('vegano') && (product.tags.includes('vegano') ? '🌱 100% Vegano • ' : '⚠️ No vegano • ')}
+                      {userDietTags.includes('sin-gluten') && (product.tags.includes('sin-gluten') ? 'Declarado sin gluten • ' : '⚠️ Precaución con gluten • ')}
+                      {userDietTags.includes('vegano') && (product.tags.includes('vegano') ? 'Vegano • ' : '⚠️ No vegano • ')}
                       {userDietTags.includes('proteina') && (product.tags.includes('proteina') ? '💪 Alto en proteína • ' : '')}
                       {userDietTags.includes('bio') ? '✨ Certificado Bio UE' : 'Garantía Ecoland'}
                     </span>
@@ -448,19 +304,19 @@ const CatalogProductDetail = () => {
 
             {/* Product Title */}
             <h1 className="font-display text-2xl md:text-3xl lg:text-4xl font-extrabold text-slate-900 leading-snug">
-              {product.name}
+              {ficha?.titulo ?? product.name}
             </h1>
+            <ProductDietBadges productId={product.id} max={6} />
 
             {/* Official EU Organic Banner */}
             <div className="flex items-center gap-3.5 p-3.5 bg-emerald-50 border border-emerald-200/90 rounded-2xl shadow-2xs">
-              <span className="text-3xl">🌿</span>
+              <img src={euOrganicLogo} alt="Logotipo de producción ecológica de la Unión Europea" className="h-10 w-auto rounded-sm shrink-0" />
               <div>
-                <div className="text-xs font-bold text-emerald-950 uppercase tracking-wide flex items-center gap-2">
-                  <span>Certificado de Agricultura Ecológica (Unión Europea)</span>
-                  <span className="bg-emerald-700 text-white text-[9px] px-2 py-0.2 rounded-full font-extrabold">ES-ECO</span>
+                <div className="text-xs font-bold text-emerald-950 uppercase tracking-wide">
+                  Producto ecológico certificado (Unión Europea)
                 </div>
                 <div className="text-xs text-emerald-800 font-medium mt-0.5">
-                  Garantía oficial Euro-hoja · 100% libre de pesticidas sintéticos, herbicidas y organismos modificados genéticamente
+                  Sin pesticidas de síntesis ni organismos modificados genéticamente
                 </div>
               </div>
             </div>
@@ -474,6 +330,10 @@ const CatalogProductDetail = () => {
               ))}
             </div>
 
+            {ficha ? (
+              <ProductFichaBody ficha={ficha} />
+            ) : (
+              <>
             {/* Deep Gourmet Description (Rendered with ReactMarkdown) */}
             <div className="prose prose-emerald max-w-none text-slate-700 leading-relaxed text-base pt-6 border-t border-slate-200">
               <ReactMarkdown
@@ -490,12 +350,15 @@ const CatalogProductDetail = () => {
             {product.usage && (
               <div className="bg-emerald-50/70 border border-emerald-200 rounded-2xl p-6 shadow-xs space-y-3">
                 <h3 className="font-extrabold text-emerald-950 text-lg flex items-center gap-2.5">
-                  <span>🍳</span> Versatilidad en la cocina y aplicaciones saludables
+                  <span>🍳</span> Versatilidad en la cocina
                 </h3>
                 <div className="text-slate-700 text-sm whitespace-pre-line leading-relaxed font-normal space-y-1">
                   {product.usage}
                 </div>
               </div>
+            )}
+
+              </>
             )}
 
             {/* Ingredients Card */}
@@ -509,23 +372,32 @@ const CatalogProductDetail = () => {
               </div>
             )}
 
+            <ProductHealthPanel product={product} />
+
             {/* Allergens Alert Card */}
-            {product.allergens && product.allergens.length > 0 && (
+            {(ficha?.alergenos_texto || (product.allergens && product.allergens.length > 0)) && (
               <div className="bg-amber-50/80 border border-amber-200 rounded-2xl p-5 shadow-xs space-y-2">
                 <h3 className="font-bold text-amber-900 text-sm flex items-center gap-2">
                   <AlertTriangle className="h-4 w-4 text-amber-700" />
                   Información sobre Alérgenos
                 </h3>
+                {ficha?.alergenos_texto ? (
+                  <p className="text-amber-900 text-sm leading-relaxed">{ficha.alergenos_texto}</p>
+                ) : (
                 <ul className="text-amber-800 text-sm space-y-1 list-disc list-inside">
                   {product.allergens.map((allergen: string, i: number) => (
                     <li key={i}>{allergen}</li>
                   ))}
                 </ul>
+                )}
+
                 <div className="text-[11px] text-amber-700/80 pt-1 italic">
                   *Se recomienda siempre consultar el etiquetado del envase físico para confirmar la información actualizada antes de su consumo.
                 </div>
               </div>
             )}
+
+            {ficha && <ProductFichaClosing ficha={ficha} />}
 
             {/* Back to Catalog Link */}
             <div className="pt-4">

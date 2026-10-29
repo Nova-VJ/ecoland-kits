@@ -71,7 +71,7 @@ export const Footer = () => {
         {/* Bottom */}
         <div className="mt-12 pt-8 border-t border-primary-foreground/20">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-primary-foreground/60">
-            <p>© 2024 Ecoland. Todos los derechos reservados.</p>
+            <p>© {new Date().getFullYear()} Ecoland. Todos los derechos reservados.</p>
             <div className="flex gap-6">
               <Link to="/aviso-legal" className="hover:text-primary-foreground transition-colors">Aviso legal</Link>
               <Link to="/privacidad" className="hover:text-primary-foreground transition-colors">Privacidad</Link>

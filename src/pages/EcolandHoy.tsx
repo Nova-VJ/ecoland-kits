@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Sparkles, Calendar, Clock, Plus, Flame, Droplet, 
@@ -37,7 +38,8 @@ import { CommandPaletteModal } from '@/components/common/CommandPaletteModal';
 import { HouseholdBudgetModal } from '@/components/budget/HouseholdBudgetModal';
 import { NutritionalExportModal } from '@/components/export/NutritionalExportModal';
 import { Wallet, FileSpreadsheet, Search } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
+import { RestockDueBanner } from '@/components/pantry/RestockReminders';
 import { useToast } from '@/hooks/use-toast';
 
 export const EcolandHoy = () => {
@@ -63,6 +65,23 @@ export const EcolandHoy = () => {
   // Diálogos modales
   const [isFastModalOpen, setIsFastModalOpen] = useState(false);
   const [isSmartLoggerOpen, setIsSmartLoggerOpen] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Enlaces directos desde las secciones (p. ej. /hoy?abrir=despensa)
+  useEffect(() => {
+    const open = searchParams.get('abrir');
+    if (!open) return;
+    const openers: Record<string, () => void> = {
+      despensa: () => setIsPantryModalOpen(true),
+      recetas: () => setIsRecipeModalOpen(true),
+      hogar: () => setIsHouseholdModalOpen(true),
+      presupuesto: () => setIsBudgetModalOpen(true),
+      informe: () => setIsExportModalOpen(true),
+      registrar: () => setIsSmartLoggerOpen(true),
+    };
+    openers[open]?.();
+    setSearchParams({}, { replace: true });
+  }, [searchParams, setSearchParams]);
   const [fastModalMeal, setFastModalMeal] = useState<MealType>('desayuno');
   const [isWeeklyTrendOpen, setIsWeeklyTrendOpen] = useState(false);
   const [isGoalSelectorOpen, setIsGoalSelectorOpen] = useState(false);
@@ -108,7 +127,14 @@ export const EcolandHoy = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  const userName = 'Patricia';
+  // Nombre del cliente con sesión iniciada; sin sesión saludamos sin nombre
+  const [userName, setUserName] = useState('');
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      const fullName = (user?.user_metadata?.full_name as string | undefined)?.trim();
+      if (fullName) setUserName(fullName.split(' ')[0]);
+    });
+  }, []);
 
   // Recálculo de totales
   const totalCalories = logs.reduce((acc, it) => acc + it.calories, 0);
@@ -224,100 +250,65 @@ export const EcolandHoy = () => {
           onStatusUpdated={refreshData}
         />
 
-        {/* BARRA DE HERRAMIENTAS INTELIGENTES P2 (EcoCoach, Qué puedo hacer, Hogar, Modo Simple) */}
-        <div className="flex flex-wrap items-center justify-between gap-2 p-2 bg-white rounded-2xl border shadow-2xs text-xs">
-          <div className="flex flex-wrap items-center gap-1.5">
+        {/* ACCIONES DEL DÍA: dos principales y el resto de herramientas en una fila neutra */}
+        <div className="space-y-2 p-3 bg-white rounded-2xl border shadow-2xs">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <Button
-              size="sm"
-              onClick={() => setIsWhatCanIDoOpen(true)}
-              className="bg-emerald-900 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl h-8 px-3 gap-1.5 shadow-2xs"
+              onClick={() => setIsSmartLoggerOpen(true)}
+              className="bg-emerald-900 hover:bg-emerald-800 text-white font-semibold text-sm rounded-xl h-11 gap-2 shadow-xs"
             >
-              <Sparkles className="w-3.5 h-3.5 text-emerald-300" />
+              <Plus className="w-4 h-4" />
+              <span>Registrar comida</span>
+              <span className="sr-only">(Smart Food Logger 3.0)</span>
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => setIsWhatCanIDoOpen(true)}
+              className="border-emerald-300 text-emerald-900 hover:bg-emerald-50 hover:text-emerald-900 font-semibold text-sm rounded-xl h-11 gap-2"
+            >
+              <Sparkles className="w-4 h-4 text-emerald-700" />
               <span>¿Qué puedo hacer ahora?</span>
             </Button>
+          </div>
 
-            <Button
-              size="sm"
-              onClick={() => setIsSmartLoggerOpen(true)}
-              className="bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs rounded-xl h-8 px-3 gap-1.5 shadow-2xs"
+          <div className="flex items-center gap-2 overflow-x-auto -mx-1 px-1 pb-0.5 [scrollbar-width:none]">
+            {[
+              { label: 'Mi Despensa', icon: Package, onClick: () => setIsPantryModalOpen(true) },
+              { label: 'Recetas & Cocina', icon: ChefHat, onClick: () => setIsRecipeModalOpen(true) },
+              { label: 'Hogar Ecoland', icon: Users, onClick: () => setIsHouseholdModalOpen(true) },
+              { label: 'Presupuesto', icon: Wallet, onClick: () => setIsBudgetModalOpen(true) },
+              { label: 'Exportar Informe', icon: FileSpreadsheet, onClick: () => setIsExportModalOpen(true) },
+            ].map(tool => (
+              <button
+                key={tool.label}
+                type="button"
+                onClick={tool.onClick}
+                className="shrink-0 inline-flex items-center gap-1.5 h-10 px-3.5 rounded-xl border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:border-emerald-300 hover:bg-emerald-50/60 hover:text-emerald-900 transition-colors"
+              >
+                <tool.icon className="w-4 h-4 text-emerald-700" />
+                {tool.label}
+              </button>
+            ))}
+            <Link
+              to="/coach"
+              className="shrink-0 inline-flex items-center gap-1.5 h-10 px-3.5 rounded-xl border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:border-emerald-300 hover:bg-emerald-50/60 hover:text-emerald-900 transition-colors"
             >
-              <Sparkles className="w-3.5 h-3.5 text-emerald-300" />
-              <span>Smart Food Logger 3.0</span>
-            </Button>
-
-            <Button
-              asChild
-              size="sm"
-              variant="outline"
-              className="border-emerald-300 text-emerald-900 hover:bg-emerald-50 font-bold text-xs rounded-xl h-8 px-3 gap-1.5"
-            >
-              <Link to="/coach">
-                <Bot className="w-3.5 h-3.5 text-emerald-800" />
-                <span>EcoCoach</span>
-              </Link>
-            </Button>
-
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => setIsHouseholdModalOpen(true)}
-              className="border-slate-300 text-slate-700 hover:bg-slate-100 font-semibold text-xs rounded-xl h-8 px-3 gap-1.5"
-            >
-              <Users className="w-3.5 h-3.5 text-slate-600" />
-              <span>Hogar Ecoland</span>
-            </Button>
-
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => setIsPantryModalOpen(true)}
-              className="border-emerald-300 text-emerald-900 bg-emerald-50/50 hover:bg-emerald-100 font-semibold text-xs rounded-xl h-8 px-3 gap-1.5"
-            >
-              <Package className="w-3.5 h-3.5 text-emerald-800" />
-              <span>Mi Despensa</span>
-            </Button>
-
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => setIsRecipeModalOpen(true)}
-              className="border-emerald-300 text-emerald-900 bg-emerald-50/50 hover:bg-emerald-100 font-semibold text-xs rounded-xl h-8 px-3 gap-1.5"
-            >
-              <ChefHat className="w-3.5 h-3.5 text-emerald-800" />
-              <span>Recetas & Cocina</span>
-            </Button>
-
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => setIsBudgetModalOpen(true)}
-              className="border-amber-300 text-amber-900 bg-amber-50/50 hover:bg-amber-100 font-semibold text-xs rounded-xl h-8 px-3 gap-1.5"
-            >
-              <Wallet className="w-3.5 h-3.5 text-amber-800" />
-              <span>Presupuesto</span>
-            </Button>
-
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => setIsExportModalOpen(true)}
-              className="border-blue-300 text-blue-900 bg-blue-50/50 hover:bg-blue-100 font-semibold text-xs rounded-xl h-8 px-3 gap-1.5"
-            >
-              <FileSpreadsheet className="w-3.5 h-3.5 text-blue-800" />
-              <span>Exportar Informe</span>
-            </Button>
-
+              <Bot className="w-4 h-4 text-emerald-700" />
+              EcoCoach
+            </Link>
             <button
+              type="button"
               onClick={() => setIsCommandPaletteOpen(true)}
-              className="flex items-center gap-2 px-3 py-1 bg-slate-100 hover:bg-slate-200 border border-slate-300/80 rounded-xl text-slate-600 text-xs font-medium transition-colors shadow-2xs"
+              className="shrink-0 inline-flex items-center gap-1.5 h-10 px-3.5 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-600 hover:bg-slate-100 transition-colors"
               title="Comando universal (Ctrl+K o Cmd+K)"
             >
-              <Search className="w-3.5 h-3.5 text-slate-500" />
+              <Search className="w-4 h-4 text-slate-500" />
               <span>Buscar o comando</span>
-              <kbd className="px-1.5 py-0.5 text-[10px] bg-white border border-slate-300 rounded shadow-2xs font-mono text-slate-500 font-bold">⌘K</kbd>
+              <kbd className="px-1.5 py-0.5 text-xs bg-white border border-slate-300 rounded text-slate-500">⌘K</kbd>
             </button>
           </div>
 
+          <div className="flex flex-wrap items-center justify-between gap-2">
           <OfflineIndicatorBar />
 
           {/* Toggle Modo Simple vs Nutrición (P2-F) */}
@@ -349,7 +340,11 @@ export const EcolandHoy = () => {
               Modo Nutrición
             </button>
           </div>
+          </div>
         </div>
+
+        {/* AVISOS DE REPOSICIÓN: solo si algo se está acabando y los avisos están activos */}
+        <RestockDueBanner />
 
         {/* 1. CABECERA CONTEXTUAL ADAPTADA POR HORARIO (P1-A Punto 1) */}
         <div className="bg-white p-5 sm:p-6 rounded-3xl border shadow-2xs space-y-3">
@@ -359,12 +354,12 @@ export const EcolandHoy = () => {
                 <span>{new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}</span>
                 <span>•</span>
                 <span className="text-emerald-800 font-bold">Ecoland Hoy</span>
-                <Badge variant="outline" className="text-[10px] font-bold border-emerald-300 text-emerald-800 capitalize">
+                <Badge variant="outline" className="text-xs font-bold border-emerald-300 text-emerald-800 capitalize">
                   {timeSlot === 'desayuno' ? '🌅 Mañana' : timeSlot === 'comida' ? '☀️ Mediodía' : timeSlot === 'tarde' ? '🌤️ Tarde' : '🌙 Noche'}
                 </Badge>
               </div>
               <h1 className="font-display text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-                {greetingTime}, <span className="text-emerald-800">{userName}</span>
+                {greetingTime}{userName && <>, <span className="text-emerald-800">{userName}</span></>}
               </h1>
               <p className="text-xs text-slate-600 mt-1 leading-relaxed">
                 {contextTip}
@@ -381,12 +376,12 @@ export const EcolandHoy = () => {
                   <SlidersHorizontal className="h-4 w-4" />
                 </div>
                 <div>
-                  <span className="text-[10px] text-slate-400 block font-semibold uppercase">Tu Objetivo Activo</span>
+                  <span className="text-xs text-slate-500 block font-semibold uppercase">Tu Objetivo Activo</span>
                   <span className="text-xs font-bold text-slate-800 truncate block max-w-[190px]">
                     {goals.goalTitle}
                   </span>
                 </div>
-                <ChevronDown className="h-4 w-4 text-slate-400 ml-1 shrink-0" />
+                <ChevronDown className="h-4 w-4 text-slate-500 ml-1 shrink-0" />
               </button>
 
               {/* Dropdown de 10 Objetivos */}
@@ -398,7 +393,7 @@ export const EcolandHoy = () => {
                     exit={{ opacity: 0, y: -5 }}
                     className="absolute right-0 top-full mt-2 w-80 bg-white rounded-2xl border shadow-xl p-2 z-30 space-y-1"
                   >
-                    <span className="text-[10px] uppercase font-bold text-slate-400 px-3 py-1 block">
+                    <span className="text-xs uppercase font-bold text-slate-500 px-3 py-1 block">
                       Elige tu enfoque de salud:
                     </span>
                     <div className="max-h-64 overflow-y-auto space-y-1">
@@ -413,7 +408,7 @@ export const EcolandHoy = () => {
                           }`}
                         >
                           <span className="truncate pr-2">{g.title}</span>
-                          <Badge variant="outline" className="text-[10px] font-mono shrink-0">
+                          <Badge variant="outline" className="text-xs tabular-nums shrink-0">
                             {g.cals} kcal
                           </Badge>
                         </button>
@@ -513,7 +508,7 @@ export const EcolandHoy = () => {
                 <AlertTriangle className="w-5 h-5 text-amber-700" />
               </div>
               <div>
-                <span className="text-[10px] font-black uppercase text-amber-800 tracking-wider block">
+                <span className="text-xs font-black uppercase text-amber-800 tracking-wider block">
                   Evita Desperdicio · Úsalo Pronto
                 </span>
                 <span className="text-xs text-slate-800 font-bold block">
@@ -541,10 +536,10 @@ export const EcolandHoy = () => {
             <div>
               <span className="text-xs text-slate-500 font-medium">Calorías de hoy</span>
               <div className="flex items-baseline gap-2 mt-0.5">
-                <span className="font-mono text-3xl sm:text-4xl font-black text-slate-900">
+                <span className="tabular-nums text-3xl sm:text-4xl font-black text-slate-900">
                   {totalCalories}
                 </span>
-                <span className="text-slate-400 text-sm font-semibold">
+                <span className="text-slate-500 text-sm font-semibold">
                   / {goals.targetCalories} kcal
                 </span>
               </div>
@@ -552,12 +547,12 @@ export const EcolandHoy = () => {
 
             <div className="flex items-center gap-3">
               <div className="text-right">
-                <span className="text-[10px] text-slate-400 block font-semibold uppercase">Te quedan</span>
-                <span className="font-mono text-lg font-bold text-emerald-800">
+                <span className="text-xs text-slate-500 block font-semibold uppercase">Te quedan</span>
+                <span className="tabular-nums text-lg font-bold text-emerald-800">
                   {remainingCalories} kcal
                 </span>
               </div>
-              <div className="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center font-bold text-emerald-900 text-sm font-mono border border-emerald-200">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center font-bold text-emerald-900 text-sm tabular-nums border border-emerald-200">
                 {caloriePercent}%
               </div>
             </div>
@@ -586,16 +581,16 @@ export const EcolandHoy = () => {
               </div>
               <div className="flex items-center gap-2 shrink-0">
                 <span className="text-[11px] font-bold text-emerald-800 uppercase">Avance:</span>
-                <span className="font-mono font-black text-emerald-950 text-base">{caloriePercent}%</span>
+                <span className="tabular-nums font-black text-emerald-950 text-base">{caloriePercent}%</span>
               </div>
             </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
             <div className="p-3.5 rounded-2xl bg-slate-50 border space-y-1">
-              <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Proteína</span>
+              <span className="text-xs text-slate-500 font-bold uppercase tracking-wider block">Proteína</span>
               <div className="flex items-baseline justify-between">
-                <strong className="font-mono text-base text-slate-900 font-bold">{totalProtein}g</strong>
-                <span className="text-[10px] text-slate-400 font-mono">/ {goals.targetProteinGrams}g</span>
+                <strong className="tabular-nums text-base text-slate-900 font-bold">{totalProtein}g</strong>
+                <span className="text-xs text-slate-500 tabular-nums">/ {goals.targetProteinGrams}g</span>
               </div>
               <div className="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
                 <div 
@@ -606,10 +601,10 @@ export const EcolandHoy = () => {
             </div>
 
             <div className="p-3.5 rounded-2xl bg-slate-50 border space-y-1">
-              <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Hidratos</span>
+              <span className="text-xs text-slate-500 font-bold uppercase tracking-wider block">Hidratos</span>
               <div className="flex items-baseline justify-between">
-                <strong className="font-mono text-base text-slate-900 font-bold">{totalCarbs}g</strong>
-                <span className="text-[10px] text-slate-400 font-mono">/ {goals.targetCarbsGrams}g</span>
+                <strong className="tabular-nums text-base text-slate-900 font-bold">{totalCarbs}g</strong>
+                <span className="text-xs text-slate-500 tabular-nums">/ {goals.targetCarbsGrams}g</span>
               </div>
               <div className="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
                 <div 
@@ -620,10 +615,10 @@ export const EcolandHoy = () => {
             </div>
 
             <div className="p-3.5 rounded-2xl bg-slate-50 border space-y-1">
-              <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Grasas Saludables</span>
+              <span className="text-xs text-slate-500 font-bold uppercase tracking-wider block">Grasas Saludables</span>
               <div className="flex items-baseline justify-between">
-                <strong className="font-mono text-base text-slate-900 font-bold">{totalFats}g</strong>
-                <span className="text-[10px] text-slate-400 font-mono">/ {goals.targetFatsGrams}g</span>
+                <strong className="tabular-nums text-base text-slate-900 font-bold">{totalFats}g</strong>
+                <span className="text-xs text-slate-500 tabular-nums">/ {goals.targetFatsGrams}g</span>
               </div>
               <div className="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
                 <div 
@@ -635,12 +630,12 @@ export const EcolandHoy = () => {
 
             <div className="p-3.5 rounded-2xl bg-emerald-50/80 border border-emerald-200 space-y-1">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] text-emerald-900 font-bold uppercase tracking-wider block">Fibra</span>
-                <span className="text-[9px] bg-emerald-200/80 text-emerald-950 px-1.5 py-0.2 rounded-md font-bold">Digestiva</span>
+                <span className="text-xs text-emerald-900 font-bold uppercase tracking-wider block">Fibra</span>
+                <span className="text-xs bg-emerald-200/80 text-emerald-950 px-1.5 py-0.2 rounded-md font-bold">Digestiva</span>
               </div>
               <div className="flex items-baseline justify-between">
-                <strong className="font-mono text-base text-emerald-950 font-bold">{totalFiber}g</strong>
-                <span className="text-[10px] text-emerald-700 font-mono">/ {goals.targetFiberGrams}g</span>
+                <strong className="tabular-nums text-base text-emerald-950 font-bold">{totalFiber}g</strong>
+                <span className="text-xs text-emerald-700 tabular-nums">/ {goals.targetFiberGrams}g</span>
               </div>
               <div className="w-full bg-emerald-200 rounded-full h-1.5 overflow-hidden">
                 <div 
@@ -660,7 +655,7 @@ export const EcolandHoy = () => {
               </div>
               <div>
                 <strong className="text-slate-900 text-xs block">Hidratación Diaria</strong>
-                <span className="text-[11px] text-slate-500 font-mono">
+                <span className="text-[11px] text-slate-500 tabular-nums">
                   {waterGlasses} de {goals.targetWaterGlasses} vasos (~{(waterGlasses * 0.25).toFixed(1)} L)
                 </span>
               </div>
@@ -731,7 +726,7 @@ export const EcolandHoy = () => {
                 <Bookmark className="w-3.5 h-3.5 text-emerald-700" />
                 Tus Comidas Guardadas ({savedMeals.length})
               </span>
-              <span className="text-[10px] text-slate-400">Tus platos personalizados</span>
+              <span className="text-xs text-slate-500">Tus platos personalizados</span>
             </div>
 
             <div className="grid sm:grid-cols-3 gap-2">
@@ -741,18 +736,18 @@ export const EcolandHoy = () => {
                   className="p-3 bg-white border border-slate-200 hover:border-emerald-300 rounded-2xl flex flex-col justify-between shadow-2xs transition-all"
                 >
                   <div>
-                    <div className="flex items-center justify-between text-[10px] mb-1">
-                      <Badge variant="outline" className="capitalize text-emerald-800 border-emerald-300 text-[9px]">
+                    <div className="flex items-center justify-between text-xs mb-1">
+                      <Badge variant="outline" className="capitalize text-emerald-800 border-emerald-300 text-xs">
                         {saved.meal}
                       </Badge>
-                      <span className="font-mono font-bold text-slate-700">{saved.calories} kcal</span>
+                      <span className="tabular-nums font-bold text-slate-700">{saved.calories} kcal</span>
                     </div>
                     <strong className="text-xs text-slate-900 block truncate">{saved.name}</strong>
-                    <span className="text-[10px] text-slate-500 block line-clamp-1">{saved.description}</span>
+                    <span className="text-xs text-slate-500 block line-clamp-1">{saved.description}</span>
                   </div>
 
                   <div className="flex items-center justify-between pt-2 mt-2 border-t border-slate-100">
-                    <span className="text-[9px] text-slate-400">P: {saved.protein}g · F: {saved.fiber}g</span>
+                    <span className="text-xs text-slate-500">P: {saved.protein}g · F: {saved.fiber}g</span>
                     <Button
                       onClick={() => {
                         dailyNutritionStore.logSavedMeal(saved.id);
@@ -760,7 +755,7 @@ export const EcolandHoy = () => {
                         toast({ title: "Comida guardada registrada en tu día" });
                       }}
                       size="sm"
-                      className="h-6 px-2.5 text-[10px] bg-emerald-800 hover:bg-emerald-900 text-white rounded-lg font-bold"
+                      className="h-6 px-2.5 text-xs bg-emerald-800 hover:bg-emerald-900 text-white rounded-lg font-bold"
                     >
                       + Anotar
                     </Button>
@@ -777,7 +772,7 @@ export const EcolandHoy = () => {
             <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
               Lo que llevas anotado hoy:
             </h4>
-            <span className="text-xs font-mono text-slate-400">
+            <span className="text-xs tabular-nums text-slate-500">
               {logs.length} {logs.length === 1 ? 'plato' : 'platos'}
             </span>
           </div>
@@ -792,7 +787,7 @@ export const EcolandHoy = () => {
                   <div className="flex items-center gap-2">
                     <span className="font-bold text-xs capitalize text-slate-800">{mealKey}</span>
                     {mealEntries.length > 0 && (
-                      <span className="text-[10px] text-slate-400 font-mono">
+                      <span className="text-xs text-slate-500 tabular-nums">
                         ({mealCals} kcal)
                       </span>
                     )}
@@ -810,7 +805,7 @@ export const EcolandHoy = () => {
                 </div>
 
                 {mealEntries.length === 0 ? (
-                  <p className="text-[11px] text-slate-400 italic py-1">
+                  <p className="text-[11px] text-slate-500 italic py-1">
                     Nada registrado todavía en {mealKey}.
                   </p>
                 ) : (
@@ -823,18 +818,18 @@ export const EcolandHoy = () => {
                       >
                         <div className="truncate pr-2">
                           <span className="font-semibold text-slate-800 truncate block">{entry.name}</span>
-                          <span className="text-[10px] text-slate-400 font-mono">
+                          <span className="text-xs text-slate-500 tabular-nums">
                             {entry.timeString} • {entry.protein}g prot • {entry.fiber}g fibra
                           </span>
                         </div>
 
                         <div className="flex items-center gap-2.5 shrink-0">
-                          <span className="font-mono font-bold text-slate-900 text-xs">
+                          <span className="tabular-nums font-bold text-slate-900 text-xs">
                             {entry.calories} kcal
                           </span>
                           <button
                             onClick={() => handleRemoveLog(entry.id)}
-                            className="text-slate-400 hover:text-rose-600 p-1 transition-colors"
+                            className="text-slate-500 hover:text-rose-600 p-1 transition-colors"
                             title="Eliminar plato"
                           >
                             <Trash2 className="h-3.5 w-3.5" />
@@ -861,7 +856,7 @@ export const EcolandHoy = () => {
               </div>
               <div>
                 <strong className="text-xs text-slate-900 block">Evolución y Tendencia de Peso (Opcional)</strong>
-                <span className="text-[10px] text-slate-500">Tendencia suavizada que ignora las fluctuaciones diarias de líquidos</span>
+                <span className="text-xs text-slate-500">Tendencia suavizada que ignora las fluctuaciones diarias de líquidos</span>
               </div>
             </div>
 
@@ -896,13 +891,13 @@ export const EcolandHoy = () => {
               </div>
 
               {weightHistory.length > 0 && (
-                <div className="flex items-center gap-4 text-xs font-mono bg-slate-50 p-2.5 rounded-xl border">
+                <div className="flex items-center gap-4 text-xs tabular-nums bg-slate-50 p-2.5 rounded-xl border">
                   <div>
-                    <span className="text-[10px] text-slate-400 block uppercase">Último peso:</span>
+                    <span className="text-xs text-slate-500 block uppercase">Último peso:</span>
                     <strong className="text-slate-900">{weightHistory.slice(-1)[0].weightKg} kg</strong>
                   </div>
                   <div className="border-l pl-4">
-                    <span className="text-[10px] text-slate-400 block uppercase">Tendencia suavizada:</span>
+                    <span className="text-xs text-slate-500 block uppercase">Tendencia suavizada:</span>
                     <strong className="text-emerald-800">{weightHistory.slice(-1)[0].smoothedTrendKg} kg</strong>
                   </div>
                 </div>
@@ -986,13 +981,10 @@ export const EcolandHoy = () => {
       <CommandPaletteModal
         isOpen={isCommandPaletteOpen}
         onClose={() => setIsCommandPaletteOpen(false)}
-        onOpenSmartLogger={() => setIsSmartLoggerOpen(true)}
         onOpenPantry={() => setIsPantryModalOpen(true)}
         onOpenRecipes={() => setIsRecipeModalOpen(true)}
         onOpenBudget={() => setIsBudgetModalOpen(true)}
         onOpenExport={() => setIsExportModalOpen(true)}
-        onOpenHousehold={() => setIsHouseholdModalOpen(true)}
-        onOpenWhatCanIDo={() => setIsWhatCanIDoOpen(true)}
       />
 
       <HouseholdBudgetModal

@@ -85,7 +85,7 @@ export const NutritionalExportModal: React.FC<NutritionalExportModalProps> = ({
                   <h2 className="text-base sm:text-lg font-bold text-slate-900">
                     Exportar Informe de Hábitos para Profesionales
                   </h2>
-                  <Badge variant="outline" className="text-[10px] bg-emerald-50 text-emerald-800 border-emerald-300">
+                  <Badge variant="outline" className="text-xs bg-emerald-50 text-emerald-800 border-emerald-300">
                     P4 Export
                   </Badge>
                 </div>
@@ -106,7 +106,7 @@ export const NutritionalExportModal: React.FC<NutritionalExportModalProps> = ({
               <ShieldAlert className="w-4 h-4 text-amber-800 shrink-0 mt-0.5" />
               <div className="space-y-0.5 leading-tight">
                 <strong className="block text-[11px] font-bold">Aviso Ético y Legal (No Diagnóstico)</strong>
-                <p className="text-[10px] text-amber-900/90 leading-relaxed">
+                <p className="text-xs text-amber-900/90 leading-relaxed">
                   {report.legalMedicalDisclaimer}
                 </p>
               </div>
@@ -115,33 +115,33 @@ export const NutritionalExportModal: React.FC<NutritionalExportModalProps> = ({
             {/* Tarjetas de Promedios */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
               <div className="p-3 bg-slate-50 border rounded-2xl">
-                <span className="text-[10px] text-slate-400 block font-bold uppercase">Calorías Medias</span>
-                <strong className="text-lg font-black text-slate-900 font-mono">
+                <span className="text-xs text-slate-500 block font-bold uppercase">Calorías Medias</span>
+                <strong className="text-lg font-black text-slate-900 tabular-nums">
                   {report.nutritionalAverages.averageCalories} kcal
                 </strong>
               </div>
 
               <div className="p-3 bg-emerald-50/50 border border-emerald-200 rounded-2xl">
-                <span className="text-[10px] text-emerald-800 block font-bold uppercase">Fibra Diaria</span>
-                <strong className="text-lg font-black text-emerald-950 font-mono">
+                <span className="text-xs text-emerald-800 block font-bold uppercase">Fibra Diaria</span>
+                <strong className="text-lg font-black text-emerald-950 tabular-nums">
                   {report.nutritionalAverages.averageFiberGrams} g
                 </strong>
-                <span className="text-[9px] text-emerald-700 block">{report.nutritionalAverages.fiberGoalMetPercent}% del objetivo</span>
+                <span className="text-xs text-emerald-700 block">{report.nutritionalAverages.fiberGoalMetPercent}% del objetivo</span>
               </div>
 
               <div className="p-3 bg-blue-50/50 border border-blue-200 rounded-2xl">
-                <span className="text-[10px] text-blue-800 block font-bold uppercase">Proteína Media</span>
-                <strong className="text-lg font-black text-blue-950 font-mono">
+                <span className="text-xs text-blue-800 block font-bold uppercase">Proteína Media</span>
+                <strong className="text-lg font-black text-blue-950 tabular-nums">
                   {report.nutritionalAverages.averageProteinGrams} g
                 </strong>
               </div>
 
               <div className="p-3 bg-cyan-50/50 border border-cyan-200 rounded-2xl">
-                <span className="text-[10px] text-cyan-800 block font-bold uppercase">Agua Promedio</span>
-                <strong className="text-lg font-black text-cyan-950 font-mono">
+                <span className="text-xs text-cyan-800 block font-bold uppercase">Agua Promedio</span>
+                <strong className="text-lg font-black text-cyan-950 tabular-nums">
                   ~{report.nutritionalAverages.averageWaterGlasses * 250} ml
                 </strong>
-                <span className="text-[9px] text-cyan-700 block">{report.nutritionalAverages.averageWaterGlasses} vasos/día</span>
+                <span className="text-xs text-cyan-700 block">{report.nutritionalAverages.averageWaterGlasses} vasos/día</span>
               </div>
             </div>
 
@@ -168,12 +168,12 @@ export const NutritionalExportModal: React.FC<NutritionalExportModalProps> = ({
                 )}
                 {report.foodFingerprintProfile.declaredAllergies.length > 0 ? (
                   report.foodFingerprintProfile.declaredAllergies.map((al, idx) => (
-                    <Badge key={idx} variant="destructive" className="text-[10px]">
+                    <Badge key={idx} variant="destructive" className="text-xs">
                       Alergia: {al}
                     </Badge>
                   ))
                 ) : (
-                  <span className="text-slate-400">Sin alergias declaradas registradas.</span>
+                  <span className="text-slate-500">Sin alergias declaradas registradas.</span>
                 )}
               </div>
             </div>
@@ -188,9 +188,9 @@ export const NutritionalExportModal: React.FC<NutritionalExportModalProps> = ({
                   <div key={idx} className="flex items-center justify-between p-2 bg-slate-50 rounded-xl">
                     <div>
                       <strong className="text-slate-900 block text-xs">{item.name}</strong>
-                      <span className="text-[10px] text-slate-400">{item.category}</span>
+                      <span className="text-xs text-slate-500">{item.category}</span>
                     </div>
-                    <Badge variant="secondary" className="text-[10px] font-mono">
+                    <Badge variant="secondary" className="text-xs tabular-nums">
                       {item.estimatedFrequency}
                     </Badge>
                   </div>
@@ -201,7 +201,7 @@ export const NutritionalExportModal: React.FC<NutritionalExportModalProps> = ({
 
           {/* Footer de Acciones */}
           <div className="p-4 border-t bg-slate-50/70 flex items-center justify-between">
-            <span className="text-[11px] font-mono text-slate-400">
+            <span className="text-[11px] tabular-nums text-slate-500">
               Reporte ID: {report.reportId}
             </span>
             <div className="flex items-center gap-2">

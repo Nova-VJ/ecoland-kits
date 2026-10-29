@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { generateInvoicePdf } from '@/lib/invoicePdfGenerator';
+import { formatPrice } from '@/lib/utils';
 
 interface OrderItem {
   id: string;
@@ -136,7 +137,7 @@ export const OrderHistory = ({ userId, userEmail, userName }: { userId: string; 
               <Badge className={statusColors[order.status] || 'bg-gray-100 text-gray-700'}>
                 {statusLabels[order.status] || order.status}
               </Badge>
-              <span className="font-semibold text-primary">{order.total.toFixed(2)}€</span>
+              <span className="font-semibold text-primary">{formatPrice(order.total)}</span>
               {expandedOrder === order.id ? (
                 <ChevronUp className="h-5 w-5 text-muted-foreground" />
               ) : (
@@ -162,10 +163,10 @@ export const OrderHistory = ({ userId, userEmail, userName }: { userId: string; 
                       <div>
                         <p className="font-medium">{item.item_name}</p>
                         <p className="text-sm text-muted-foreground">
-                          {item.quantity} x {item.unit_price.toFixed(2)}€
+                          {item.quantity} x {formatPrice(item.unit_price)}
                         </p>
                       </div>
-                      <span className="font-semibold">{item.total_price.toFixed(2)}€</span>
+                      <span className="font-semibold">{formatPrice(item.total_price)}</span>
                     </div>
                   ))}
                 </div>
@@ -190,7 +191,7 @@ export const OrderHistory = ({ userId, userEmail, userName }: { userId: string; 
                   <div>
                     <p className="text-sm font-medium">Resumen</p>
                     <p className="text-sm text-muted-foreground">
-                      Subtotal: {order.subtotal.toFixed(2)}€ + Envío: {order.shipping_cost.toFixed(2)}€
+                      Subtotal: {formatPrice(order.subtotal)} + Envío: {formatPrice(order.shipping_cost)}
                     </p>
                   </div>
                 </div>

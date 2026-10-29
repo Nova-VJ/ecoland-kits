@@ -22,6 +22,7 @@ import { zeroFrictionPantryService } from '@/services/zeroFrictionPantryService'
 import { HouseholdBudgetModal } from '@/components/budget/HouseholdBudgetModal';
 import { Wallet } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { formatPrice } from '@/lib/utils';
 
 export const MiSemana = () => {
   const { toast } = useToast();
@@ -84,8 +85,8 @@ export const MiSemana = () => {
 
   // Cálculos consolidados del plan semanal
   const totalWeeklyCaloriesPerPerson = Math.round(plan.days.reduce((acc, d) => acc + d.almuerzo.calories + d.cena.calories, 0) / 7);
-  const averagePricePerServing = (plan.days.reduce((acc, d) => acc + d.almuerzo.pricePerServing + d.cena.pricePerServing, 0) / (plan.days.length * 2)).toFixed(2);
-  const totalPantrySavings = (plan.days.reduce((acc, d) => acc + (d.almuerzo.pricePerServing * (d.almuerzo.pantryCoveredPercent / 100)) + (d.cena.pricePerServing * (d.cena.pantryCoveredPercent / 100)), 0) * numPersons).toFixed(2);
+  const averagePricePerServing = (plan.days.reduce((acc, d) => acc + d.almuerzo.pricePerServing + d.cena.pricePerServing, 0) / (plan.days.length * 2));
+  const totalPantrySavings = (plan.days.reduce((acc, d) => acc + (d.almuerzo.pricePerServing * (d.almuerzo.pantryCoveredPercent / 100)) + (d.cena.pricePerServing * (d.cena.pantryCoveredPercent / 100)), 0) * numPersons);
 
   return (
     <div className="section-padding bg-slate-50/50 min-h-screen">
@@ -95,12 +96,9 @@ export const MiSemana = () => {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 md:p-8 rounded-3xl border shadow-2xs">
           <div className="space-y-1.5 max-w-2xl">
             <div className="flex items-center gap-2">
-              <span className="text-[10px] uppercase font-black tracking-widest text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full">
+              <span className="text-xs uppercase font-black tracking-widest text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full">
                 Planificación Inteligente & Sin Desperdicio
               </span>
-              <Badge variant="outline" className="text-[10px] text-slate-500 border-slate-300">
-                P1 Intelligence
-              </Badge>
             </div>
             <div className="flex items-center gap-2.5 flex-wrap">
               <h1 className="font-display text-2xl md:text-3xl font-black text-slate-900 tracking-tight flex items-center gap-2.5">
@@ -194,35 +192,35 @@ export const MiSemana = () => {
         {/* Resumen de Métricas Financieras y Nutricionales (P1-D Puntos 13 y 14: Nutrición por Euro) */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <div className="p-4 bg-white rounded-2xl border shadow-2xs space-y-1">
-            <span className="text-[10px] font-bold uppercase text-slate-400 block tracking-wider">Coste medio / ración</span>
-            <strong className="text-xl font-black text-slate-900 block font-mono">
-              ~{averagePricePerServing} €
+            <span className="text-xs font-bold uppercase text-slate-500 block tracking-wider">Coste medio / ración</span>
+            <strong className="text-xl font-black text-slate-900 block tabular-nums">
+              ~{formatPrice(averagePricePerServing)}
             </strong>
-            <span className="text-[10px] text-emerald-800 font-semibold block">Cocina casera 100% bio</span>
+            <span className="text-xs text-emerald-800 font-semibold block">Cocina casera 100% bio</span>
           </div>
 
           <div className="p-4 bg-emerald-50/70 border border-emerald-200 rounded-2xl shadow-2xs space-y-1">
-            <span className="text-[10px] font-bold uppercase text-emerald-800 block tracking-wider">Ahorro en Despensa</span>
-            <strong className="text-xl font-black text-emerald-950 block font-mono">
-              +{totalPantrySavings} €
+            <span className="text-xs font-bold uppercase text-emerald-800 block tracking-wider">Ahorro en Despensa</span>
+            <strong className="text-xl font-black text-emerald-950 block tabular-nums">
+              +{formatPrice(totalPantrySavings)}
             </strong>
-            <span className="text-[10px] text-emerald-800 font-semibold block">Ingredientes que ya tienes</span>
+            <span className="text-xs text-emerald-800 font-semibold block">Ingredientes que ya tienes</span>
           </div>
 
           <div className="p-4 bg-white rounded-2xl border shadow-2xs space-y-1">
-            <span className="text-[10px] font-bold uppercase text-slate-400 block tracking-wider">Nutrición por Euro</span>
-            <strong className="text-xl font-black text-slate-900 block font-mono">
-              12.4 g <span className="text-xs font-normal text-slate-400">prot/€</span>
+            <span className="text-xs font-bold uppercase text-slate-500 block tracking-wider">Nutrición por Euro</span>
+            <strong className="text-xl font-black text-slate-900 block tabular-nums">
+              12.4 g <span className="text-xs font-normal text-slate-500">prot/€</span>
             </strong>
-            <span className="text-[10px] text-slate-500 block">Alta densidad proteica bio</span>
+            <span className="text-xs text-slate-500 block">Alta densidad proteica bio</span>
           </div>
 
           <div className="p-4 bg-white rounded-2xl border shadow-2xs space-y-1">
-            <span className="text-[10px] font-bold uppercase text-slate-400 block tracking-wider">Fibra por Euro</span>
-            <strong className="text-xl font-black text-emerald-900 block font-mono">
-              7.8 g <span className="text-xs font-normal text-slate-400">fibra/€</span>
+            <span className="text-xs font-bold uppercase text-slate-500 block tracking-wider">Fibra por Euro</span>
+            <strong className="text-xl font-black text-emerald-900 block tabular-nums">
+              7.8 g <span className="text-xs font-normal text-slate-500">fibra/€</span>
             </strong>
-            <span className="text-[10px] text-slate-500 block">Aporte prebiótico de despensa</span>
+            <span className="text-xs text-slate-500 block">Aporte prebiótico de despensa</span>
           </div>
         </div>
 
@@ -230,7 +228,7 @@ export const MiSemana = () => {
         <div className="bg-emerald-950 text-white rounded-3xl p-5 sm:p-6 shadow-md space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="space-y-1">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-800 text-emerald-200 text-[10px] font-bold">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-800 text-emerald-200 text-xs font-bold">
                 <Clock className="w-3.5 h-3.5" />
                 <span>PREPARACIÓN ANTICIPADA · 35 MINUTOS EL DOMINGO</span>
               </div>
@@ -263,7 +261,7 @@ export const MiSemana = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   {batchPrepPlan.steps.map((step, idx) => (
                     <div key={step.id} className="p-3.5 rounded-2xl bg-emerald-900/60 border border-emerald-800 space-y-1.5">
-                      <div className="flex items-center justify-between text-[10px] text-emerald-300 font-mono">
+                      <div className="flex items-center justify-between text-xs text-emerald-300 tabular-nums">
                         <span className="font-bold uppercase tracking-wider">Paso {idx + 1}</span>
                         <span>⏱ {step.timeMinutes} min</span>
                       </div>
@@ -285,12 +283,12 @@ export const MiSemana = () => {
         <div className="p-4 bg-slate-50 border rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-600">
           <div className="flex items-center gap-2">
             <span className="font-bold text-slate-800">Transparencia económica:</span>
-            <span>Valor total ingredientes utilizados: <strong>~{(parseFloat(averagePricePerServing) * numPersons * 7).toFixed(2)} €</strong></span>
+            <span>Valor total ingredientes utilizados: <strong>~{formatPrice((averagePricePerServing * numPersons * 7))}</strong></span>
           </div>
           <div className="flex items-center gap-4 text-[11px]">
-            <span className="text-emerald-800 font-semibold">Ya en despensa: +{totalPantrySavings} €</span>
+            <span className="text-emerald-800 font-semibold">Ya en despensa: +{formatPrice(totalPantrySavings)}</span>
             <span className="text-amber-900 font-bold bg-amber-100/70 px-2.5 py-1 rounded-xl border border-amber-300">
-              Dinero que necesitas gastar hoy: ~{(parseFloat(averagePricePerServing) * numPersons * 7 - parseFloat(totalPantrySavings)).toFixed(2)} €
+              Dinero que necesitas gastar hoy: ~{formatPrice((averagePricePerServing * numPersons * 7 - totalPantrySavings))}
             </span>
           </div>
         </div>
@@ -302,7 +300,7 @@ export const MiSemana = () => {
               <ChefHat className="w-4 h-4 text-emerald-800" />
               Menú Semanal Flexible (Lunes a Domingo)
             </h3>
-            <span className="text-[11px] text-slate-400">Pulsa cualquier plato para ver ingredientes</span>
+            <span className="text-[11px] text-slate-500">Pulsa cualquier plato para ver ingredientes</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-3">
@@ -319,7 +317,7 @@ export const MiSemana = () => {
                       const updated = dailyNutritionStore.setDayFlexibilityType(day.dayIndex, e.target.value as any);
                       setPlan({ ...updated });
                     }}
-                    className="text-[9px] font-bold bg-slate-100 border border-slate-200 rounded-md px-1 py-0.5 text-slate-700"
+                    className="text-xs font-bold bg-slate-100 border border-slate-200 rounded-md px-1 py-0.5 text-slate-700"
                   >
                     <option value="PLANIFICADO">Planificado</option>
                     <option value="COMER_FUERA">🍽️ Comer fuera</option>
@@ -332,31 +330,31 @@ export const MiSemana = () => {
                   {/* Comida / Almuerzo */}
                   {(selectedMode === 'comidas_cenas' || selectedMode === 'completa') && (
                     <div className="p-2 rounded-xl bg-slate-50 border space-y-1 text-[11px]">
-                      <span className="text-[9px] font-bold text-slate-400 uppercase block">Comida</span>
+                      <span className="text-xs font-bold text-slate-500 uppercase block">Comida</span>
                       <strong className="text-slate-800 line-clamp-2 leading-tight block">
                         {day.almuerzo.title}
                       </strong>
-                      <div className="flex justify-between items-center text-[10px] pt-1 text-slate-500 font-mono">
+                      <div className="flex justify-between items-center text-xs pt-1 text-slate-500 tabular-nums">
                         <span>{day.almuerzo.calories} kcal</span>
-                        <span className="text-emerald-800 font-bold">{day.almuerzo.pricePerServing.toFixed(2)}€/rac</span>
+                        <span className="text-emerald-800 font-bold">{formatPrice(day.almuerzo.pricePerServing)}/rac</span>
                       </div>
                     </div>
                   )}
 
                   {/* Cena */}
                   <div className="p-2 rounded-xl bg-emerald-50/70 border border-emerald-100 space-y-1 text-[11px]">
-                    <span className="text-[9px] font-bold text-emerald-800 uppercase block">Cena</span>
+                    <span className="text-xs font-bold text-emerald-800 uppercase block">Cena</span>
                     <strong className="text-emerald-950 line-clamp-2 leading-tight block">
                       {day.cena.title}
                     </strong>
-                    <div className="flex justify-between items-center text-[10px] pt-1 text-slate-500 font-mono">
+                    <div className="flex justify-between items-center text-xs pt-1 text-slate-500 tabular-nums">
                       <span>{day.cena.calories} kcal</span>
-                      <span className="text-emerald-800 font-bold">{day.cena.pricePerServing.toFixed(2)}€/rac</span>
+                      <span className="text-emerald-800 font-bold">{formatPrice(day.cena.pricePerServing)}/rac</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="pt-1 border-t text-[10px] text-slate-400 flex items-center justify-between">
+                <div className="pt-1 border-t text-xs text-slate-500 flex items-center justify-between">
                   <span>⏱ {day.cena.prepMinutes} min</span>
                   <span className="text-emerald-700 font-bold">{day.cena.pantryCoveredPercent}% en casa</span>
                 </div>
@@ -408,8 +406,8 @@ export const MiSemana = () => {
                         <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
                         Te falta comprar ({shoppingList.filter(it => it.status === 'missing').length} ingredientes)
                       </span>
-                      <span className="text-[11px] font-mono font-bold text-emerald-900">
-                        Total: {shoppingList.filter(it => it.status === 'missing' && !it.checked).reduce((acc, it) => acc + it.priceEuro, 0).toFixed(2)} €
+                      <span className="text-[11px] tabular-nums font-bold text-emerald-900">
+                        Total: {formatPrice(shoppingList.filter(it => it.status === 'missing' && !it.checked).reduce((acc, it) => acc + it.priceEuro, 0))}
                       </span>
                     </div>
 
@@ -426,12 +424,12 @@ export const MiSemana = () => {
                               onChange={() => handleToggleItem(item.id)}
                               className="rounded text-emerald-800 w-4 h-4"
                             />
-                            <span className={`truncate ${item.checked ? 'line-through text-slate-400' : 'font-bold text-slate-900'}`}>
+                            <span className={`truncate ${item.checked ? 'line-through text-slate-500' : 'font-bold text-slate-900'}`}>
                               {item.name}
                             </span>
                           </label>
-                          <span className="font-mono font-bold text-emerald-900 shrink-0 text-xs">
-                            {item.priceEuro.toFixed(2)} €
+                          <span className="tabular-nums font-bold text-emerald-900 shrink-0 text-xs">
+                            {formatPrice(item.priceEuro)}
                           </span>
                         </div>
                       ))}
@@ -455,7 +453,7 @@ export const MiSemana = () => {
                             <Check className="w-3.5 h-3.5 text-emerald-600" />
                             <span>{item.name}</span>
                           </div>
-                          <span className="text-[10px] text-emerald-800 font-bold">En despensa</span>
+                          <span className="text-xs text-emerald-800 font-bold">En despensa</span>
                         </div>
                       ))}
                     </div>
@@ -474,7 +472,7 @@ export const MiSemana = () => {
                             className="p-2.5 rounded-xl border bg-slate-50 flex items-center justify-between text-xs text-slate-600"
                           >
                             <span>{item.name}</span>
-                            <span className="text-[10px] font-mono">{item.priceEuro.toFixed(2)} €</span>
+                            <span className="text-xs tabular-nums">{formatPrice(item.priceEuro)}</span>
                           </div>
                         ))}
                       </div>
@@ -489,7 +487,7 @@ export const MiSemana = () => {
                     className="flex-1 bg-emerald-900 hover:bg-emerald-800 text-white font-bold py-5 rounded-2xl text-xs gap-2 shadow-md"
                   >
                     <ShoppingBag className="w-4 h-4" />
-                    <span>Añadir faltantes al carrito ({shoppingList.filter(it => it.status === 'missing' && !it.checked).reduce((acc, it) => acc + it.priceEuro, 0).toFixed(2)} €)</span>
+                    <span>Añadir faltantes al carrito ({formatPrice(shoppingList.filter(it => it.status === 'missing' && !it.checked).reduce((acc, it) => acc + it.priceEuro, 0))})</span>
                   </Button>
                 </div>
               </motion.div>

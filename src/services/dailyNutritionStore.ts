@@ -8,6 +8,10 @@ import { productInsightsService } from './productInsightsService';
 
 export type MealType = 'desayuno' | 'comida' | 'cena' | 'snacks';
 
+// Otras pantallas usan "almuerzo" y "snack"; el diario los guarda como "comida" y "snacks"
+export const toMealType = (meal: string): MealType =>
+  meal === 'almuerzo' ? 'comida' : meal === 'snack' ? 'snacks' : (meal as MealType);
+
 export interface DailyMealEntry {
   id: string;
   name: string;
@@ -319,36 +323,8 @@ class DailyNutritionStore {
       if (raw) return JSON.parse(raw);
     } catch {}
 
-    const initial: DailyMealEntry[] = [
-      {
-        id: 'init_1',
-        name: 'Kéfir bio con copos de avena integral, nueces y semillas de chía',
-        meal: 'desayuno',
-        calories: 465,
-        protein: 18.5,
-        carbs: 52,
-        fats: 16,
-        fiber: 8.5,
-        timeString: '08:30',
-        isHabitual: true,
-        source: 'habitual'
-      },
-      {
-        id: 'init_2',
-        name: 'Guiso suave de lentejas pardinas bio con zanahoria y calabacín',
-        meal: 'comida',
-        calories: 520,
-        protein: 26,
-        carbs: 68,
-        fats: 9,
-        fiber: 14.5,
-        timeString: '14:15',
-        source: 'manual'
-      }
-    ];
-
-    this.saveLogs(initial);
-    return initial;
+    // Cliente nuevo: diario vacío, sin comidas de ejemplo que no ha registrado
+    return [];
   }
 
   public saveLogs(logs: DailyMealEntry[]) {
@@ -1239,13 +1215,8 @@ class DailyNutritionStore {
       if (raw) return JSON.parse(raw);
     } catch {}
 
-    const defaults: WeightRecord[] = [
-      { id: 'w1', dateStr: '2026-10-14', weightKg: 70.4, smoothedTrendKg: 70.4 },
-      { id: 'w2', dateStr: '2026-10-18', weightKg: 70.1, smoothedTrendKg: 70.2 },
-      { id: 'w3', dateStr: '2026-10-21', weightKg: 70.5, smoothedTrendKg: 70.2 },
-      { id: 'w4', dateStr: '2026-10-25', weightKg: 69.8, smoothedTrendKg: 70.0 },
-      { id: 'w5', dateStr: '2026-10-28', weightKg: 69.7, smoothedTrendKg: 69.9 },
-    ];
+    // Sin historial inventado: el cliente empieza sin registros de peso
+    const defaults: WeightRecord[] = [];
 
     try {
       localStorage.setItem(this.WEIGHT_RECORDS_KEY, JSON.stringify(defaults));

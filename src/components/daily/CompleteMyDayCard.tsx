@@ -10,6 +10,7 @@ import { dailyNutritionStore, CompleteMyDaySuggestion } from '@/services/dailyNu
 import { useCart } from '@/context/CartContext';
 import { allCatalogProducts } from '@/data/catalog/individual-products';
 import { useToast } from '@/hooks/use-toast';
+import { formatPrice } from '@/lib/utils';
 
 interface CompleteMyDayCardProps {
   onRecipeCooked: () => void;
@@ -36,7 +37,7 @@ export const CompleteMyDayCard = ({ onRecipeCooked }: CompleteMyDayCardProps) =>
 
     toast({
       title: "Ingredientes añadidos a tu cesta",
-      description: `Se han añadido los alimentos faltantes (${activeSuggestion.missingCost.toFixed(2)}€).`,
+      description: `Se han añadido los alimentos faltantes (${formatPrice(activeSuggestion.missingCost)}).`,
     });
     setIsOpen(true);
   };
@@ -64,7 +65,7 @@ export const CompleteMyDayCard = ({ onRecipeCooked }: CompleteMyDayCardProps) =>
       {/* Cabecera con tono amable y constructivo */}
       <div className="flex items-start justify-between gap-3">
         <div className="space-y-1">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-800/80 text-emerald-200 text-[10px] font-bold">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-800/80 text-emerald-200 text-xs font-bold">
             <Sparkles className="h-3.5 w-3.5 text-emerald-300" />
             <span>COMPLETA TU DÍA 2.0 · DESPENSA PRIMERO</span>
           </div>
@@ -96,8 +97,8 @@ export const CompleteMyDayCard = ({ onRecipeCooked }: CompleteMyDayCardProps) =>
                   : 'bg-emerald-950/60 border-emerald-800/60 hover:bg-emerald-900/60 text-emerald-200'
               }`}
             >
-              <div className="flex items-center justify-between text-[10px] text-emerald-300 font-medium mb-1">
-                <span className="font-bold uppercase tracking-wider text-[9px] text-emerald-300">
+              <div className="flex items-center justify-between text-xs text-emerald-300 font-medium mb-1">
+                <span className="font-bold uppercase tracking-wider text-xs text-emerald-300">
                   {isOptionA ? '⭐ Opción A (Tienes todo)' : `Opción ${String.fromCharCode(65 + idx)}`}
                 </span>
                 <span>⏱ {sug.timeMinutes} min</span>
@@ -105,14 +106,14 @@ export const CompleteMyDayCard = ({ onRecipeCooked }: CompleteMyDayCardProps) =>
               <strong className="block text-white text-xs font-bold leading-tight line-clamp-2">
                 {sug.title}
               </strong>
-              <div className="flex items-center justify-between mt-2 pt-1 border-t border-emerald-800/60 text-[10px]">
-                <span className="font-mono text-emerald-300">{sug.calories} kcal</span>
+              <div className="flex items-center justify-between mt-2 pt-1 border-t border-emerald-800/60 text-xs">
+                <span className="tabular-nums text-emerald-300">{sug.calories} kcal</span>
                 {sug.allPantryAvailable ? (
                   <span className="text-emerald-400 font-bold flex items-center gap-0.5">
                     <Check className="w-3 h-3" /> 0€ a comprar
                   </span>
                 ) : (
-                  <span className="text-amber-300 font-mono">Falta {sug.missingCost.toFixed(2)}€</span>
+                  <span className="text-amber-300 tabular-nums">Falta {formatPrice(sug.missingCost)}</span>
                 )}
               </div>
             </button>
@@ -129,7 +130,7 @@ export const CompleteMyDayCard = ({ onRecipeCooked }: CompleteMyDayCardProps) =>
                 {activeSuggestion.title}
               </h4>
               {activeSuggestion.allPantryAvailable && (
-                <Badge className="bg-emerald-500 text-emerald-950 text-[9px] font-black">
+                <Badge className="bg-emerald-500 text-emerald-950 text-xs font-black">
                   TIENES TODO
                 </Badge>
               )}
@@ -140,10 +141,10 @@ export const CompleteMyDayCard = ({ onRecipeCooked }: CompleteMyDayCardProps) =>
           </div>
 
           <div className="flex items-center gap-1.5 shrink-0">
-            <Badge className="bg-emerald-800 text-emerald-100 text-[10px]">
+            <Badge className="bg-emerald-800 text-emerald-100 text-xs">
               Proteína: {activeSuggestion.protein}g
             </Badge>
-            <Badge className="bg-amber-800/80 text-amber-200 text-[10px]">
+            <Badge className="bg-amber-800/80 text-amber-200 text-xs">
               Fibra: {activeSuggestion.fiber}g
             </Badge>
           </div>
@@ -152,11 +153,11 @@ export const CompleteMyDayCard = ({ onRecipeCooked }: CompleteMyDayCardProps) =>
         {/* EFECTO ESTIMADO ANTES VS DESPUÉS (Requisito Punto 7) */}
         <div className="p-3 rounded-xl bg-emerald-950/70 border border-emerald-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px]">
           <div className="flex items-center gap-2 text-emerald-300">
-            <span className="text-[10px] uppercase font-bold text-slate-400">Impacto estimado en tu día:</span>
+            <span className="text-xs uppercase font-bold text-slate-500">Impacto estimado en tu día:</span>
           </div>
-          <div className="flex items-center gap-4 font-mono">
+          <div className="flex items-center gap-4 tabular-nums">
             <div className="flex items-center gap-1.5">
-              <span className="text-slate-400">Antes:</span>
+              <span className="text-slate-500">Antes:</span>
               <span>Prot {activeSuggestion.effectBefore?.protein || 0}g</span>
               <span>·</span>
               <span>Fibra {activeSuggestion.effectBefore?.fiber || 0}g</span>
@@ -173,7 +174,7 @@ export const CompleteMyDayCard = ({ onRecipeCooked }: CompleteMyDayCardProps) =>
 
         {/* Estado en Despensa (Cruce inteligente) */}
         <div>
-          <span className="text-[10px] uppercase font-bold text-emerald-300 tracking-wider block mb-2">
+          <span className="text-xs uppercase font-bold text-emerald-300 tracking-wider block mb-2">
             Ingredientes en tu Despensa:
           </span>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-[11px]">
@@ -194,7 +195,7 @@ export const CompleteMyDayCard = ({ onRecipeCooked }: CompleteMyDayCardProps) =>
                   )}
                   <span className="truncate">{item.name}</span>
                 </div>
-                <span className="text-[10px] font-medium shrink-0 ml-1">
+                <span className="text-xs font-medium shrink-0 ml-1">
                   {item.available ? (item.isLow ? 'Queda poco' : 'En despensa') : 'Te falta'}
                 </span>
               </div>
@@ -228,7 +229,7 @@ export const CompleteMyDayCard = ({ onRecipeCooked }: CompleteMyDayCardProps) =>
               className="flex-1 bg-emerald-950/80 hover:bg-emerald-900 text-emerald-200 hover:text-white font-bold py-5 rounded-xl text-xs gap-1.5 shadow-sm border border-emerald-700"
             >
               <ShoppingBag className="h-4 w-4" />
-              <span>Añadir faltante ({activeSuggestion.missingCost.toFixed(2)}€)</span>
+              <span>Añadir faltante ({formatPrice(activeSuggestion.missingCost)})</span>
             </Button>
           )}
         </div>
@@ -243,7 +244,7 @@ export const CompleteMyDayCard = ({ onRecipeCooked }: CompleteMyDayCardProps) =>
               className="pt-3 border-t border-emerald-800/80 space-y-3"
             >
               <div className="space-y-2">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-300 block">
+                <span className="text-xs font-bold uppercase tracking-wider text-emerald-300 block">
                   Pasos de preparación ({activeSuggestion.timeMinutes} min):
                 </span>
                 <ol className="space-y-1.5 list-decimal list-inside text-[11px] text-emerald-100">

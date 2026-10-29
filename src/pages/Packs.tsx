@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { PackCard } from '@/components/packs/PackCard';
 import { packs, objectives } from '@/data/packs';
 import { Button } from '@/components/ui/button';
+import { CategoryIcon } from '@/components/common/CategoryIcon';
 
 const Packs = () => {
   const [selectedObjective, setSelectedObjective] = useState<string | null>(null);
@@ -50,7 +51,7 @@ const Packs = () => {
                 onClick={() => setSelectedObjective(obj.id)}
                 className="gap-1"
               >
-                <span>{obj.icon}</span>
+                <CategoryIcon id={obj.id} />
                 {obj.label}
               </Button>
             ))}

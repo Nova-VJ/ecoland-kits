@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { getCatalogPackBySlug, CatalogPack } from '@/data/catalog';
 import { useCart } from '@/context/CartContext';
 import { useProductViews } from '@/hooks/useProductViews';
+import { formatPrice } from '@/lib/utils';
 
 const CatalogPackDetail = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -109,7 +110,7 @@ const CatalogPackDetail = () => {
 
             <div className="flex items-end justify-between pt-4 border-t">
               <div>
-                <p className="text-3xl font-display font-bold text-primary">{pack.price.toFixed(2)}€</p>
+                <p className="text-3xl font-display font-bold text-primary">{formatPrice(pack.price)}</p>
                 <p className="text-sm text-muted-foreground">{pack.products.length} productos incluidos</p>
               </div>
               <Button
@@ -135,7 +136,7 @@ const CatalogPackDetail = () => {
                       <Check className="h-4 w-4 text-primary flex-shrink-0" />
                       <span className="text-sm">{item.name}</span>
                     </div>
-                    <span className="text-sm font-medium text-primary">{item.price.toFixed(2)}€</span>
+                    <span className="text-sm font-medium text-primary">{formatPrice(item.price)}</span>
                   </div>
                 ))}
               </div>

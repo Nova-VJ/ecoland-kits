@@ -58,6 +58,8 @@ Pasos:
       estimatedCalories: 420,
       estimatedProtein: 14,
       estimatedFiber: 8,
+      id: 'test-recipe',
+      createdAt: new Date().toISOString(),
       ingredients: [
         { raw: 'Quinoa real bio 150g', normalizedName: 'quinoa', amount: 150, unit: 'g', inPantry: true },
         { raw: 'Pasta de curry rojo 50g', normalizedName: 'pasta de curry rojo', amount: 50, unit: 'g', inPantry: false, estimatedMissingCostEuro: 2.80 }

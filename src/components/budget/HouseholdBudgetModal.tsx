@@ -22,6 +22,7 @@ import {
   ShieldCheck,
   Package
 } from 'lucide-react';
+import { formatPrice } from '@/lib/utils';
 
 interface HouseholdBudgetModalProps {
   isOpen: boolean;
@@ -94,7 +95,7 @@ export const HouseholdBudgetModal: React.FC<HouseholdBudgetModalProps> = ({
                   <h2 className="text-base sm:text-lg font-bold text-slate-900">
                     Presupuesto Familiar & Control de Gasto
                   </h2>
-                  <Badge variant="outline" className="text-[10px] bg-emerald-50 text-emerald-800 border-emerald-300">
+                  <Badge variant="outline" className="text-xs bg-emerald-50 text-emerald-800 border-emerald-300">
                     P4 Core
                   </Badge>
                 </div>
@@ -113,43 +114,43 @@ export const HouseholdBudgetModal: React.FC<HouseholdBudgetModalProps> = ({
             {/* Tarjetas Métricas Principales */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div className="p-3.5 bg-slate-50 rounded-2xl border space-y-1">
-                <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">
+                <span className="text-xs uppercase font-bold text-slate-500 block tracking-wider">
                   Gastado este mes
                 </span>
-                <strong className="text-lg sm:text-xl font-black text-slate-900 block font-mono">
-                  {summary.currentMonthSpentEuro.toFixed(2)} €
+                <strong className="text-lg sm:text-xl font-black text-slate-900 block tabular-nums">
+                  {formatPrice(summary.currentMonthSpentEuro)}
                 </strong>
-                <span className="text-[10px] text-slate-500">de {summary.monthlyCapEuro} € tope</span>
+                <span className="text-xs text-slate-500">de {summary.monthlyCapEuro} € tope</span>
               </div>
 
               <div className="p-3.5 bg-emerald-50/50 rounded-2xl border border-emerald-200 space-y-1">
-                <span className="text-[10px] uppercase font-bold text-emerald-800 block tracking-wider">
+                <span className="text-xs uppercase font-bold text-emerald-800 block tracking-wider">
                   Presupuesto restante
                 </span>
-                <strong className="text-lg sm:text-xl font-black text-emerald-950 block font-mono">
-                  {summary.remainingBudgetEuro.toFixed(2)} €
+                <strong className="text-lg sm:text-xl font-black text-emerald-950 block tabular-nums">
+                  {formatPrice(summary.remainingBudgetEuro)}
                 </strong>
-                <span className="text-[10px] text-emerald-700">disponible este mes</span>
+                <span className="text-xs text-emerald-700">disponible este mes</span>
               </div>
 
               <div className="p-3.5 bg-blue-50/50 rounded-2xl border border-blue-200 space-y-1">
-                <span className="text-[10px] uppercase font-bold text-blue-800 block tracking-wider">
+                <span className="text-xs uppercase font-bold text-blue-800 block tracking-wider">
                   Coste medio ración
                 </span>
-                <strong className="text-lg sm:text-xl font-black text-blue-950 block font-mono">
-                  ~{summary.averageCostPerServingEuro.toFixed(2)} €
+                <strong className="text-lg sm:text-xl font-black text-blue-950 block tabular-nums">
+                  ~{formatPrice(summary.averageCostPerServingEuro)}
                 </strong>
-                <span className="text-[10px] text-blue-700">por plato cocinado</span>
+                <span className="text-xs text-blue-700">por plato cocinado</span>
               </div>
 
               <div className="p-3.5 bg-purple-50/50 rounded-2xl border border-purple-200 space-y-1">
-                <span className="text-[10px] uppercase font-bold text-purple-800 block tracking-wider">
+                <span className="text-xs uppercase font-bold text-purple-800 block tracking-wider">
                   Ahorro en despensa
                 </span>
-                <strong className="text-lg sm:text-xl font-black text-purple-950 block font-mono">
-                  +{summary.pantrySavingsTotalEuro.toFixed(2)} €
+                <strong className="text-lg sm:text-xl font-black text-purple-950 block tabular-nums">
+                  +{formatPrice(summary.pantrySavingsTotalEuro)}
                 </strong>
-                <span className="text-[10px] text-purple-700">evitado en compras</span>
+                <span className="text-xs text-purple-700">evitado en compras</span>
               </div>
             </div>
 
@@ -157,7 +158,7 @@ export const HouseholdBudgetModal: React.FC<HouseholdBudgetModalProps> = ({
             <div className="p-4 bg-white border rounded-2xl space-y-2 shadow-2xs">
               <div className="flex items-center justify-between font-bold text-xs">
                 <span className="text-slate-700">Progreso del presupuesto mensual:</span>
-                <span className="font-mono text-emerald-900">{summary.burnRatePercent}% consumido</span>
+                <span className="tabular-nums text-emerald-900">{summary.burnRatePercent}% consumido</span>
               </div>
               <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
                 <div
@@ -209,7 +210,7 @@ export const HouseholdBudgetModal: React.FC<HouseholdBudgetModalProps> = ({
                       step="0.01"
                       value={newAmount}
                       onChange={e => setNewAmount(e.target.value)}
-                      className="text-xs bg-white rounded-xl font-mono"
+                      className="text-xs bg-white rounded-xl tabular-nums"
                     />
                     <div className="flex items-center gap-1.5">
                       <select
@@ -245,13 +246,13 @@ export const HouseholdBudgetModal: React.FC<HouseholdBudgetModalProps> = ({
                       </div>
                       <div>
                         <strong className="text-slate-900 block text-xs">{exp.description}</strong>
-                        <span className="text-[10px] text-slate-400 font-mono">
+                        <span className="text-xs text-slate-500 tabular-nums">
                           {exp.date} · {exp.category}
                         </span>
                       </div>
                     </div>
-                    <span className="font-mono font-bold text-slate-900 text-xs">
-                      {exp.amountEuro.toFixed(2)} €
+                    <span className="tabular-nums font-bold text-slate-900 text-xs">
+                      {formatPrice(exp.amountEuro)}
                     </span>
                   </div>
                 ))}

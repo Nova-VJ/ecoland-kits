@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { allCatalogProducts, CatalogProduct } from '@/data/catalog/individual-products';
 import { useCart } from '@/context/CartContext';
 import { useToast } from '@/hooks/use-toast';
+import { formatPrice } from '@/lib/utils';
 
 interface QuickSearchModalProps {
   isOpen: boolean;
@@ -54,7 +55,7 @@ export const QuickSearchModal = ({ isOpen, onClose }: QuickSearchModalProps) => 
     setCartOpen(true);
     toast({
       title: "✓ Añadido al carrito",
-      description: `${cleanTitle(product.name)} (${product.price.toFixed(2)}€)`,
+      description: `${cleanTitle(product.name)} (${formatPrice(product.price)})`,
     });
   };
 
@@ -82,7 +83,7 @@ export const QuickSearchModal = ({ isOpen, onClose }: QuickSearchModalProps) => 
               className="w-full text-sm font-medium bg-transparent outline-none placeholder:text-slate-400"
             />
             {query && (
-              <button onClick={() => setQuery('')} className="text-slate-400 hover:text-slate-600">
+              <button onClick={() => setQuery('')} className="text-slate-500 hover:text-slate-600">
                 <X className="h-4 w-4" />
               </button>
             )}
@@ -120,7 +121,7 @@ export const QuickSearchModal = ({ isOpen, onClose }: QuickSearchModalProps) => 
             <span>
               {query ? `Resultados para "${query}"` : 'Productos destacados:'}
             </span>
-            <span className="font-mono text-[11px] font-bold text-emerald-800">
+            <span className="tabular-nums text-[11px] font-bold text-emerald-800">
               {searchResults.length} mostrados
             </span>
           </div>
@@ -141,8 +142,8 @@ export const QuickSearchModal = ({ isOpen, onClose }: QuickSearchModalProps) => 
                       {cleanTitle(product.name)}
                     </span>
                     <div className="flex items-center gap-2 mt-0.5">
-                      <span className="text-[10px] text-slate-400 font-mono">{product.brand}</span>
-                      <span className="text-[10px] uppercase font-bold text-emerald-800 bg-emerald-50 px-1.5 py-0.2 rounded">
+                      <span className="text-xs text-slate-500 tabular-nums">{product.brand}</span>
+                      <span className="text-xs uppercase font-bold text-emerald-800 bg-emerald-50 px-1.5 py-0.2 rounded">
                         {product.category}
                       </span>
                     </div>
@@ -150,8 +151,8 @@ export const QuickSearchModal = ({ isOpen, onClose }: QuickSearchModalProps) => 
                 </div>
 
                 <div className="flex items-center gap-3 shrink-0">
-                  <strong className="text-sm font-black font-mono text-slate-900">
-                    {product.price.toFixed(2)}€
+                  <strong className="text-sm font-black tabular-nums text-slate-900">
+                    {formatPrice(product.price)}
                   </strong>
                   <button
                     onClick={() => handleAdd(product)}
@@ -168,7 +169,7 @@ export const QuickSearchModal = ({ isOpen, onClose }: QuickSearchModalProps) => 
               <div className="text-center py-10 space-y-2">
                 <span className="text-3xl block">🔍</span>
                 <p className="text-xs font-bold text-slate-700">No encontramos ningún producto para esa búsqueda</p>
-                <p className="text-[11px] text-slate-400">Prueba con palabras como "avena", "quinoa", "garbanzo" o "aceite".</p>
+                <p className="text-[11px] text-slate-500">Prueba con palabras como "avena", "quinoa", "garbanzo" o "aceite".</p>
               </div>
             )}
           </div>
@@ -183,7 +184,7 @@ export const QuickSearchModal = ({ isOpen, onClose }: QuickSearchModalProps) => 
               <span>Ir a la tienda completa con todos los filtros</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </Link>
-            <span className="text-[10px] text-slate-400">Presiona ESC o pulsa fuera para cerrar</span>
+            <span className="text-xs text-slate-500">Presiona ESC o pulsa fuera para cerrar</span>
           </div>
 
         </motion.div>

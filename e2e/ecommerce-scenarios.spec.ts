@@ -20,7 +20,7 @@ test.describe('Ecoland — Suite Oficial E2E de Producción (20 Escenarios de Ne
     await addBtn.click();
 
     // El drawer del carrito debe abrirse
-    await expect(page.locator('text=Tu Cesta Ecológica')).toBeVisible();
+    await expect(page.locator('text=Tu cesta')).toBeVisible();
   });
 
   test('2. Usuario registrado realiza compra y visualiza sus datos precargados', async ({ page }) => {

@@ -282,7 +282,7 @@ class ProductInsightsService {
   // 1 & 2. USEFUL DAYS & PILOT COHORTS
   // ==========================================
 
-  public recordMeaningfulAction(actionType: MeaningfulActionType, metadata?: { userId?: string; cohort?: PilotCohort }): void {
+  public recordMeaningfulAction(actionType: MeaningfulActionType, metadata?: { userId?: string; cohort?: PilotCohort; [key: string]: unknown }): void {
     const todayStr = new Date().toISOString().split('T')[0];
     const days = this.getRawUsefulDays(this.activeDataSource);
 

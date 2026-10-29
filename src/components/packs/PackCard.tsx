@@ -5,6 +5,7 @@ import { ShoppingBag, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Pack, PackSize, packSizes } from '@/data/packs';
 import { useCart } from '@/context/CartContext';
+import { formatPrice } from '@/lib/utils';
 
 interface PackCardProps {
   pack: Pack;
@@ -88,7 +89,7 @@ export const PackCard = ({ pack, index = 0 }: PackCardProps) => {
           <div className="flex items-center justify-between pt-2">
             <div>
               <span className="text-xl font-display font-bold">
-                {pack.prices[selectedSize].toFixed(2)}€
+                {formatPrice(pack.prices[selectedSize])}
               </span>
               <span className="text-xs text-muted-foreground ml-1">
                 / pack {selectedSize}

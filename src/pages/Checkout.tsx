@@ -20,6 +20,7 @@ import {
 } from '@/services/transactionalOrderService';
 
 import { dailyNutritionStore } from '@/services/dailyNutritionStore';
+import { formatPrice } from '@/lib/utils';
 
 export const Checkout = () => {
   const { items, totalPrice, clearCart, totalItems } = useCart();
@@ -44,7 +45,7 @@ export const Checkout = () => {
   });
 
   // Métodos de pago disponibles
-  const [paymentMethod, setPaymentMethod] = useState<PaymentProvider>('tarjeta');
+  const [paymentMethod, setPaymentMethod] = useState<PaymentProvider>('redsys');
   const [isProcessing, setIsProcessing] = useState(false);
   const [confirmedOrder, setConfirmedOrder] = useState<OrderRecord | null>(null);
   const [pantryAdded, setPantryAdded] = useState(false);
@@ -144,7 +145,7 @@ export const Checkout = () => {
         shippingPostalCode: formData.codigoPostal.trim(),
         zeroWastePackaging,
         plantTree,
-        notes: formData.notes
+        notes: formData.notas
       };
 
       const intentRes = transactionalOrderService.createOrderIntent(
@@ -209,7 +210,7 @@ export const Checkout = () => {
     return (
       <div className="section-padding min-h-[70vh] flex items-center justify-center">
         <div className="text-center max-w-md mx-auto p-8 rounded-3xl bg-white border shadow-xs space-y-4">
-          <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto text-slate-400">
+          <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto text-slate-500">
             <ShoppingBag className="h-8 w-8" />
           </div>
           <h2 className="font-display text-2xl font-black text-slate-900">Tu cesta está vacía</h2>
@@ -253,11 +254,11 @@ export const Checkout = () => {
           <div className="p-5 rounded-2xl bg-slate-50 border text-left text-xs space-y-3">
             <div className="flex justify-between items-center border-b pb-2">
               <span className="text-slate-500">Número de pedido:</span>
-              <strong className="font-mono text-emerald-950 font-bold text-sm">{confirmedOrder.orderNumber}</strong>
+              <strong className="tabular-nums text-emerald-950 font-bold text-sm">{confirmedOrder.orderNumber}</strong>
             </div>
             <div className="flex justify-between items-center border-b pb-2">
               <span className="text-slate-500">Factura legal emitida:</span>
-              <strong className="font-mono text-slate-800 font-bold">{confirmedOrder.invoiceNumber}</strong>
+              <strong className="tabular-nums text-slate-800 font-bold">{confirmedOrder.invoiceNumber}</strong>
             </div>
             <div className="flex justify-between items-center border-b pb-2">
               <span className="text-slate-500">Modalidad de entrega:</span>
@@ -285,27 +286,27 @@ export const Checkout = () => {
               <span className="font-bold text-slate-700 block">Desglose de impuestos (IVA incluido):</span>
               {confirmedOrder.taxBreakdown.base4 > 0 && (
                 <div className="flex justify-between">
-                  <span>Base Alimentos Básicos (4%): {confirmedOrder.taxBreakdown.base4.toFixed(2)}€</span>
-                  <span>Cuota IVA 4%: {confirmedOrder.taxBreakdown.iva4.toFixed(2)}€</span>
+                  <span>Base Alimentos Básicos (4%): {formatPrice(confirmedOrder.taxBreakdown.base4)}</span>
+                  <span>Cuota IVA 4%: {formatPrice(confirmedOrder.taxBreakdown.iva4)}</span>
                 </div>
               )}
               {confirmedOrder.taxBreakdown.base10 > 0 && (
                 <div className="flex justify-between">
-                  <span>Base Alimentación General (10%): {confirmedOrder.taxBreakdown.base10.toFixed(2)}€</span>
-                  <span>Cuota IVA 10%: {confirmedOrder.taxBreakdown.iva10.toFixed(2)}€</span>
+                  <span>Base Alimentación General (10%): {formatPrice(confirmedOrder.taxBreakdown.base10)}</span>
+                  <span>Cuota IVA 10%: {formatPrice(confirmedOrder.taxBreakdown.iva10)}</span>
                 </div>
               )}
               {confirmedOrder.taxBreakdown.base21 > 0 && (
                 <div className="flex justify-between">
-                  <span>Base Cosmética / Portes (21%): {confirmedOrder.taxBreakdown.base21.toFixed(2)}€</span>
-                  <span>Cuota IVA 21%: {confirmedOrder.taxBreakdown.iva21.toFixed(2)}€</span>
+                  <span>Base Cosmética / Portes (21%): {formatPrice(confirmedOrder.taxBreakdown.base21)}</span>
+                  <span>Cuota IVA 21%: {formatPrice(confirmedOrder.taxBreakdown.iva21)}</span>
                 </div>
               )}
             </div>
 
             <div className="flex justify-between items-center pt-2 font-bold border-t text-sm">
               <span>Total Pagado:</span>
-              <span className="text-base text-emerald-950 font-mono">{confirmedOrder.total.toFixed(2)}€</span>
+              <span className="text-base text-emerald-950 tabular-nums">{formatPrice(confirmedOrder.total)}</span>
             </div>
           </div>
 
@@ -332,7 +333,9 @@ export const Checkout = () => {
                   onClick={() => {
                     const itemsToAdd = confirmedOrder.lines.map(l => ({
                       name: l.productName,
-                      quantity: l.quantity
+                      category: 'despensa',
+                      servings: l.quantity,
+                      price: l.unitPrice
                     }));
                     dailyNutritionStore.addOrderItemsToPantry(itemsToAdd);
                     setPantryAdded(true);
@@ -393,7 +396,7 @@ export const Checkout = () => {
 
         {/* Indicador de Pasos Numerados */}
         <div className="bg-white rounded-2xl p-4 border shadow-2xs flex items-center justify-between text-xs font-bold text-slate-600">
-          <div className={`flex items-center gap-2 ${step >= 1 ? 'text-emerald-900' : 'text-slate-400'}`}>
+          <div className={`flex items-center gap-2 ${step >= 1 ? 'text-emerald-900' : 'text-slate-500'}`}>
             <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
               step >= 1 ? 'bg-emerald-900 text-white shadow-2xs' : 'bg-slate-200'
             }`}>1</span>
@@ -402,7 +405,7 @@ export const Checkout = () => {
 
           <span className="text-slate-300">➔</span>
 
-          <div className={`flex items-center gap-2 ${step >= 2 ? 'text-emerald-900' : 'text-slate-400'}`}>
+          <div className={`flex items-center gap-2 ${step >= 2 ? 'text-emerald-900' : 'text-slate-500'}`}>
             <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
               step >= 2 ? 'bg-emerald-900 text-white shadow-2xs' : 'bg-slate-200'
             }`}>2</span>
@@ -411,7 +414,7 @@ export const Checkout = () => {
 
           <span className="text-slate-300">➔</span>
 
-          <div className="flex items-center gap-2 text-slate-400">
+          <div className="flex items-center gap-2 text-slate-500">
             <span className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold">3</span>
             <span>3. Confirmación</span>
           </div>
@@ -447,13 +450,13 @@ export const Checkout = () => {
                     }`}
                   >
                     <div className="flex items-center justify-between mb-1.5">
-                      <Truck className={`h-5 w-5 ${deliveryMethod === 'domicilio' ? 'text-emerald-800' : 'text-slate-400'}`} />
-                      <Badge variant="outline" className="text-[10px] font-bold">
-                        {totalPrice >= COMMERCIAL_RULES.FREE_SHIPPING_THRESHOLD ? 'GRATIS' : `${COMMERCIAL_RULES.STANDARD_SHIPPING_PRICE.toFixed(2)}€`}
+                      <Truck className={`h-5 w-5 ${deliveryMethod === 'domicilio' ? 'text-emerald-800' : 'text-slate-500'}`} />
+                      <Badge variant="outline" className="text-xs font-bold">
+                        {totalPrice >= COMMERCIAL_RULES.FREE_SHIPPING_THRESHOLD ? 'GRATIS' : `${formatPrice(COMMERCIAL_RULES.STANDARD_SHIPPING_PRICE)}`}
                       </Badge>
                     </div>
                     <strong className="block text-slate-900 text-xs">Envío Refrigerado 24/48h</strong>
-                    <span className="text-[11px] text-slate-500">Control de temperatura garantizado. Gratis a partir de {COMMERCIAL_RULES.FREE_SHIPPING_THRESHOLD.toFixed(2)}€.</span>
+                    <span className="text-[11px] text-slate-500">Control de temperatura garantizado. Gratis a partir de {formatPrice(COMMERCIAL_RULES.FREE_SHIPPING_THRESHOLD)}.</span>
                   </div>
 
                   <div
@@ -465,8 +468,8 @@ export const Checkout = () => {
                     }`}
                   >
                     <div className="flex items-center justify-between mb-1.5">
-                      <Store className={`h-5 w-5 ${deliveryMethod === 'click_and_collect' ? 'text-emerald-800' : 'text-slate-400'}`} />
-                      <Badge className="bg-emerald-800 text-white text-[10px] font-bold">SIEMPRE GRATIS</Badge>
+                      <Store className={`h-5 w-5 ${deliveryMethod === 'click_and_collect' ? 'text-emerald-800' : 'text-slate-500'}`} />
+                      <Badge className="bg-emerald-800 text-white text-xs font-bold">SIEMPRE GRATIS</Badge>
                     </div>
                     <strong className="block text-slate-900 text-xs">Click & Collect Valladolid</strong>
                     <span className="text-[11px] text-slate-500">Recogida sin colas en tienda física ({COMMERCIAL_RULES.PHYSICAL_STORE.address}). Listo en 2h.</span>
@@ -481,65 +484,65 @@ export const Checkout = () => {
                   
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="space-y-1">
-                      <label className="text-[11px] font-semibold text-slate-700">Nombre *</label>
-                      <Input 
+                      <label htmlFor="checkout-campo-1" className="text-[11px] font-semibold text-slate-700">Nombre *</label>
+                      <Input id="checkout-campo-1" 
                         placeholder="Ej: Laura" 
                         value={formData.nombre} 
                         onChange={(e) => handleInputChange('nombre', e.target.value)}
-                        className="rounded-xl text-xs h-10"
+                        className="rounded-xl text-base sm:text-sm h-11"
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[11px] font-semibold text-slate-700">Apellidos</label>
-                      <Input 
+                      <label htmlFor="checkout-campo-2" className="text-[11px] font-semibold text-slate-700">Apellidos</label>
+                      <Input id="checkout-campo-2" 
                         placeholder="Ej: Martín Gómez" 
                         value={formData.apellidos} 
                         onChange={(e) => handleInputChange('apellidos', e.target.value)}
-                        className="rounded-xl text-xs h-10"
+                        className="rounded-xl text-base sm:text-sm h-11"
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="space-y-1">
-                      <label className="text-[11px] font-semibold text-slate-700">Email de confirmación *</label>
-                      <Input 
+                      <label htmlFor="checkout-campo-3" className="text-[11px] font-semibold text-slate-700">Email de confirmación *</label>
+                      <Input id="checkout-campo-3" 
                         type="email"
                         placeholder="tu@email.com" 
                         value={formData.email} 
                         onChange={(e) => handleInputChange('email', e.target.value)}
-                        className="rounded-xl text-xs h-10"
+                        className="rounded-xl text-base sm:text-sm h-11"
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[11px] font-semibold text-slate-700">Teléfono móvil *</label>
-                      <Input 
+                      <label htmlFor="checkout-campo-4" className="text-[11px] font-semibold text-slate-700">Teléfono móvil *</label>
+                      <Input id="checkout-campo-4" 
                         type="tel"
                         placeholder="600 000 000" 
                         value={formData.telefono} 
                         onChange={(e) => handleInputChange('telefono', e.target.value)}
-                        className="rounded-xl text-xs h-10"
+                        className="rounded-xl text-base sm:text-sm h-11"
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="space-y-1">
-                      <label className="text-[11px] font-semibold text-slate-700">NIF / CIF (opcional para factura oficial)</label>
-                      <Input 
+                      <label htmlFor="checkout-campo-5" className="text-[11px] font-semibold text-slate-700">NIF / CIF (opcional para factura oficial)</label>
+                      <Input id="checkout-campo-5" 
                         placeholder="Ej: 12345678Z" 
                         value={formData.nif} 
                         onChange={(e) => handleInputChange('nif', e.target.value)}
-                        className="rounded-xl text-xs h-10"
+                        className="rounded-xl text-base sm:text-sm h-11"
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[11px] font-semibold text-slate-700">Código Postal *</label>
-                      <Input 
+                      <label htmlFor="checkout-campo-6" className="text-[11px] font-semibold text-slate-700">Código Postal *</label>
+                      <Input id="checkout-campo-6" 
                         placeholder="47001" 
                         value={formData.codigoPostal} 
                         onChange={(e) => handleInputChange('codigoPostal', e.target.value)}
-                        className="rounded-xl text-xs h-10"
+                        className="rounded-xl text-base sm:text-sm h-11"
                       />
                     </div>
                   </div>
@@ -547,20 +550,20 @@ export const Checkout = () => {
                   {deliveryMethod === 'domicilio' && (
                     <div className="space-y-3 pt-2">
                       <div className="space-y-1">
-                        <label className="text-[11px] font-semibold text-slate-700">Dirección completa *</label>
-                        <Input 
+                        <label htmlFor="checkout-campo-7" className="text-[11px] font-semibold text-slate-700">Dirección completa *</label>
+                        <Input id="checkout-campo-7" 
                           placeholder="Calle, número, piso, puerta" 
                           value={formData.direccion} 
                           onChange={(e) => handleInputChange('direccion', e.target.value)}
-                          className="rounded-xl text-xs h-10"
+                          className="rounded-xl text-base sm:text-sm h-11"
                         />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-[11px] font-semibold text-slate-700">Ciudad</label>
-                        <Input 
+                        <label htmlFor="checkout-campo-8" className="text-[11px] font-semibold text-slate-700">Ciudad</label>
+                        <Input id="checkout-campo-8" 
                           value={formData.ciudad} 
                           onChange={(e) => handleInputChange('ciudad', e.target.value)}
-                          className="rounded-xl text-xs h-10"
+                          className="rounded-xl text-base sm:text-sm h-11"
                         />
                       </div>
                     </div>
@@ -609,7 +612,7 @@ export const Checkout = () => {
                         </span>
                       </div>
                     </div>
-                    <Badge variant="outline" className="text-[10px] text-slate-500 font-normal">Piloto en trámite</Badge>
+                    <Badge variant="outline" className="text-xs text-slate-500 font-normal">Piloto en trámite</Badge>
                   </div>
 
                   <Button 
@@ -649,7 +652,7 @@ export const Checkout = () => {
                 {/* Opciones de Pago Auditadas */}
                 <div className="space-y-3 text-xs">
                   {[
-                    { id: 'tarjeta', label: '💳 Tarjeta de Crédito / Débito (Visa, Mastercard)', desc: 'Cifrado seguro bancario Redsys / Stripe (PSD2 cumplido)' },
+                    { id: 'redsys', label: '💳 Tarjeta de Crédito / Débito (Visa, Mastercard)', desc: 'Cifrado seguro bancario Redsys / Stripe (PSD2 cumplido)' },
                     { id: 'bizum', label: '⚡ Bizum', desc: 'Pago instantáneo mediante pasarela bancaria española oficial' },
                     { id: 'apple_pay', label: '🍏 Apple Pay / Google Pay', desc: 'Pago rápido en dispositivos compatibles certificados' },
                   ].map(m => (
@@ -677,37 +680,37 @@ export const Checkout = () => {
                 </div>
 
                 {/* Formulario simulado de tarjeta para pruebas sin almacenar datos */}
-                {paymentMethod === 'tarjeta' && (
+                {paymentMethod === 'redsys' && (
                   <div className="p-4 rounded-2xl bg-slate-50 border space-y-3 text-xs">
                     <div className="flex items-center justify-between text-slate-600 pb-1">
                       <span className="font-bold">Datos de la Tarjeta</span>
-                      <span className="text-[10px] text-emerald-800 font-semibold">🔒 Pasarela Segura</span>
+                      <span className="text-xs text-emerald-800 font-semibold">🔒 Pasarela Segura</span>
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[11px] text-slate-600">Número de tarjeta (Modo Test Activo)</label>
-                      <Input 
+                      <label htmlFor="checkout-campo-9" className="text-[11px] text-slate-600">Número de tarjeta (Modo Test Activo)</label>
+                      <Input id="checkout-campo-9" 
                         placeholder="•••• •••• •••• 4242" 
                         defaultValue="4242 4242 4242 4242"
-                        className="rounded-xl font-mono text-xs h-10 bg-white"
+                        className="rounded-xl text-base sm:text-sm h-11 bg-white tabular-nums"
                         readOnly
                       />
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       <div className="space-y-1">
-                        <label className="text-[11px] text-slate-600">Caducidad</label>
-                        <Input 
+                        <label htmlFor="checkout-campo-10" className="text-[11px] text-slate-600">Caducidad</label>
+                        <Input id="checkout-campo-10" 
                           placeholder="MM/AA" 
                           defaultValue="12/28"
-                          className="rounded-xl font-mono text-xs h-10 bg-white"
+                          className="rounded-xl text-base sm:text-sm h-11 bg-white tabular-nums"
                           readOnly
                         />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-[11px] text-slate-600">CVC</label>
-                        <Input 
+                        <label htmlFor="checkout-campo-11" className="text-[11px] text-slate-600">CVC</label>
+                        <Input id="checkout-campo-11" 
                           placeholder="•••" 
                           defaultValue="123"
-                          className="rounded-xl font-mono text-xs h-10 bg-white"
+                          className="rounded-xl text-base sm:text-sm h-11 bg-white tabular-nums"
                           readOnly
                         />
                       </div>
@@ -733,7 +736,7 @@ export const Checkout = () => {
                     disabled={isProcessing}
                     className="flex-2 bg-emerald-900 hover:bg-emerald-800 text-white font-black py-6 text-sm rounded-2xl shadow-md gap-2"
                   >
-                    {isProcessing ? 'Validando en servidor y pagando...' : `Pagar ${finalTotal.toFixed(2)}€`}
+                    {isProcessing ? 'Validando en servidor y pagando...' : `Pagar ${formatPrice(finalTotal)}`}
                   </Button>
                 </div>
               </div>
@@ -748,7 +751,7 @@ export const Checkout = () => {
                 <h4 className="font-bold text-slate-900 text-base">Resumen del Pedido</h4>
                 <span className="text-xs text-slate-500">{totalItems} alimentos bio seleccionados</span>
               </div>
-              <Badge className="bg-emerald-100 text-emerald-900 border-0 text-[10px] font-bold">
+              <Badge className="bg-emerald-100 text-emerald-900 border-0 text-xs font-bold">
                 +{ecoPointsEarned} EcoPuntos
               </Badge>
             </div>
@@ -764,9 +767,9 @@ export const Checkout = () => {
                   <div key={idx} className="flex justify-between items-center py-1.5 border-b border-slate-100">
                     <div className="truncate flex-1 pr-2">
                       <span className="font-bold text-slate-800 truncate block">{name}</span>
-                      <span className="text-[10px] text-slate-400">Cant: {it.quantity}</span>
+                      <span className="text-xs text-slate-500">Cant: {it.quantity}</span>
                     </div>
-                    <strong className="font-mono text-slate-900 shrink-0">{(price * it.quantity).toFixed(2)}€</strong>
+                    <strong className="tabular-nums text-slate-900 shrink-0">{formatPrice((price * it.quantity))}</strong>
                   </div>
                 );
               })}
@@ -774,7 +777,7 @@ export const Checkout = () => {
 
             {/* Garantías de Sostenibilidad Oficialmente Verificadas (Prioridad 9) */}
             <div className="p-3.5 rounded-2xl bg-emerald-950 text-white space-y-2 text-xs">
-              <span className="text-[10px] uppercase font-bold text-emerald-400 block tracking-wider">
+              <span className="text-xs uppercase font-bold text-emerald-400 block tracking-wider">
                 Garantías de Sostenibilidad Verificadas
               </span>
               <div className="space-y-1.5 text-[11px]">
@@ -782,14 +785,14 @@ export const Checkout = () => {
                   <ShieldCheck className="h-4 w-4 text-emerald-300 shrink-0" />
                   <div>
                     <strong className="block text-white text-[11px]">100% Certificación Bio Oficial (Eurohoja)</strong>
-                    <span className="text-[10px] text-emerald-300">Reglamento (UE) 2018/848 sin transgénicos ni pesticidas sintéticos.</span>
+                    <span className="text-xs text-emerald-300">Reglamento (UE) 2018/848 sin transgénicos ni pesticidas sintéticos.</span>
                   </div>
                 </div>
                 <div className="bg-emerald-900/60 p-2 rounded-xl border border-emerald-800 flex items-center gap-2">
                   <Leaf className="h-4 w-4 text-emerald-300 shrink-0" />
                   <div>
                     <strong className="block text-white text-[11px]">Embalaje FSC 100% Libre de Plástico Virgen</strong>
-                    <span className="text-[10px] text-emerald-300">Cartón reciclado y viruta vegetal compostable certificada.</span>
+                    <span className="text-xs text-emerald-300">Cartón reciclado y viruta vegetal compostable certificada.</span>
                   </div>
                 </div>
               </div>
@@ -799,27 +802,27 @@ export const Checkout = () => {
             <div className="space-y-2 pt-2 border-t text-xs">
               <div className="flex justify-between text-slate-600">
                 <span>Subtotal alimentos</span>
-                <span className="font-mono">{totalPrice.toFixed(2)}€</span>
+                <span className="tabular-nums">{formatPrice(totalPrice)}</span>
               </div>
               <div className="flex justify-between text-slate-600">
                 <span>Coste de entrega ({deliveryMethod === 'click_and_collect' ? 'Tienda' : 'Domicilio'})</span>
-                <span className="font-mono font-bold text-emerald-800">
-                  {shippingCost === 0 ? 'GRATIS' : `${shippingCost.toFixed(2)}€`}
+                <span className="tabular-nums font-bold text-emerald-800">
+                  {shippingCost === 0 ? 'GRATIS' : `${formatPrice(shippingCost)}`}
                 </span>
               </div>
               {plantTree && (
                 <div className="flex justify-between text-teal-800 font-medium">
                   <span>Aportación reforestación (CyL)</span>
-                  <span className="font-mono">+{COMMERCIAL_RULES.TREE_CONTRIBUTION.AMOUNT.toFixed(2)}€</span>
+                  <span className="tabular-nums">+{formatPrice(COMMERCIAL_RULES.TREE_CONTRIBUTION.AMOUNT)}</span>
                 </div>
               )}
               <div className="flex justify-between text-slate-500 text-[11px]">
                 <span>IVA incluido (desglose oficial en factura)</span>
-                <span className="font-mono">{(finalTotal * 0.091).toFixed(2)}€</span>
+                <span className="tabular-nums">{formatPrice((finalTotal * 0.091))}</span>
               </div>
               <div className="flex justify-between text-base font-black text-slate-900 pt-2 border-t">
                 <span>Total a Pagar</span>
-                <span className="font-mono text-xl text-emerald-950">{finalTotal.toFixed(2)}€</span>
+                <span className="tabular-nums text-xl text-emerald-950">{formatPrice(finalTotal)}</span>
               </div>
             </div>
 

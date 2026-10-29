@@ -70,7 +70,7 @@ test.describe('Ecoland Daily — P3-A Zero-Friction Logging & Smart Food Logger 
     await expect(page.locator('text=Introduce o escanea un código de barras')).toBeVisible();
 
     // Buscar código por defecto (Ecoland)
-    await page.locator('button:has-text("Buscar")').first().click();
+    await page.getByRole('button', { name: 'Buscar', exact: true }).click();
     await page.waitForTimeout(300);
 
     // Comprobar producto, fuente y Food Fingerprint

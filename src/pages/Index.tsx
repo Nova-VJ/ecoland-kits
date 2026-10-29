@@ -6,11 +6,13 @@ import { Trust } from '@/components/home/Trust';
 import { Testimonials } from '@/components/home/Testimonials';
 import { QuizCTA } from '@/components/home/QuizCTA';
 import { CertificationBadge } from '@/components/home/CertificationBadge';
+import { SectionDoors } from '@/components/home/SectionDoors';
 
 const Index = () => {
   return (
     <>
       <Hero />
+      <SectionDoors />
       <Trust />
       <CertificationBadge />
       <FeaturedProducts />

@@ -72,7 +72,7 @@ export class FastFoodParser {
    * Parsea texto natural escrito o dictado por voz
    * Ejemplo: "2 tostadas integrales con aguacate y un café con leche"
    */
-  public parseNaturalText(input: string, source: 'text' | 'voice' = 'text'): FoodParseResult {
+  public parseNaturalText(input: string, source: FoodParseResult['source'] = 'text'): FoodParseResult {
     const clean = input
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "")

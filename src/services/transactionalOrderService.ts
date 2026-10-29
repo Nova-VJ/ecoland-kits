@@ -184,7 +184,7 @@ class TransactionalOrderService {
       // Buscar precio y datos oficiales en catálogo maestro
       let officialPrice: number | null = null;
       let officialName = '';
-      let taxRate = COMMERCIAL_RULES.TAX_RATES.REDUCED; // 10% por defecto en alimentos
+      let taxRate: number = COMMERCIAL_RULES.TAX_RATES.REDUCED; // 10% por defecto en alimentos
 
       const catProduct = catalogProducts.find(p => p.id === item.id);
       if (catProduct) {

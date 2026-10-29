@@ -1,14 +1,62 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Minus, Trash2, ShoppingBag, Leaf, ShieldCheck, Check, Info, Box } from 'lucide-react';
+import { X, Plus, Minus, Trash2, ShoppingBag, Leaf, ShieldCheck, Check, Box, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useCart, PackCartItem, ProductCartItem, CatalogProductCartItem, CatalogPackCartItem } from '@/context/CartContext';
+import { useCart, CartItem } from '@/context/CartContext';
+import { PackSize } from '@/data/packs';
 import { Link } from 'react-router-dom';
 import { COMMERCIAL_RULES, calculateShippingCost } from '@/config/commercialRules';
+import { cleanProductName, formatPrice } from '@/lib/utils';
+import { useHealthProfile } from '@/context/HealthProfileContext';
+import { reviewCart, isProfileEmpty } from '@/lib/saludEngine';
+
+// Las cuatro clases de artículo de la cesta se muestran con la misma fila
+function toCartRow(item: CartItem) {
+  switch (item.type) {
+    case 'pack': {
+      const discount = item.isSubscription ? COMMERCIAL_RULES.SUBSCRIPTION_DISCOUNT_FACTOR : 1;
+      return {
+        key: `pack-${item.pack.id}-${item.size}-${item.isSubscription}`,
+        id: item.pack.id, size: item.size as PackSize | undefined,
+        name: item.pack.name, image: item.pack.image,
+        detail: `Tamaño ${item.size}${item.isSubscription ? ' · Suscripción -10%' : ''}`,
+        unitPrice: item.pack.prices[item.size] * discount,
+      };
+    }
+    case 'product':
+      return {
+        key: `product-${item.product.id}`, id: item.product.id, size: undefined,
+        name: item.product.name, image: item.product.image, detail: item.product.category,
+        unitPrice: item.product.price,
+      };
+    case 'catalog-product': {
+      const weight = item.product.weight && item.product.weight !== 'Formato estándar' ? item.product.weight : '';
+      return {
+        key: `cat-prod-${item.product.id}`, id: item.product.id, size: undefined,
+        name: cleanProductName(item.product.name),
+        image: item.product.image,
+        detail: [item.product.brand, weight].filter(Boolean).join(' · '),
+        unitPrice: item.product.price,
+      };
+    }
+    case 'catalog-pack':
+      return {
+        key: `cat-pack-${item.pack.id}`, id: item.pack.id, size: undefined,
+        name: item.pack.name, image: item.pack.image, detail: 'Pack ahorro bio',
+        unitPrice: item.pack.price,
+      };
+  }
+}
 
 export const CartDrawer = () => {
   const { items, isOpen, setIsOpen, removeItem, updateQuantity, totalPrice, totalItems } = useCart();
   const [zeroWastePackaging, setZeroWastePackaging] = useState(true);
+  const { profile } = useHealthProfile();
+
+  // Revisión con el perfil de Ecoland Salud: avisa, nunca bloquea la compra
+  const profileConflicts = isProfileEmpty(profile)
+    ? []
+    : reviewCart(items.flatMap(i => (i.type === 'catalog-product' ? [i.product] : [])), profile);
 
   // Reglas comerciales centralizadas
   const shippingInfo = calculateShippingCost(totalPrice, 'domicilio');
@@ -40,35 +88,35 @@ export const CartDrawer = () => {
             <div className="p-4 border-b flex items-center justify-between bg-card">
               <div className="flex items-center gap-2">
                 <ShoppingBag className="h-5 w-5 text-primary" />
-                <h2 className="font-display font-semibold text-lg text-foreground">Tu Cesta Ecológica</h2>
-                <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full font-mono">
+                <h2 className="font-display font-semibold text-lg text-foreground">Tu cesta</h2>
+                <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full tabular-nums">
                   {totalItems} {totalItems === 1 ? 'artículo' : 'artículos'}
                 </span>
               </div>
               <button
                 onClick={() => setIsOpen(false)}
-                className="p-1 rounded-full hover:bg-muted text-muted-foreground transition-colors"
-                aria-label="Cerrar carrito"
+                className="w-9 h-9 grid place-items-center rounded-full hover:bg-muted text-muted-foreground transition-colors"
+                aria-label="Cerrar cesta"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
             {/* Progression Steps Indicator */}
-            <div className="bg-slate-50 border-b px-4 py-2 flex items-center justify-between text-[11px] font-medium text-slate-500">
+            <div className="bg-slate-50 border-b px-4 py-2.5 flex items-center text-xs font-medium text-slate-500">
               <span className="flex items-center gap-1.5 text-emerald-800 font-bold">
-                <span className="w-4 h-4 rounded-full bg-emerald-800 text-white flex items-center justify-center text-[9px]">1</span>
+                <span className="w-5 h-5 rounded-full bg-emerald-800 text-white flex items-center justify-center text-[11px]">1</span>
                 Cesta
               </span>
-              <span className="text-slate-300">➔</span>
-              <span className="flex items-center gap-1.5 text-slate-400">
-                <span className="w-4 h-4 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-[9px]">2</span>
-                Entrega / Recogida
+              <span className="h-px flex-1 mx-2 bg-slate-200" aria-hidden />
+              <span className="flex items-center gap-1.5 text-slate-500">
+                <span className="w-5 h-5 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-[11px]">2</span>
+                Entrega
               </span>
-              <span className="text-slate-300">➔</span>
-              <span className="flex items-center gap-1.5 text-slate-400">
-                <span className="w-4 h-4 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-[9px]">3</span>
-                Pago Seguro
+              <span className="h-px flex-1 mx-2 bg-slate-200" aria-hidden />
+              <span className="flex items-center gap-1.5 text-slate-500">
+                <span className="w-5 h-5 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-[11px]">3</span>
+                Pago
               </span>
             </div>
 
@@ -82,8 +130,8 @@ export const CartDrawer = () => {
                   </div>
                 ) : (
                   <div className="space-y-1.5">
-                    <div className="flex justify-between items-center text-slate-600 text-[11px]">
-                      <span>Te faltan <strong className="text-emerald-950 font-mono font-bold">{shippingInfo.remainingForFree.toFixed(2)}€</strong> para <strong>Envío Gratis</strong></span>
+                    <div className="flex justify-between items-center text-slate-600">
+                      <span>Te faltan <strong className="text-emerald-950 font-semibold">{formatPrice(shippingInfo.remainingForFree)}</strong> para <strong>Envío Gratis</strong></span>
                       <span className="font-bold text-emerald-800">{progressPercent}%</span>
                     </div>
                     <div className="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
@@ -97,15 +145,31 @@ export const CartDrawer = () => {
               </div>
             )}
 
+            {profileConflicts.length > 0 && (
+              <div className="bg-amber-50 border-b border-amber-200 px-4 py-3 text-sm text-amber-950" role="status">
+                <p className="font-semibold">
+                  {profileConflicts.length === 1 ? 'Un producto no encaja' : `${profileConflicts.length} productos no encajan`} con tu perfil de Ecoland Salud:
+                </p>
+                <ul className="mt-1 space-y-0.5">
+                  {profileConflicts.map(({ product, match }) => (
+                    <li key={product.id}>· {cleanProductName(product.name, 40)}: {match.reasons[0].toLowerCase()}</li>
+                  ))}
+                </ul>
+                <Link to="/salud" onClick={() => setIsOpen(false)} className="mt-1 inline-block text-xs font-medium underline underline-offset-2">
+                  Ver alternativas en Ecoland Salud
+                </Link>
+              </div>
+            )}
+
             {/* Items List */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-3">
+            <div className="flex-1 overflow-y-auto p-4 bg-slate-50/60">
               {items.length === 0 ? (
                 <div className="text-center py-16 space-y-3">
-                  <div className="w-14 h-14 rounded-full bg-slate-100 flex items-center justify-center mx-auto text-slate-400">
+                  <div className="w-14 h-14 rounded-full bg-slate-100 flex items-center justify-center mx-auto text-slate-500">
                     <ShoppingBag className="h-7 w-7" />
                   </div>
                   <p className="text-slate-700 font-bold text-sm">Tu cesta todavía está vacía</p>
-                  <p className="text-xs text-slate-400 max-w-xs mx-auto">
+                  <p className="text-xs text-slate-500 max-w-xs mx-auto">
                     Explora nuestros packs de temporada, productos de herbolario o compone tu cesta con el Plato Harvard interactivo.
                   </p>
                   <Button
@@ -118,287 +182,109 @@ export const CartDrawer = () => {
                   </Button>
                 </div>
               ) : (
-                items.map((item, index) => {
-                  if (item.type === 'pack') {
-                    const price = item.pack.prices[item.size];
-                    const discount = item.isSubscription ? COMMERCIAL_RULES.SUBSCRIPTION_DISCOUNT_FACTOR : 1;
-                    const finalItemPrice = price * discount;
-
+                <ul className="space-y-2.5">
+                  {items.map(item => {
+                    const row = toCartRow(item);
                     return (
-                      <div
-                        key={`pack-${item.pack.id}-${item.size}-${item.isSubscription}-${index}`}
-                        className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-200/80"
-                      >
-                        <div className="w-16 h-16 rounded-xl overflow-hidden bg-slate-200 shrink-0">
-                          <img
-                            src={item.pack.image}
-                            alt={item.pack.name}
-                            className="w-full h-full object-cover"
-                          />
+                      <li key={row.key} className="flex gap-3 p-3 rounded-2xl bg-white border border-slate-200/80">
+                        <img
+                          src={row.image}
+                          alt=""
+                          loading="lazy"
+                          className="w-16 h-16 rounded-xl object-cover bg-slate-100 shrink-0"
+                        />
+                        <div className="flex-1 min-w-0 flex flex-col">
+                          <div className="flex items-start gap-2">
+                            <div className="min-w-0 flex-1">
+                              <h4 className="font-sans font-semibold text-sm leading-snug text-slate-900 line-clamp-2">{row.name}</h4>
+                              {row.detail && <p className="text-xs text-slate-500 mt-0.5 truncate">{row.detail}</p>}
+                            </div>
+                            <button
+                              onClick={() => removeItem(row.id, row.size, item.type)}
+                              className="w-8 h-8 -mt-1 -mr-1 grid place-items-center rounded-full text-slate-500 hover:text-red-600 hover:bg-red-50 shrink-0"
+                              aria-label={`Quitar ${row.name}`}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </div>
+                          <div className="flex items-center justify-between mt-auto pt-2">
+                            <div className="flex items-center rounded-full border border-slate-200">
+                              <button
+                                onClick={() => updateQuantity(row.id, item.quantity - 1, row.size, item.type)}
+                                className="w-8 h-8 grid place-items-center text-slate-600 hover:text-emerald-900"
+                                aria-label={`Una unidad menos de ${row.name}`}
+                              >
+                                <Minus className="h-3.5 w-3.5" />
+                              </button>
+                              <span className="w-7 text-center text-sm font-semibold tabular-nums" aria-live="polite">{item.quantity}</span>
+                              <button
+                                onClick={() => updateQuantity(row.id, item.quantity + 1, row.size, item.type)}
+                                className="w-8 h-8 grid place-items-center text-slate-600 hover:text-emerald-900"
+                                aria-label={`Una unidad más de ${row.name}`}
+                              >
+                                <Plus className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+                            <span className="text-sm font-semibold text-slate-900 tabular-nums">
+                              {formatPrice(row.unitPrice * item.quantity)}
+                            </span>
+                          </div>
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-semibold text-xs text-slate-900 truncate">{item.pack.name}</h4>
-                          <p className="text-[11px] text-slate-500">
-                            Tamaño: <span className="font-semibold">{item.size}</span>
-                            {item.isSubscription && (
-                              <span className="ml-1 text-emerald-800 font-bold text-[10px] bg-emerald-100 px-1.5 py-0.5 rounded">
-                                -10% Suscripción
-                              </span>
-                            )}
-                          </p>
-                          <p className="text-xs font-mono font-bold text-emerald-900 mt-0.5">
-                            {(finalItemPrice * item.quantity).toFixed(2)}€
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-1.5 shrink-0">
-                          <button
-                            onClick={() => updateQuantity(item.pack.id, item.quantity - 1, item.size, 'pack')}
-                            className="w-6 h-6 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-100"
-                            aria-label="Reducir cantidad"
-                          >
-                            <Minus className="h-3 w-3" />
-                          </button>
-                          <span className="w-5 text-center text-xs font-mono font-bold">{item.quantity}</span>
-                          <button
-                            onClick={() => updateQuantity(item.pack.id, item.quantity + 1, item.size, 'pack')}
-                            className="w-6 h-6 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-100"
-                            aria-label="Aumentar cantidad"
-                          >
-                            <Plus className="h-3 w-3" />
-                          </button>
-                          <button
-                            onClick={() => removeItem(item.pack.id, item.size, 'pack')}
-                            className="p-1 text-slate-400 hover:text-red-500 ml-1"
-                            aria-label="Eliminar"
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </button>
-                        </div>
-                      </div>
+                      </li>
                     );
-                  }
-
-                  if (item.type === 'product') {
-                    return (
-                      <div
-                        key={`product-${item.product.id}-${index}`}
-                        className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-200/80"
-                      >
-                        <div className="w-16 h-16 rounded-xl overflow-hidden bg-slate-200 shrink-0">
-                          <img
-                            src={item.product.image}
-                            alt={item.product.name}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-semibold text-xs text-slate-900 truncate">{item.product.name}</h4>
-                          <p className="text-[11px] text-slate-500">{item.product.category}</p>
-                          <p className="text-xs font-mono font-bold text-emerald-900 mt-0.5">
-                            {(item.product.price * item.quantity).toFixed(2)}€
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-1.5 shrink-0">
-                          <button
-                            onClick={() => updateQuantity(item.product.id, item.quantity - 1, undefined, 'product')}
-                            className="w-6 h-6 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-100"
-                            aria-label="Reducir cantidad"
-                          >
-                            <Minus className="h-3 w-3" />
-                          </button>
-                          <span className="w-5 text-center text-xs font-mono font-bold">{item.quantity}</span>
-                          <button
-                            onClick={() => updateQuantity(item.product.id, item.quantity + 1, undefined, 'product')}
-                            className="w-6 h-6 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-100"
-                            aria-label="Aumentar cantidad"
-                          >
-                            <Plus className="h-3 w-3" />
-                          </button>
-                          <button
-                            onClick={() => removeItem(item.product.id, undefined, 'product')}
-                            className="p-1 text-slate-400 hover:text-red-500 ml-1"
-                            aria-label="Eliminar"
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  }
-
-                  if (item.type === 'catalog-product') {
-                    return (
-                      <div
-                        key={`cat-prod-${item.product.id}-${index}`}
-                        className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-200/80"
-                      >
-                        <div className="w-16 h-16 rounded-xl overflow-hidden bg-slate-200 shrink-0">
-                          <img
-                            src={item.product.image}
-                            alt={item.product.name}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-semibold text-xs text-slate-900 truncate">{item.product.name}</h4>
-                          <p className="text-[11px] text-slate-500">{item.product.brand || item.product.unit}</p>
-                          <p className="text-xs font-mono font-bold text-emerald-900 mt-0.5">
-                            {(item.product.price * item.quantity).toFixed(2)}€
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-1.5 shrink-0">
-                          <button
-                            onClick={() => updateQuantity(item.product.id, item.quantity - 1, undefined, 'catalog-product')}
-                            className="w-6 h-6 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-100"
-                            aria-label="Reducir cantidad"
-                          >
-                            <Minus className="h-3 w-3" />
-                          </button>
-                          <span className="w-5 text-center text-xs font-mono font-bold">{item.quantity}</span>
-                          <button
-                            onClick={() => updateQuantity(item.product.id, item.quantity + 1, undefined, 'catalog-product')}
-                            className="w-6 h-6 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-100"
-                            aria-label="Aumentar cantidad"
-                          >
-                            <Plus className="h-3 w-3" />
-                          </button>
-                          <button
-                            onClick={() => removeItem(item.product.id, undefined, 'catalog-product')}
-                            className="p-1 text-slate-400 hover:text-red-500 ml-1"
-                            aria-label="Eliminar"
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  }
-
-                  if (item.type === 'catalog-pack') {
-                    return (
-                      <div
-                        key={`cat-pack-${item.pack.id}-${index}`}
-                        className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-200/80"
-                      >
-                        <div className="w-16 h-16 rounded-xl overflow-hidden bg-slate-200 shrink-0">
-                          <img
-                            src={item.pack.image}
-                            alt={item.pack.name}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-semibold text-xs text-slate-900 truncate">{item.pack.name}</h4>
-                          <p className="text-[11px] text-slate-500">Pack Ahorro Bio</p>
-                          <p className="text-xs font-mono font-bold text-emerald-900 mt-0.5">
-                            {(item.pack.price * item.quantity).toFixed(2)}€
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-1.5 shrink-0">
-                          <button
-                            onClick={() => updateQuantity(item.pack.id, item.quantity - 1, undefined, 'catalog-pack')}
-                            className="w-6 h-6 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-100"
-                            aria-label="Reducir cantidad"
-                          >
-                            <Minus className="h-3 w-3" />
-                          </button>
-                          <span className="w-5 text-center text-xs font-mono font-bold">{item.quantity}</span>
-                          <button
-                            onClick={() => updateQuantity(item.pack.id, item.quantity + 1, undefined, 'catalog-pack')}
-                            className="w-6 h-6 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-100"
-                            aria-label="Aumentar cantidad"
-                          >
-                            <Plus className="h-3 w-3" />
-                          </button>
-                          <button
-                            onClick={() => removeItem(item.pack.id, undefined, 'catalog-pack')}
-                            className="p-1 text-slate-400 hover:text-red-500 ml-1"
-                            aria-label="Eliminar"
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  }
-
-                  return null;
-                })
+                  })}
+                </ul>
               )}
             </div>
 
             {/* Footer */}
             {items.length > 0 && (
               <div className="p-4 border-t bg-card space-y-3">
-                {/* Environmental Evidence Box (Prioridad 9: Solo claims con verification_status = VERIFIED) */}
-                <div className="p-3 rounded-2xl bg-emerald-50/80 border border-emerald-200/60 space-y-2">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="font-bold text-emerald-950 flex items-center gap-1.5">
-                      <Leaf className="h-4 w-4 text-emerald-700" />
-                      Garantías Ecológicas Verificadas
-                    </span>
-                    <span className="text-emerald-800 font-mono text-[11px] bg-emerald-100 px-2 py-0.5 rounded-full font-bold">
-                      +{Math.floor(totalPrice)} EcoPuntos
-                    </span>
-                  </div>
-
-                  <div className="space-y-1.5 pt-1 text-[11px]">
-                    <div className="p-2 rounded-xl bg-white/90 border border-emerald-100 flex items-center gap-2">
-                      <Box className="h-4 w-4 text-emerald-700 shrink-0" />
-                      <div>
-                        <strong className="block text-slate-800 text-[10px]">Embalaje 100% Sostenible FSC</strong>
-                        <span className="text-[10px] text-slate-500">Cartón reciclado y viruta vegetal compostable (Sin plástico virgen).</span>
-                      </div>
-                    </div>
-                    <div className="p-2 rounded-xl bg-white/90 border border-emerald-100 flex items-center gap-2">
-                      <ShieldCheck className="h-4 w-4 text-emerald-700 shrink-0" />
-                      <div>
-                        <strong className="block text-slate-800 text-[10px]">Alimentación Certificada UE (Eurohoja)</strong>
-                        <span className="text-[10px] text-slate-500">Garantía oficial libre de pesticidas sintéticos y transgénicos.</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Opción Packaging 100% Sin Plástico */}
-                  <label className="flex items-center gap-2 pt-1.5 cursor-pointer text-[11px] text-slate-700 border-t border-emerald-100">
-                    <input 
-                      type="checkbox" 
-                      checked={zeroWastePackaging} 
-                      onChange={(e) => setZeroWastePackaging(e.target.checked)}
-                      className="rounded border-slate-300 text-emerald-800 focus:ring-emerald-700"
-                    />
-                    <span>Empaque Zero Waste: preparado en caja reciclada y sin albarán en papel</span>
-                  </label>
-                </div>
-
-                {/* Subtotal y Botón de Checkout */}
-                <div className="flex justify-between items-center pt-1">
-                  <div>
-                    <span className="text-slate-400 text-xs block">Subtotal con IVA</span>
-                    <span className="text-[11px] text-emerald-800 font-semibold">Envío 24/48h o Click & Collect</span>
-                  </div>
-                  <span className="text-2xl font-black font-mono text-slate-900">
-                    {totalPrice.toFixed(2)}€
+                {/* Garantías ecológicas verificadas (solo claims con verification_status = VERIFIED) */}
+                <div className="flex flex-wrap gap-1.5 text-xs">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-100 px-2.5 py-1 text-emerald-900">
+                    <ShieldCheck className="h-3.5 w-3.5 text-emerald-700" /> Ecológico certificado UE
+                  </span>
+                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-100 px-2.5 py-1 text-emerald-900">
+                    <Box className="h-3.5 w-3.5 text-emerald-700" /> Embalaje FSC sin plástico
+                  </span>
+                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-100 px-2.5 py-1 text-emerald-900">
+                    <Leaf className="h-3.5 w-3.5 text-emerald-700" /> +{Math.floor(totalPrice)} EcoPuntos
                   </span>
                 </div>
 
-                <Button 
-                  className="w-full bg-emerald-900 hover:bg-emerald-800 text-white font-black text-sm py-6 rounded-2xl shadow-md gap-2"
+                <label className="flex items-start gap-2 cursor-pointer text-xs text-slate-600">
+                  <input
+                    type="checkbox"
+                    checked={zeroWastePackaging}
+                    onChange={(e) => setZeroWastePackaging(e.target.checked)}
+                    className="mt-0.5 rounded border-slate-300 text-emerald-800 focus:ring-emerald-700"
+                  />
+                  <span>Empaque Zero Waste: caja reciclada y sin albarán en papel</span>
+                </label>
+
+                <div className="flex justify-between items-end pt-1">
+                  <div>
+                    <span className="text-sm text-slate-600 block">Subtotal (IVA incluido)</span>
+                    <span className="text-xs text-slate-500">Envío 24/48 h o Click &amp; Collect</span>
+                  </div>
+                  <span className="text-2xl font-semibold text-slate-900 tabular-nums">
+                    {formatPrice(totalPrice)}
+                  </span>
+                </div>
+
+                <Button
+                  className="w-full h-12 bg-emerald-900 hover:bg-emerald-800 text-white font-semibold text-sm rounded-xl shadow-sm gap-2"
                   onClick={() => setIsOpen(false)}
                   asChild
                 >
                   <Link to="/checkout">
-                    <span>Tramitar pedido seguro ➔</span>
+                    Tramitar pedido
+                    <ArrowRight className="h-4 w-4" />
                   </Link>
                 </Button>
 
-                <div className="flex items-center justify-center gap-2.5 text-[10px] text-slate-400 font-medium pt-1">
-                  <span>🔒 SSL 256-bit</span>
-                  <span>•</span>
-                  <span>⚡ Bizum</span>
-                  <span>•</span>
-                  <span>💳 Tarjeta</span>
-                </div>
+                <p className="text-center text-xs text-slate-500">Pago seguro con tarjeta, Bizum o Apple Pay</p>
               </div>
             )}
           </motion.div>

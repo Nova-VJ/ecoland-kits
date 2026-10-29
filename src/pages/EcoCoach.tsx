@@ -145,7 +145,7 @@ export const EcoCoach = () => {
                 <Bot className="w-6 h-6 text-emerald-200" />
               </div>
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800">
+                <span className="text-xs font-bold uppercase tracking-wider text-emerald-800">
                   Compañero Alimentario Inteligente
                 </span>
                 <h1 className="font-display text-2xl md:text-3xl font-black text-slate-900 tracking-tight">
@@ -170,7 +170,7 @@ export const EcoCoach = () => {
 
           {/* Chips de Preguntas Frecuentes Sugeridas */}
           <div className="pt-2 border-t space-y-1.5">
-            <span className="text-[11px] font-bold text-slate-400 block uppercase tracking-wider">
+            <span className="text-[11px] font-bold text-slate-500 block uppercase tracking-wider">
               Preguntas sugeridas:
             </span>
             <div className="flex flex-wrap gap-1.5">
@@ -199,7 +199,7 @@ export const EcoCoach = () => {
               {msg.sender === 'user' ? (
                 <div className="bg-emerald-900 text-white rounded-3xl rounded-tr-xs px-5 py-3 max-w-lg shadow-sm text-xs md:text-sm">
                   <p>{msg.text}</p>
-                  <span className="text-[10px] text-emerald-300 block text-right mt-1 font-mono">
+                  <span className="text-xs text-emerald-300 block text-right mt-1 tabular-nums">
                     {msg.timestamp}
                   </span>
                 </div>
@@ -212,11 +212,11 @@ export const EcoCoach = () => {
                           <span className="font-bold text-slate-900 text-sm">
                             {msg.response.title}
                           </span>
-                          <Badge className={`text-[10px] font-black border uppercase tracking-wider ${getBadgeStyle(msg.response.infoType)}`}>
+                          <Badge className={`text-xs font-black border uppercase tracking-wider ${getBadgeStyle(msg.response.infoType)}`}>
                             {msg.response.infoType}
                           </Badge>
                         </div>
-                        <span className="text-[10px] text-slate-400 font-mono">
+                        <span className="text-xs text-slate-500 tabular-nums">
                           {msg.timestamp}
                         </span>
                       </div>
@@ -237,7 +237,7 @@ export const EcoCoach = () => {
                                 ⏱ {msg.response.recipeCard.prepTimeMinutes} min · {msg.response.recipeCard.servings} ración
                               </span>
                             </div>
-                            <div className="flex items-center gap-2 font-mono text-[11px] font-bold text-emerald-900">
+                            <div className="flex items-center gap-2 tabular-nums text-[11px] font-bold text-emerald-900">
                               <span>{msg.response.recipeCard.calories} kcal</span>
                               <span>·</span>
                               <span>P: {msg.response.recipeCard.protein}g</span>
@@ -280,37 +280,37 @@ export const EcoCoach = () => {
                           <Shield className="w-3.5 h-3.5 text-emerald-700" />
                           <span>Basado en tus datos (Contexto utilizado):</span>
                         </div>
-                        <div className="flex flex-wrap gap-2 text-[10px] text-slate-600 pl-5">
+                        <div className="flex flex-wrap gap-2 text-xs text-slate-600 pl-5">
                           <span className="flex items-center gap-1 text-emerald-800 font-medium">✓ Tu despensa</span>
                           <span className="flex items-center gap-1 text-emerald-800 font-medium">✓ Tu diario de hoy</span>
                           <span className="flex items-center gap-1 text-emerald-800 font-medium">✓ Tu plan semanal</span>
                         </div>
-                        <div className="pl-5 flex items-center gap-1 text-[10px] text-slate-400">
-                          <Info className="w-3 h-3 text-slate-400 shrink-0" />
+                        <div className="pl-5 flex items-center gap-1 text-xs text-slate-500">
+                          <Info className="w-3 h-3 text-slate-500 shrink-0" />
                           <span>Fundamentado en: {msg.response.dataGrounding}</span>
                         </div>
                       </div>
 
                       {/* Feedback Discreto del Coach (P2.5 Punto 6) */}
                       <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-t border-slate-100/80 text-[11px]">
-                        <span className="text-slate-400 text-[10px]">¿Te sirvió esta sugerencia?</span>
+                        <span className="text-slate-500 text-xs">¿Te sirvió esta sugerencia?</span>
                         
                         {feedbackState[msg.id] ? (
-                          <span className="text-emerald-800 font-bold text-[10px] flex items-center gap-1">
+                          <span className="text-emerald-800 font-bold text-xs flex items-center gap-1">
                             ✓ {feedbackState[msg.id].isHelpful ? 'Valoración positiva registrada' : 'Preferencia guardada'}
                           </span>
                         ) : (
                           <div className="flex items-center gap-1.5">
                             <button
                               onClick={() => handleFeedback(msg.id, msg.text || '', msg.response?.title || '', true)}
-                              className="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-emerald-100 text-slate-600 hover:text-emerald-950 text-[10px] font-bold flex items-center gap-1 transition-colors"
+                              className="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-emerald-100 text-slate-600 hover:text-emerald-950 text-xs font-bold flex items-center gap-1 transition-colors"
                             >
                               <span>👍</span>
                               <span>Sí</span>
                             </button>
                             <button
                               onClick={() => handleFeedback(msg.id, msg.text || '', msg.response?.title || '', false)}
-                              className="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-amber-100 text-slate-600 hover:text-amber-950 text-[10px] font-bold flex items-center gap-1 transition-colors"
+                              className="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-amber-100 text-slate-600 hover:text-amber-950 text-xs font-bold flex items-center gap-1 transition-colors"
                             >
                               <span>👎</span>
                               <span>No mucho</span>
@@ -341,7 +341,7 @@ export const EcoCoach = () => {
                               <button
                                 key={opt.id}
                                 onClick={() => handleSelectNegativeReason(msg.id, msg.text || '', msg.response?.title || '', opt.id)}
-                                className="px-2 py-1 rounded-lg bg-white hover:bg-amber-100 border border-amber-200 text-[10px] font-semibold text-amber-900 transition-colors"
+                                className="px-2 py-1 rounded-lg bg-white hover:bg-amber-100 border border-amber-200 text-xs font-semibold text-amber-900 transition-colors"
                               >
                                 {opt.label}
                               </button>

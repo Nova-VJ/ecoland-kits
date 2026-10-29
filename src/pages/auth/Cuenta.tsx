@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { User, Phone, MapPin, Package, Repeat, Crown, LogOut, Loader2, Save, Leaf, Shield, Eye, ShoppingCart, Sparkles, MessageSquare, UtensilsCrossed } from 'lucide-react';
+import { User, Phone, MapPin, Package, Repeat, Crown, LogOut, Loader2, Save, Leaf, Shield, Eye, ShoppingCart, Sparkles, MessageSquare, UtensilsCrossed, HeartPulse } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -15,6 +15,7 @@ import { AbandonedCarts } from '@/components/account/AbandonedCarts';
 import { PersonalizedOffers } from '@/components/account/PersonalizedOffers';
 import { SavedDiets } from '@/components/account/SavedDiets';
 import { ConversationHistory } from '@/components/account/ConversationHistory';
+import { MyHealthProfile } from '@/components/account/MyHealthProfile';
 
 interface Profile {
   full_name: string | null;
@@ -29,6 +30,7 @@ interface Profile {
 }
 
 const Cuenta = () => {
+  const [searchParams] = useSearchParams();
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -199,11 +201,15 @@ const Cuenta = () => {
 
             {/* Main Content with Tabs */}
             <div className="lg:col-span-2">
-              <Tabs defaultValue="perfil" className="w-full">
+              <Tabs defaultValue={searchParams.get('tab') || 'perfil'} className="w-full">
                 <TabsList className="flex w-full overflow-x-auto mb-6 h-auto p-1 gap-1">
                   <TabsTrigger value="perfil" className="text-xs sm:text-sm px-3 py-2 gap-1.5 flex-shrink-0">
                     <User className="h-3.5 w-3.5" />
                     Perfil
+                  </TabsTrigger>
+                  <TabsTrigger value="salud" className="text-xs sm:text-sm px-3 py-2 gap-1.5 flex-shrink-0">
+                    <HeartPulse className="h-3.5 w-3.5" />
+                    Mi salud
                   </TabsTrigger>
                   <TabsTrigger value="pedidos" className="text-xs sm:text-sm px-3 py-2 gap-1.5 flex-shrink-0">
                     <Package className="h-3.5 w-3.5" />
@@ -230,6 +236,10 @@ const Cuenta = () => {
                     Para ti
                   </TabsTrigger>
                 </TabsList>
+
+                <TabsContent value="salud">
+                  <MyHealthProfile />
+                </TabsContent>
 
                 <TabsContent value="perfil">
                   <div className="bg-card rounded-2xl border p-6">

@@ -12,6 +12,7 @@ import { catalogPacks } from '@/data/catalog/packs-catalog';
 import { useToast } from '@/hooks/use-toast';
 import { generateDietPdf } from '@/lib/dietPdfGenerator';
 import ReactMarkdown from 'react-markdown';
+import { formatPrice } from '@/lib/utils';
 
 interface Diet {
   id: string;
@@ -190,13 +191,13 @@ export const SavedDiets = () => {
                   <h4 className="font-medium text-sm">{diet.title}</h4>
                   <p className="text-xs text-muted-foreground mt-0.5">
                     {new Date(diet.created_at).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}
-                    {' · '}{diet.product_slugs.length} productos · {totalPrice.toFixed(2)}€
+                    {' · '}{diet.product_slugs.length} productos · {formatPrice(totalPrice)}
                   </p>
                 </div>
               </button>
               <div className="flex gap-1 flex-shrink-0">
                 {diet.subscription_active && (
-                  <Badge variant="secondary" className="text-[10px] gap-1">
+                  <Badge variant="secondary" className="text-xs gap-1">
                     <Repeat className="h-3 w-3" />
                     {diet.subscription_interval === 'weekly' ? 'Semanal' : 'Mensual'}
                   </Badge>
@@ -252,7 +253,7 @@ export const SavedDiets = () => {
                               <span className={diet.product_slugs.includes(r.slug) ? 'text-muted-foreground' : ''}>
                                 {r.type === 'pack' ? '📦 ' : ''}{r.name}
                               </span>
-                              <span className="text-primary font-medium">{r.price.toFixed(2)}€</span>
+                              <span className="text-primary font-medium">{formatPrice(r.price)}</span>
                             </button>
                           ))}
                         </div>
@@ -273,7 +274,7 @@ export const SavedDiets = () => {
                           )}
                         </span>
                         <div className="flex items-center gap-2">
-                          {info && <span className="text-xs text-primary font-medium">{info.price.toFixed(2)}€</span>}
+                          {info && <span className="text-xs text-primary font-medium">{formatPrice(info.price)}</span>}
                           <button onClick={() => removeProduct(diet.id, slug)} className="opacity-0 group-hover:opacity-100 transition-opacity">
                             <X className="h-3.5 w-3.5 text-destructive" />
                           </button>
@@ -333,14 +334,14 @@ export const SavedDiets = () => {
                       <div className="bg-background rounded-lg p-3 border">
                         <div className="flex justify-between text-xs text-muted-foreground">
                           <span>Precio sin descuento</span>
-                          <span className="line-through">{totalPrice.toFixed(2)}€</span>
+                          <span className="line-through">{formatPrice(totalPrice)}</span>
                         </div>
                         <div className="flex justify-between text-sm font-semibold text-primary mt-1">
                           <span>Precio con {DISCOUNTS[diet.subscription_plan || '3months']?.label}</span>
-                          <span>{discountedPrice.toFixed(2)}€</span>
+                          <span>{formatPrice(discountedPrice)}</span>
                         </div>
-                        <p className="text-[10px] text-muted-foreground mt-1">
-                          Ahorras {(totalPrice - discountedPrice).toFixed(2)}€ por pedido ({(DISCOUNTS[diet.subscription_plan || '3months']?.discount * 100).toFixed(0)}% dto.)
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Ahorras {formatPrice((totalPrice - discountedPrice))} por pedido ({(DISCOUNTS[diet.subscription_plan || '3months']?.discount * 100).toFixed(0)}% dto.)
                         </p>
                       </div>
                     </div>

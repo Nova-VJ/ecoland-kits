@@ -37,7 +37,7 @@ export const HabitualMealsRow = ({ onLogged }: HabitualMealsRowProps) => {
           <Clock className="h-4 w-4 text-emerald-800" />
           <span>Tus Comidas Habituales (1 Toque)</span>
         </div>
-        <span className="text-[10px] text-slate-400">Repite sin buscar</span>
+        <span className="text-xs text-slate-500">Repite sin buscar</span>
       </div>
 
       <div className="flex gap-2.5 overflow-x-auto pb-1.5 scrollbar-none">
@@ -56,10 +56,10 @@ export const HabitualMealsRow = ({ onLogged }: HabitualMealsRowProps) => {
             >
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <Badge variant="outline" className="text-[9px] capitalize text-emerald-800 border-emerald-300 font-bold">
+                  <Badge variant="outline" className="text-xs capitalize text-emerald-800 border-emerald-300 font-bold">
                     {hab.meal}
                   </Badge>
-                  <span className="text-[10px] text-slate-400 font-mono">
+                  <span className="text-xs text-slate-500 tabular-nums">
                     {hab.timesLogged} veces
                   </span>
                 </div>
@@ -72,10 +72,10 @@ export const HabitualMealsRow = ({ onLogged }: HabitualMealsRowProps) => {
               </div>
 
               <div className="flex items-center justify-between pt-3 mt-2 border-t border-slate-100 text-[11px]">
-                <span className="font-mono font-bold text-emerald-950">
+                <span className="tabular-nums font-bold text-emerald-950">
                   {hab.calories} kcal
                 </span>
-                <span className={`inline-flex items-center gap-1 font-bold text-[10px] px-2 py-1 rounded-lg ${
+                <span className={`inline-flex items-center gap-1 font-bold text-xs px-2 py-1 rounded-lg ${
                   isJustLogged
                     ? 'bg-emerald-800 text-white'
                     : 'bg-emerald-50 text-emerald-900 hover:bg-emerald-100'

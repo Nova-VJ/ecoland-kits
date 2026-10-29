@@ -40,6 +40,18 @@ function assignCategory(name: string, brand: string): string {
   return 'granel';
 }
 
+const NO_PHOTO = '/foto-proximamente.svg';
+
+// Producto nuevo del inventario sin ficha todavía: solo afirmamos lo que sabemos.
+// Sin etiquetas de vegano ni certificaciones hasta verificarlo (ver productFacts).
+const newLiveProductDefaults = (rawName: string, brand: string) => ({
+  description: `${rawName} de ${brand}, disponible en la tienda Ecoland. Pronto añadiremos su descripción completa.`,
+  tags: ['bio'], // Ecoland solo vende productos ecológicos
+  allergens: ['Ingredientes, alérgenos y trazas: consulta el envase antes de consumir.'],
+  ingredients: 'Consulta la lista de ingredientes en el envase.',
+  usage: 'Conservar según las indicaciones del envase.',
+});
+
 export const CatalogProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [products, setProducts] = useState<CatalogProduct[]>(allCatalogProducts);
   const [isLiveSync, setIsLiveSync] = useState(false);
@@ -99,15 +111,11 @@ export const CatalogProvider: React.FC<{ children: React.ReactNode }> = ({ child
             slug,
             name: `${brand} – ${rawName}`,
             brand,
-            description: `${rawName} de ${brand} es un producto ecológico certificado por la Unión Europea (Euro-hoja), cultivado y seleccionado bajo rigurosos estándares de sostenibilidad.`,
+            ...newLiveProductDefaults(rawName, brand),
             price,
             weight: p.formato || 'Estándar',
-            image: imgUrl || 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=600',
+            image: imgUrl || NO_PHOTO,
             category: assignCategory(rawName, brand),
-            tags: ['bio', 'premium', 'vegano'],
-            allergens: ['Consultar etiquetado oficial'],
-            ingredients: 'Ingredientes procedentes de agricultura ecológica certificada (100% bio).',
-            usage: '✔ Ideal para el consumo diario dentro de una alimentación consciente y equilibrada.\n✔ Conservar en lugar fresco, seco y al abrigo de la luz.',
             inStock: true
           });
         }
@@ -146,15 +154,11 @@ export const CatalogProvider: React.FC<{ children: React.ReactNode }> = ({ child
             slug,
             name: `${brand} – ${rawName}`,
             brand,
-            description: `${rawName} de ${brand} es un producto físico ecológico seleccionado directamente de la tienda Ecoland, con certificación oficial y garantía de calidad.`,
+            ...newLiveProductDefaults(rawName, brand),
             price,
             weight: n.formato || 'Estándar',
-            image: imgUrl || 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=600',
+            image: imgUrl || NO_PHOTO,
             category: assignCategory(rawName, brand),
-            tags: ['bio', 'premium', 'vegano'],
-            allergens: ['Consultar etiquetado oficial'],
-            ingredients: 'Ingredientes 100% de agricultura biológica.',
-            usage: '✔ Uso habitual en recetas caseras y nutrición diaria.\n✔ Conservar en lugar fresco y seco.',
             inStock: true
           });
         }

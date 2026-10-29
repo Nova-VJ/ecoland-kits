@@ -154,7 +154,7 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
         >
           {/* Input Buscador */}
           <div className="p-4 border-b flex items-center gap-3 bg-slate-50/70">
-            <Search className="w-5 h-5 text-slate-400 shrink-0" />
+            <Search className="w-5 h-5 text-slate-500 shrink-0" />
             <input
               autoFocus
               value={searchQuery}
@@ -162,7 +162,7 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
               placeholder="Escribe un comando o busca una sección... (ej. despensa, agua, presupuesto)"
               className="w-full bg-transparent border-none text-sm focus:outline-none placeholder:text-slate-400 font-medium"
             />
-            <Badge variant="outline" className="text-[10px] font-mono text-slate-400 hidden sm:inline-block">
+            <Badge variant="outline" className="text-xs tabular-nums text-slate-500 hidden sm:inline-block">
               ESC para cerrar
             </Badge>
           </div>
@@ -170,7 +170,7 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
           {/* Listado de comandos */}
           <div className="p-2 max-h-80 overflow-y-auto space-y-1">
             {filteredCommands.length === 0 ? (
-              <div className="p-8 text-center text-xs text-slate-400">
+              <div className="p-8 text-center text-xs text-slate-500">
                 No se encontraron comandos que coincidan con tu búsqueda.
               </div>
             ) : (
@@ -190,7 +190,7 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
                         <strong className="text-xs font-bold text-slate-900 block group-hover:text-emerald-950">
                           {cmd.title}
                         </strong>
-                        <span className="text-[10px] text-slate-400">{cmd.category}</span>
+                        <span className="text-xs text-slate-500">{cmd.category}</span>
                       </div>
                     </div>
                     <ArrowRight className="w-3.5 h-3.5 text-slate-300 group-hover:text-emerald-700 transition-colors mr-1" />

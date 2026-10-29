@@ -77,7 +77,7 @@ export const WhatCanIDoNowModal = ({ isOpen, onClose, onTriggerLog, onAddWater }
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5">
-                    <span className="w-4 h-4 rounded-full bg-emerald-100 text-emerald-900 text-[9px] font-bold flex items-center justify-center">
+                    <span className="w-4 h-4 rounded-full bg-emerald-100 text-emerald-900 text-xs font-bold flex items-center justify-center">
                       {index + 1}
                     </span>
                     <strong className="text-xs sm:text-sm font-bold text-slate-900">
@@ -115,7 +115,7 @@ export const WhatCanIDoNowModal = ({ isOpen, onClose, onTriggerLog, onAddWater }
         </div>
 
         <div className="p-3.5 bg-slate-50 border-t flex items-center justify-between">
-          <span className="text-[11px] text-slate-400">
+          <span className="text-[11px] text-slate-500">
             Máximo 3 sugerencias para no abrumar tu toma de decisiones.
           </span>
           <Button

@@ -11,6 +11,7 @@ import { allCatalogProducts, CatalogProduct } from '@/data/catalog/individual-pr
 import { generateSmartBudgetBasket, BudgetConfig, GeneratedBasketItem } from '@/lib/budgetOptimizer';
 import { useToast } from '@/hooks/use-toast';
 import { Link } from 'react-router-dom';
+import { formatPrice } from '@/lib/utils';
 
 export const BudgetOptimizerInteractive = () => {
   const { addCatalogProduct, setIsOpen } = useCart();
@@ -53,7 +54,7 @@ export const BudgetOptimizerInteractive = () => {
     setIsOpen(true);
     toast({
       title: "¡Compra semanal añadida con éxito!",
-      description: `Se han añadido ${basketItems.length} productos ecológicos por un total de ${totalCost.toFixed(2)}€.`,
+      description: `Se han añadido ${basketItems.length} productos ecológicos por un total de ${formatPrice(totalCost)}.`,
     });
   };
 
@@ -88,7 +89,7 @@ export const BudgetOptimizerInteractive = () => {
           <div className="space-y-2">
             <div className="flex justify-between items-center font-bold text-slate-800">
               <span>Presupuesto objetivo:</span>
-              <strong className="text-emerald-800 font-mono text-base">{budgetAmount}€</strong>
+              <strong className="text-emerald-800 tabular-nums text-base">{budgetAmount}€</strong>
             </div>
             <input 
               type="range" 
@@ -104,7 +105,7 @@ export const BudgetOptimizerInteractive = () => {
                 <button
                   key={amt}
                   onClick={() => setBudgetAmount(amt)}
-                  className={`px-2.5 py-1 rounded-lg border font-bold text-[10px] transition-all ${
+                  className={`px-2.5 py-1 rounded-lg border font-bold text-xs transition-all ${
                     budgetAmount === amt ? 'bg-emerald-800 text-white border-emerald-800' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
                   }`}
                 >
@@ -183,27 +184,27 @@ export const BudgetOptimizerInteractive = () => {
         <div className="p-5 rounded-3xl bg-slate-900 text-white flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <Badge className="bg-emerald-500/20 text-emerald-300 border-0 text-[10px]">
+              <Badge className="bg-emerald-500/20 text-emerald-300 border-0 text-xs">
                 {basketItems.length} Alimentos Bio Seleccionados
               </Badge>
-              <Badge className="bg-teal-500/20 text-teal-300 border-0 text-[10px]">
+              <Badge className="bg-teal-500/20 text-teal-300 border-0 text-xs">
                 {basket.estimatedMeals} Comidas Estimadas
               </Badge>
             </div>
             <h3 className="font-display text-xl font-bold">Cesta Semanal Completa y Equilibrada</h3>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-slate-500">
               Aporte estimado: ~{basket.totalCalories} kcal • {basket.totalProtein}g proteína • {basket.totalFiber}g fibra prebiótica
             </p>
           </div>
 
           <div className="flex items-center gap-6 self-end md:self-auto">
             <div className="text-right">
-              <span className="text-xs text-slate-400 block">Total compra real:</span>
-              <span className="text-3xl font-display font-black text-emerald-400 font-mono">
-                {totalCost.toFixed(2)}€
+              <span className="text-xs text-slate-500 block">Total compra real:</span>
+              <span className="text-3xl font-display font-black text-emerald-400 tabular-nums">
+                {formatPrice(totalCost)}
               </span>
-              <span className="text-[10px] text-slate-400 block">
-                Presupuesto: {budgetAmount}€ ({totalCost <= budgetAmount ? `Ahorras ${(budgetAmount - totalCost).toFixed(2)}€` : 'Ajustado'})
+              <span className="text-xs text-slate-500 block">
+                Presupuesto: {budgetAmount}€ ({totalCost <= budgetAmount ? `Ahorras ${formatPrice((budgetAmount - totalCost))}` : 'Ajustado'})
               </span>
             </div>
 
@@ -236,10 +237,10 @@ export const BudgetOptimizerInteractive = () => {
 
                 <div className="flex-1 min-w-0 space-y-1">
                   <div className="flex items-center gap-1.5 flex-wrap">
-                    <span className="text-[9px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                    <span className="text-xs uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
                       {item.categoryRole === 'desayuno' ? '🌅 Desayuno' : item.categoryRole === 'legumbre' ? '🫘 Legumbre' : item.categoryRole === 'cereal' ? '🌾 Cereal' : item.categoryRole === 'verdura' ? '🥦 Hortaliza' : '🫒 Esencial'}
                     </span>
-                    <span className="text-[10px] text-slate-400 truncate">{item.product.brand}</span>
+                    <span className="text-xs text-slate-500 truncate">{item.product.brand}</span>
                   </div>
 
                   <Link to={`/tienda/producto/${item.product.slug}`} className="block text-xs font-bold text-slate-900 truncate hover:text-emerald-800">
@@ -247,10 +248,10 @@ export const BudgetOptimizerInteractive = () => {
                   </Link>
 
                   <div className="flex items-center justify-between text-xs pt-1">
-                    <strong className="text-emerald-800 font-mono font-bold">{item.product.price.toFixed(2)}€</strong>
+                    <strong className="text-emerald-800 tabular-nums font-bold">{formatPrice(item.product.price)}</strong>
                     <button 
                       onClick={() => removeItem(item.product.slug)}
-                      className="text-slate-400 hover:text-red-600 transition-colors text-[10px]"
+                      className="text-slate-500 hover:text-red-600 transition-colors text-xs"
                       title="Quitar de la cesta"
                     >
                       Quitar ×

@@ -4,6 +4,7 @@ import { ArrowRight, ArrowLeft, Check, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { packs } from '@/data/packs';
+import { formatPrice } from '@/lib/utils';
 
 interface QuizAnswer {
   questionId: number;
@@ -288,7 +289,7 @@ const Quiz = () => {
                       <p className="text-sm text-muted-foreground mb-3">
                         {pack.shortDescription}
                       </p>
-                      <p className="font-semibold">Desde {pack.prices.S.toFixed(2)}€</p>
+                      <p className="font-semibold">Desde {formatPrice(pack.prices.S)}</p>
                     </div>
                   </Link>
                 ))}

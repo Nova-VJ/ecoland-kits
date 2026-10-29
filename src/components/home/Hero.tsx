@@ -97,7 +97,7 @@ export const Hero = () => {
           duration: 0.6
         }} className="flex flex-wrap gap-4">
             <Link to="/packs">
-              <Button className="btn-hero bg-eco-cream text-eco-dark hover:bg-white">
+              <Button className="btn-hero bg-none bg-eco-cream text-eco-dark hover:bg-white">
                 Ver packs
                 <ArrowRight className="h-5 w-5" />
               </Button>

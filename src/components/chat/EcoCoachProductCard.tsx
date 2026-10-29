@@ -4,6 +4,7 @@ import { useCart } from '@/context/CartContext';
 import { allCatalogProducts } from '@/data/catalog/individual-products';
 import { catalogPacks } from '@/data/catalog/packs-catalog';
 import { Link } from 'react-router-dom';
+import { formatPrice } from '@/lib/utils';
 
 interface Props {
   type: 'product' | 'pack';
@@ -22,7 +23,7 @@ export const EcoCoachProductCard = ({ type, slug }: Props) => {
         <Link to={`/tienda/producto/${product.slug}`} className="text-xs font-medium text-primary hover:underline">
           {product.name}
         </Link>
-        <span className="text-[10px] text-muted-foreground">{product.price.toFixed(2)}€</span>
+        <span className="text-xs text-muted-foreground">{formatPrice(product.price)}</span>
         <button
           onClick={(e) => { e.preventDefault(); addCatalogProduct(product); }}
           className="ml-0.5 p-0.5 rounded bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
@@ -43,7 +44,7 @@ export const EcoCoachProductCard = ({ type, slug }: Props) => {
       <Link to={`/tienda/pack/${pack.slug}`} className="text-xs font-medium text-primary hover:underline">
         {pack.name}
       </Link>
-      <span className="text-[10px] text-muted-foreground">{pack.price.toFixed(2)}€</span>
+      <span className="text-xs text-muted-foreground">{formatPrice(pack.price)}</span>
       <button
         onClick={(e) => { e.preventDefault(); addCatalogPack(pack); }}
         className="ml-0.5 p-0.5 rounded bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"

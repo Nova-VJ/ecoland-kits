@@ -41,7 +41,7 @@ export const Blog = () => {
                 Elaboradas por nutricionistas con ingredientes 100% ecológicos.
               </p>
             </div>
-            <span className="text-xs font-mono text-emerald-800 font-bold bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+            <span className="text-xs tabular-nums text-emerald-800 font-bold bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
               {recipes.length} recetas oficiales
             </span>
           </div>
@@ -63,7 +63,7 @@ export const Blog = () => {
                     />
                     <div className="absolute bottom-2 left-2 flex gap-1 flex-wrap">
                       {recipe.tags.slice(0, 2).map(tag => (
-                        <span key={tag} className="text-[10px] font-bold bg-white/90 backdrop-blur-xs text-emerald-950 px-2 py-0.5 rounded-full shadow-2xs">
+                        <span key={tag} className="text-xs font-bold bg-white/90 backdrop-blur-xs text-emerald-950 px-2 py-0.5 rounded-full shadow-2xs">
                           {tag}
                         </span>
                       ))}
@@ -79,7 +79,7 @@ export const Blog = () => {
                       <div className="flex items-center gap-3">
                         <span className="flex items-center gap-1">
                           <Clock className="h-3.5 w-3.5 text-emerald-700" />
-                          <span>{recipe.prepTime}</span>
+                          <span>{recipe.timeMinutes} min</span>
                         </span>
                         <span className="flex items-center gap-1">
                           <Users className="h-3.5 w-3.5 text-emerald-700" />

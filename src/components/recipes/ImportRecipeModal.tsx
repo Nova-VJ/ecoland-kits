@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { recipeImportService } from '@/services/recipeImportService';
 import { dailyNutritionStore, ImportedRecipe } from '@/services/dailyNutritionStore';
+import { formatPrice } from '@/lib/utils';
 
 interface ImportRecipeModalProps {
   isOpen: boolean;
@@ -162,7 +163,7 @@ export const ImportRecipeModal = ({ isOpen, onClose, onRecipeSaved }: ImportReci
                     placeholder="https://ejemplo.com/receta-quinoa"
                     className="rounded-xl h-10 text-xs"
                   />
-                  <span className="text-[10px] text-slate-400 block">
+                  <span className="text-xs text-slate-500 block">
                     Preservamos siempre la atribución y enlace a la fuente original.
                   </span>
                 </div>
@@ -211,17 +212,17 @@ export const ImportRecipeModal = ({ isOpen, onClose, onRecipeSaved }: ImportReci
             >
               <div className="p-4 rounded-2xl bg-slate-50 border space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono text-emerald-800 font-bold">
+                  <span className="text-xs tabular-nums text-emerald-800 font-bold">
                     {parsedRecipe.sourceAttribution}
                   </span>
-                  <Badge variant="outline" className="text-[10px]">
+                  <Badge variant="outline" className="text-xs">
                     ⏱ {parsedRecipe.prepTimeMinutes} min · {parsedRecipe.servings} raciones
                   </Badge>
                 </div>
                 <h4 className="font-bold text-slate-900 text-sm sm:text-base">
                   {parsedRecipe.title}
                 </h4>
-                <div className="flex items-center gap-3 text-[11px] text-slate-500 font-mono">
+                <div className="flex items-center gap-3 text-[11px] text-slate-500 tabular-nums">
                   <span>~{parsedRecipe.estimatedCalories} kcal</span>
                   <span>·</span>
                   <span>Prot: {parsedRecipe.estimatedProtein}g</span>
@@ -253,13 +254,13 @@ export const ImportRecipeModal = ({ isOpen, onClose, onRecipeSaved }: ImportReci
                         <span className="font-semibold text-slate-900 truncate">
                           {ing.raw}
                         </span>
-                        <span className="text-[10px] text-slate-400 font-mono hidden sm:inline">
+                        <span className="text-xs text-slate-500 tabular-nums hidden sm:inline">
                           ({ing.amount} {ing.unit})
                         </span>
                       </div>
 
-                      <span className={`text-[10px] font-bold shrink-0 ${ing.inPantry ? 'text-emerald-800' : 'text-amber-800'}`}>
-                        {ing.inPantry ? 'YA TIENES (0€)' : `TE FALTA (~${ing.estimatedPriceEuro?.toFixed(2)}€)`}
+                      <span className={`text-xs font-bold shrink-0 ${ing.inPantry ? 'text-emerald-800' : 'text-amber-800'}`}>
+                        {ing.inPantry ? 'YA TIENES (0€)' : `TE FALTA (~${formatPrice(ing.estimatedPriceEuro ?? 0)})`}
                       </span>
                     </div>
                   ))}
@@ -270,7 +271,7 @@ export const ImportRecipeModal = ({ isOpen, onClose, onRecipeSaved }: ImportReci
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 border-t">
                 {parsedRecipe.ingredients.some(i => !i.inPantry) && (
                   <Button
-                    onClick={handleAddMissingIngredientsToShoppingList}
+                    onClick={handleAddMissingToShoppingList}
                     disabled={missingAdded}
                     variant="outline"
                     className="py-5 rounded-xl border-amber-300 text-amber-900 hover:bg-amber-100 font-bold text-xs gap-1.5"
@@ -310,7 +311,7 @@ export const ImportRecipeModal = ({ isOpen, onClose, onRecipeSaved }: ImportReci
               <div className="text-center pt-1">
                 <button
                   onClick={() => setParsedRecipe(null)}
-                  className="text-[11px] text-slate-400 hover:text-slate-700 underline"
+                  className="text-[11px] text-slate-500 hover:text-slate-700 underline"
                 >
                   Importar otra receta
                 </button>

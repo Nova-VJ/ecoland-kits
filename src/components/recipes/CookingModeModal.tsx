@@ -167,7 +167,7 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
                   <h2 className="text-base sm:text-lg font-bold text-slate-900 truncate max-w-xs sm:max-w-md">
                     {recipe.title}
                   </h2>
-                  <Badge className="bg-emerald-100 text-emerald-900 border-none text-[10px] font-bold">
+                  <Badge className="bg-emerald-100 text-emerald-900 border-none text-xs font-bold">
                     Modo Cocina 2.0
                   </Badge>
                 </div>
@@ -280,7 +280,7 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
                     <div className="flex items-center gap-2">
                       {timerSecondsLeft !== null ? (
                         <div className="flex items-center gap-2">
-                          <span className="text-2xl font-mono font-black text-emerald-900 px-3 py-1 bg-emerald-50 rounded-xl border border-emerald-200">
+                          <span className="text-2xl tabular-nums font-black text-emerald-900 px-3 py-1 bg-emerald-50 rounded-xl border border-emerald-200">
                             {formatTimerTime(timerSecondsLeft)}
                           </span>
                           <Button
@@ -387,7 +387,7 @@ export const CookingModeModal: React.FC<CookingModeModalProps> = ({
                 <div className="pt-2 border-t space-y-1.5">
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-slate-800">¿Han sobrado raciones para mañana?</span>
-                    <div className="flex items-center gap-1.5 font-mono">
+                    <div className="flex items-center gap-1.5 tabular-nums">
                       <button
                         onClick={() => setLeftoverPortions(Math.max(0, leftoverPortions - 1))}
                         className="w-6 h-6 rounded-lg bg-white border font-bold text-slate-700"

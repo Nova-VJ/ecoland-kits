@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { getProductBySlug, categories, productTags } from '@/data/products';
 import { useCart } from '@/context/CartContext';
+import { formatPrice } from '@/lib/utils';
+import { CategoryIcon } from '@/components/common/CategoryIcon';
 
 const ProductDetail = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -72,7 +74,7 @@ const ProductDetail = () => {
             {/* Category */}
             {category && (
               <Badge variant="secondary" className="text-sm">
-                {category.icon} {category.label}
+                <CategoryIcon id={category.id} className="inline -mt-0.5 mr-1" />{category.label}
               </Badge>
             )}
 
@@ -93,7 +95,7 @@ const ProductDetail = () => {
             {/* Price */}
             <div className="flex items-baseline gap-2">
               <span className="text-3xl font-bold text-primary">
-                {product.price.toFixed(2)}€
+                {formatPrice(product.price)}
               </span>
               {product.inStock ? (
                 <span className="text-eco-green flex items-center gap-1">

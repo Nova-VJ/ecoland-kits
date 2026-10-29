@@ -5,6 +5,7 @@ import { Users, Package, Leaf, TrendingUp, Loader2, ArrowLeft } from 'lucide-rea
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
+import { formatPrice } from '@/lib/utils';
 
 interface OrderWithProfile {
   id: string;
@@ -152,7 +153,7 @@ const AdminDashboard = () => {
                 <TrendingUp className="h-5 w-5 text-primary" />
                 <span className="text-sm text-muted-foreground">Ingresos Totales</span>
               </div>
-              <p className="text-3xl font-bold">{totalRevenue.toFixed(2)}€</p>
+              <p className="text-3xl font-bold">{formatPrice(totalRevenue)}</p>
             </div>
             <div className="bg-card rounded-xl p-6 border">
               <div className="flex items-center gap-3 mb-2">
@@ -184,7 +185,7 @@ const AdminDashboard = () => {
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold">{Number(order.total).toFixed(2)}€</p>
+                      <p className="font-semibold">{formatPrice(Number(order.total))}</p>
                       <Badge variant="secondary" className="text-xs">
                         +{order.points_awarded} pts
                       </Badge>
@@ -212,7 +213,7 @@ const AdminDashboard = () => {
                       <div>
                         <p className="font-medium">{user.full_name || 'Usuario'}</p>
                         <p className="text-sm text-muted-foreground">
-                          {user.total_orders} pedidos • {user.total_spent.toFixed(2)}€
+                          {user.total_orders} pedidos • {formatPrice(user.total_spent)}
                         </p>
                       </div>
                     </div>

@@ -79,7 +79,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
       if (existingIndex >= 0) {
         const updated = [...prev];
-        (updated[existingIndex] as PackCartItem).quantity += 1;
+        updated[existingIndex] = { ...updated[existingIndex], quantity: updated[existingIndex].quantity + 1 } as PackCartItem;
         return updated;
       }
 
@@ -96,7 +96,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
       if (existingIndex >= 0) {
         const updated = [...prev];
-        (updated[existingIndex] as ProductCartItem).quantity += 1;
+        updated[existingIndex] = { ...updated[existingIndex], quantity: updated[existingIndex].quantity + 1 } as ProductCartItem;
         return updated;
       }
 
@@ -113,7 +113,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
       if (existingIndex >= 0) {
         const updated = [...prev];
-        (updated[existingIndex] as CatalogProductCartItem).quantity += 1;
+        updated[existingIndex] = { ...updated[existingIndex], quantity: updated[existingIndex].quantity + 1 } as CatalogProductCartItem;
         return updated;
       }
 
@@ -130,7 +130,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
       if (existingIndex >= 0) {
         const updated = [...prev];
-        (updated[existingIndex] as CatalogPackCartItem).quantity += 1;
+        updated[existingIndex] = { ...updated[existingIndex], quantity: updated[existingIndex].quantity + 1 } as CatalogPackCartItem;
         return updated;
       }
 

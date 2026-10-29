@@ -6,6 +6,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { dailyNutritionStore, WeeklyTrendSummary } from '@/services/dailyNutritionStore';
+import { formatPrice } from '@/lib/utils';
 
 interface WeeklyTrendDialogProps {
   isOpen: boolean;
@@ -61,16 +62,16 @@ export const WeeklyTrendDialog = ({ isOpen, onClose }: WeeklyTrendDialogProps) =
           {/* RESUMEN SEMANAL 2.0: 3 PREGUNTAS CLAVE (P1-F Punto 18) */}
           <div className="space-y-2.5">
             <div className="p-3 bg-slate-50 rounded-2xl border space-y-1">
-              <span className="text-[10px] uppercase font-black text-slate-500 tracking-wider block">
+              <span className="text-xs uppercase font-black text-slate-500 tracking-wider block">
                 1. ¿Qué hiciste esta semana?
               </span>
               <p className="text-[11px] text-slate-700 leading-relaxed">
-                Registraste tus comidas {summary.daysLogged} días y preparaste {summary.pantryMealsCooked} platos aprovechando ingredientes de tu despensa, ahorrando ~{summary.estimatedEuroSavedAntiWaste.toFixed(2)}€ en comida no desperdiciada.
+                Registraste tus comidas {summary.daysLogged} días y preparaste {summary.pantryMealsCooked} platos aprovechando ingredientes de tu despensa, ahorrando ~{formatPrice(summary.estimatedEuroSavedAntiWaste)} en comida no desperdiciada.
               </p>
             </div>
 
             <div className="p-3 bg-slate-50 rounded-2xl border space-y-1">
-              <span className="text-[10px] uppercase font-black text-emerald-800 tracking-wider block">
+              <span className="text-xs uppercase font-black text-emerald-800 tracking-wider block">
                 2. ¿Qué cambió respecto a tu propia media?
               </span>
               <p className="text-[11px] text-slate-700 leading-relaxed">
@@ -79,7 +80,7 @@ export const WeeklyTrendDialog = ({ isOpen, onClose }: WeeklyTrendDialogProps) =
             </div>
 
             <div className="p-3 bg-emerald-50/70 border border-emerald-200 rounded-2xl space-y-1">
-              <span className="text-[10px] uppercase font-black text-emerald-900 tracking-wider flex items-center gap-1">
+              <span className="text-xs uppercase font-black text-emerald-900 tracking-wider flex items-center gap-1">
                 <Lightbulb className="w-3.5 h-3.5 text-amber-600" />
                 3. ¿Qué puedes probar la próxima semana?
               </span>
@@ -99,7 +100,7 @@ export const WeeklyTrendDialog = ({ isOpen, onClose }: WeeklyTrendDialogProps) =
               <strong className="block text-xl font-black text-slate-900">
                 {summary.daysLogged} / {summary.totalDays}
               </strong>
-              <span className="text-[10px] text-emerald-800 font-semibold block">Hábito muy positivo</span>
+              <span className="text-xs text-emerald-800 font-semibold block">Hábito muy positivo</span>
             </div>
 
             <div className="p-3.5 rounded-2xl bg-slate-50 border space-y-1">
@@ -110,7 +111,7 @@ export const WeeklyTrendDialog = ({ isOpen, onClose }: WeeklyTrendDialogProps) =
               <strong className="block text-xl font-black text-slate-900">
                 {summary.plantDiversityCount} plantas observadas
               </strong>
-              <span className="text-[10px] text-slate-500 block">Meta orientativa personal (no médica)</span>
+              <span className="text-xs text-slate-500 block">Meta orientativa personal (no médica)</span>
             </div>
 
             <div className="p-3.5 rounded-2xl bg-slate-50 border space-y-1">
@@ -119,9 +120,9 @@ export const WeeklyTrendDialog = ({ isOpen, onClose }: WeeklyTrendDialogProps) =
                 Fibra Promedio
               </span>
               <strong className="block text-xl font-black text-slate-900">
-                {summary.averageFiber}g <span className="text-xs font-normal text-slate-400">/día</span>
+                {summary.averageFiber}g <span className="text-xs font-normal text-slate-500">/día</span>
               </strong>
-              <span className="text-[10px] text-emerald-800 font-semibold block">Óptima para digestión</span>
+              <span className="text-xs text-emerald-800 font-semibold block">Óptima para digestión</span>
             </div>
 
             <div className="p-3.5 rounded-2xl bg-slate-50 border space-y-1">
@@ -132,7 +133,7 @@ export const WeeklyTrendDialog = ({ isOpen, onClose }: WeeklyTrendDialogProps) =
               <strong className="block text-xl font-black text-slate-900">
                 {summary.pantryMealsCooked} platos
               </strong>
-              <span className="text-[10px] text-emerald-800 font-semibold block">Ahorro: ~{summary.estimatedEuroSavedAntiWaste.toFixed(2)}€</span>
+              <span className="text-xs text-emerald-800 font-semibold block">Ahorro: ~{formatPrice(summary.estimatedEuroSavedAntiWaste)}</span>
             </div>
           </div>
 

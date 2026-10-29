@@ -7,6 +7,7 @@ import { Switch } from '@/components/ui/switch';
 import { getPackBySlug, PackSize, packSizes } from '@/data/packs';
 import { getRecipesByPackSlug } from '@/data/recipes';
 import { useCart } from '@/context/CartContext';
+import { formatPrice } from '@/lib/utils';
 
 const PackDetail = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -100,7 +101,7 @@ const PackDetail = () => {
                     }`}
                   >
                     <span className="block font-semibold">{size}</span>
-                    <span className="block text-sm opacity-80">{pack.prices[size].toFixed(2)}€</span>
+                    <span className="block text-sm opacity-80">{formatPrice(pack.prices[size])}</span>
                   </button>
                 ))}
               </div>
@@ -122,10 +123,10 @@ const PackDetail = () => {
             <div className="flex items-end justify-between pt-4 border-t">
               <div>
                 {isSubscription && (
-                  <p className="text-sm text-muted-foreground line-through">{price.toFixed(2)}€</p>
+                  <p className="text-sm text-muted-foreground line-through">{formatPrice(price)}</p>
                 )}
                 <p className="text-3xl font-display font-bold">
-                  {finalPrice.toFixed(2)}€
+                  {formatPrice(finalPrice)}
                   <span className="text-base font-normal text-muted-foreground ml-2">
                     / pack {selectedSize}
                   </span>

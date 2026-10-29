@@ -70,7 +70,7 @@ class NutritionalExportService {
         averageProteinGrams: todayProt > 0 ? todayProt : 78,
         averageFiberGrams: todayFiber > 0 ? todayFiber : 28,
         averageWaterGlasses: water > 0 ? water : 6,
-        fiberGoalMetPercent: todayFiber >= goals.targetFiber ? 100 : Math.round((todayFiber / goals.targetFiber) * 100)
+        fiberGoalMetPercent: todayFiber >= goals.targetFiberGrams ? 100 : Math.round((todayFiber / goals.targetFiberGrams) * 100)
       },
       foodFingerprintProfile: {
         isVegan: fingerprint.isVegan,

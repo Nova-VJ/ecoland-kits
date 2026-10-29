@@ -6,6 +6,7 @@ import { getRecipeBySlug } from '@/data/recipes';
 import { getPackBySlug } from '@/data/packs';
 import { useCart } from '@/context/CartContext';
 import { useToast } from '@/hooks/use-toast';
+import { formatPrice } from '@/lib/utils';
 
 const RecipeDetail = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -116,7 +117,7 @@ const RecipeDetail = () => {
               <div className="flex-1 text-center md:text-left">
                 <p className="text-sm text-muted-foreground">Receta del pack</p>
                 <h3 className="font-display text-xl font-semibold">{pack.name}</h3>
-                <p className="text-sm text-muted-foreground">Desde {pack.prices.S.toFixed(2)}€</p>
+                <p className="text-sm text-muted-foreground">Desde {formatPrice(pack.prices.S)}</p>
               </div>
               <div className="flex gap-3">
                 <Link to={`/packs/${pack.slug}`}>
@@ -124,7 +125,7 @@ const RecipeDetail = () => {
                 </Link>
                 <Button className="gap-2 btn-hero" onClick={handleAddRecipeToCart}>
                   <ShoppingBag className="h-4 w-4" />
-                  Comprar ingredientes ({pack.prices.M.toFixed(2)}€)
+                  Comprar ingredientes ({formatPrice(pack.prices.M)})
                 </Button>
               </div>
             </div>

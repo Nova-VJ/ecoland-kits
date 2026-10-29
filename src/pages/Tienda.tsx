@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useMemo, useEffect } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Search, Filter, X, Package } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -16,6 +16,9 @@ import {
 import { useCart } from '@/context/CartContext';
 import { useCatalog } from '@/context/CatalogContext';
 import { RefreshCw, Radio } from 'lucide-react';
+import { formatPrice, cleanProductName } from '@/lib/utils';
+import { ProductDietBadges } from '@/components/common/ProductDietBadges';
+import { CategoryIcon } from '@/components/common/CategoryIcon';
 
 const productTags = [
   { id: 'bio', label: 'Bio' },
@@ -23,27 +26,31 @@ const productTags = [
   { id: 'sin-gluten', label: 'Sin Gluten' },
   { id: 'sin-azucar', label: 'Sin Azúcar' },
   { id: 'proteina', label: 'Proteína' },
-  { id: 'detox', label: 'Detox' },
+  { id: 'detox', label: 'Infusiones' },
   { id: 'fermentado', label: 'Fermentado' },
   { id: 'premium', label: 'Premium' },
 ];
 
 const packCategories = [
   { id: 'vegano', label: 'Vegano', icon: '🌱' },
-  { id: 'detox', label: 'Detox', icon: '🍃' },
+  { id: 'detox', label: 'Infusiones', icon: '🍃' },
   { id: 'asiatica', label: 'Asiática', icon: '🍱' },
   { id: 'mar', label: 'Mar', icon: '🐟' },
   { id: 'cafe', label: 'Café', icon: '☕' },
-  { id: 'inmunidad', label: 'Inmunidad', icon: '🛡️' },
+  { id: 'inmunidad', label: 'Vitaminas', icon: '🛡️' },
   { id: 'cosmetica', label: 'Cosmética', icon: '🧴' },
   { id: 'snacks', label: 'Snacks', icon: '🍪' },
   { id: 'aceites', label: 'Aceites', icon: '🫒' },
   { id: 'accesorios', label: 'Accesorios', icon: '💧' },
 ];
 
+// Productos que se pintan de una vez; el resto se carga con "Ver más"
+const PAGE_SIZE = 24;
+
 const Tienda = () => {
   const { products, isLiveSync, isSyncing, refreshCatalog } = useCatalog();
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchParams] = useSearchParams();
+  const [searchQuery, setSearchQuery] = useState(() => searchParams.get('q') ?? '');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedTags, setSelectedTags] = useState<string[]>(() => {
     try {
@@ -78,6 +85,9 @@ const Tienda = () => {
       return matchesSearch && matchesCategory && matchesTags;
     });
   }, [searchQuery, selectedCategory, selectedTags]);
+
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  useEffect(() => setVisibleCount(PAGE_SIZE), [filteredProducts]);
 
   const filteredPacks = useMemo(() => {
     return catalogPacks.filter(pack => {
@@ -195,14 +205,17 @@ const Tienda = () => {
         {/* Barra de Perfil Alimentario / Dietas Rápidas */}
         <div className="mb-8 p-3 rounded-2xl bg-primary/5 border border-primary/10 flex flex-wrap items-center gap-2">
           <span className="text-xs font-semibold text-primary uppercase tracking-wider flex items-center gap-1.5 mr-2">
-            🌱 Mi Perfil Alimentario:
+            Mi perfil alimentario:
           </span>
+          <Link to="/salud" className="order-last ml-auto text-xs font-medium text-primary underline underline-offset-2">
+            Personalízalo en Ecoland Salud
+          </Link>
           {[
-            { id: 'sin-gluten', label: '🌾 Sin Gluten', desc: 'Apto celíacos' },
-            { id: 'vegano', label: '🌱 100% Vegano', desc: 'Plant-based' },
-            { id: 'proteina', label: '💪 Rico en Proteína', desc: 'Fuerza y saciedad' },
-            { id: 'sin-azucar', label: '🚫 Sin Azúcar Añadido', desc: 'Índice glucémico bajo' },
-            { id: 'bio', label: '✨ 100% Bio Certificado', desc: 'Euro-hoja' }
+            { id: 'sin-gluten', label: 'Sin gluten', desc: 'Productos declarados sin gluten' },
+            { id: 'vegano', label: 'Vegano', desc: 'Sin ingredientes de origen animal' },
+            { id: 'proteina', label: 'Rico en proteína', desc: 'Legumbres, tofu, proteína vegetal' },
+            { id: 'sin-azucar', label: 'Sin azúcar añadido', desc: 'Sin azúcares añadidos según el envase' },
+            { id: 'bio', label: 'Ecológico certificado', desc: 'Sello ecológico de la UE' }
           ].map(diet => {
             const isActive = selectedTags.includes(diet.id);
             return (
@@ -216,8 +229,9 @@ const Tienda = () => {
                 }`}
                 title={diet.desc}
               >
+                <CategoryIcon id={diet.id} className="w-3.5 h-3.5" />
                 {diet.label}
-                {isActive && <span className="ml-1 text-[10px]">✓</span>}
+                {isActive && <span className="ml-1 text-xs">✓</span>}
               </button>
             );
           })}
@@ -252,7 +266,7 @@ const Tienda = () => {
                         : 'bg-muted hover:bg-muted/80'
                     }`}
                   >
-                    {category.icon} {category.label}
+                    <span className="inline-flex items-center gap-1.5"><CategoryIcon id={category.id} />{category.label}</span>
                   </button>
                 ))}
               </div>
@@ -290,13 +304,14 @@ const Tienda = () => {
 
         {/* Products Grid */}
         {activeTab === 'productos' && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredProducts.map((product, index) => (
+          <>
+          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
+            {filteredProducts.slice(0, visibleCount).map((product, index) => (
               <motion.div
                 key={product.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: Math.min(index * 0.02, 0.5) }}
+                transition={{ delay: Math.min((index % PAGE_SIZE) * 0.02, 0.3) }}
                 className="group bg-card rounded-2xl overflow-hidden border hover:shadow-lg transition-all duration-300"
               >
                 <Link to={`/tienda/producto/${product.slug}`}>
@@ -309,8 +324,8 @@ const Tienda = () => {
                     />
                   </div>
                 </Link>
-                <div className="p-4">
-                  <div className="flex flex-wrap gap-1 mb-2">
+                <div className="p-3 sm:p-4">
+                  <div className="hidden sm:flex flex-wrap gap-1 mb-2">
                     <Badge variant="outline" className="text-xs">
                       {product.brand}
                     </Badge>
@@ -321,19 +336,19 @@ const Tienda = () => {
                     ))}
                   </div>
                   <Link to={`/tienda/producto/${product.slug}`}>
-                    <h3 className="font-semibold mb-1 line-clamp-2 hover:text-primary transition-colors text-sm">
-                      {product.name}
+                    <h3 className="font-semibold mb-1 line-clamp-2 hover:text-primary transition-colors text-sm" title={product.name}>
+                      {cleanProductName(product.name)}
                     </h3>
                   </Link>
-                  <p className="text-xs text-muted-foreground line-clamp-2 mb-3">
-                    {product.description}
-                  </p>
-                  <div className="flex items-center justify-between">
+                  <div className="mb-3 min-h-[1.5rem]">
+                    <ProductDietBadges productId={product.id} />
+                  </div>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div>
-                      <span className="text-lg font-bold text-primary">
-                        {product.price.toFixed(2)}€
+                      <span className="text-base sm:text-lg font-bold text-primary">
+                        {formatPrice(product.price)}
                       </span>
-                      {product.weight && (
+                      {product.weight && product.weight !== 'Formato estándar' && (
                         <span className="text-xs text-muted-foreground ml-1">
                           / {product.weight}
                         </span>
@@ -341,6 +356,7 @@ const Tienda = () => {
                     </div>
                     <Button
                       size="sm"
+                      className="h-10 w-full sm:w-auto"
                       onClick={() => addCatalogProduct(product)}
                       disabled={!product.inStock}
                     >
@@ -351,6 +367,22 @@ const Tienda = () => {
               </motion.div>
             ))}
           </div>
+          {visibleCount < filteredProducts.length && (
+            <div className="flex flex-col items-center gap-2 mt-10">
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={() => setVisibleCount(n => n + PAGE_SIZE)}
+                className="rounded-xl border-emerald-200 text-emerald-900 hover:bg-emerald-50 hover:text-emerald-900"
+              >
+                Ver más productos
+              </Button>
+              <span className="text-xs text-muted-foreground">
+                Mostrando {visibleCount} de {filteredProducts.length}
+              </span>
+            </div>
+          )}
+          </>
         )}
 
         {/* Packs Grid */}
@@ -404,7 +436,7 @@ const Tienda = () => {
                   </p>
                   <div className="flex items-center justify-between">
                     <span className="text-xl font-bold text-primary">
-                      {pack.price.toFixed(2)}€
+                      {formatPrice(pack.price)}
                     </span>
                     <Button
                       onClick={() => addCatalogPack(pack)}

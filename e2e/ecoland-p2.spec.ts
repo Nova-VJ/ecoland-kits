@@ -59,7 +59,7 @@ test.describe('Ecoland Daily — P2 Adaptive Companion E2E Tests', () => {
     await page.waitForLoadState('networkidle');
 
     // Botón de importar receta externa
-    const importBtn = page.locator('button:has-text("Importar Receta Externa")');
+    const importBtn = page.locator('button:has-text("Importar Receta")');
     await expect(importBtn).toBeVisible();
     await importBtn.click();
 

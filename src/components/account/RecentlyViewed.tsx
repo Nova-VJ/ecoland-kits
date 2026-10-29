@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Eye, Clock } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useProductViews } from '@/hooks/useProductViews';
+import { formatPrice } from '@/lib/utils';
 
 export const RecentlyViewed = () => {
   const { views, isLoading } = useProductViews();
@@ -62,11 +63,11 @@ export const RecentlyViewed = () => {
               <div className="p-2">
                 <p className="text-xs font-medium line-clamp-2">{view.product_name}</p>
                 {view.product_price && (
-                  <p className="text-xs font-bold text-primary mt-1">{Number(view.product_price).toFixed(2)}€</p>
+                  <p className="text-xs font-bold text-primary mt-1">{formatPrice(Number(view.product_price))}</p>
                 )}
                 <div className="flex items-center gap-1 mt-1 text-muted-foreground">
                   <Clock className="h-3 w-3" />
-                  <span className="text-[10px]">
+                  <span className="text-xs">
                     {new Date(view.viewed_at).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}
                   </span>
                 </div>

@@ -76,8 +76,8 @@ export const HouseholdSettingsModal = ({ isOpen, onClose }: HouseholdSettingsMod
           {/* Tarjeta de Código de Invitación */}
           <div className="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200 flex items-center justify-between">
             <div>
-              <span className="text-[10px] uppercase font-bold text-emerald-800 block">Código de Familia</span>
-              <strong className="text-base font-mono font-black text-emerald-950 tracking-wider">
+              <span className="text-xs uppercase font-bold text-emerald-800 block">Código de Familia</span>
+              <strong className="text-base tabular-nums font-black text-emerald-950 tracking-wider">
                 {household.code}
               </strong>
             </div>
@@ -98,7 +98,7 @@ export const HouseholdSettingsModal = ({ isOpen, onClose }: HouseholdSettingsMod
               <Lock className="w-3.5 h-3.5 text-emerald-700" />
               <span>Privacidad por diseño en el hogar:</span>
             </div>
-            <div className="grid grid-cols-2 gap-2 text-[10px]">
+            <div className="grid grid-cols-2 gap-2 text-xs">
               <div className="bg-white p-2 rounded-xl border">
                 <strong className="text-emerald-950 block mb-0.5">✓ Se comparte:</strong>
                 <p className="text-slate-500">Despensa casera, lista de compra unificada, planes semanales y recetas familiares.</p>
@@ -127,10 +127,10 @@ export const HouseholdSettingsModal = ({ isOpen, onClose }: HouseholdSettingsMod
                     </div>
                     <div>
                       <strong className="block text-slate-900 text-xs">{m.name}</strong>
-                      <span className="text-[10px] text-slate-400">{m.email}</span>
+                      <span className="text-xs text-slate-500">{m.email}</span>
                     </div>
                   </div>
-                  <Badge variant="outline" className="text-[10px] font-bold">
+                  <Badge variant="outline" className="text-xs font-bold">
                     {m.role === 'OWNER' ? 'Titular' : 'Colaborador'}
                   </Badge>
                 </div>

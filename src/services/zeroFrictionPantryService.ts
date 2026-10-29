@@ -17,7 +17,9 @@
  * 13. Sugerencias de reposición éticas (sin auto-carrito)
  */
 
-import { dailyNutritionStore } from './dailyNutritionStore';
+import { dailyNutritionStore, toMealType } from './dailyNutritionStore';
+
+import { restockForecastService } from './restockForecastService';
 
 export type PantryLocation = 'DESPENSA' | 'NEVERA' | 'CONGELADOR' | 'BEBIDAS' | 'OTRO';
 export type FreshnessState = 'RECIENTE' | 'CONSUMIR PRONTO' | 'MUY MADURO' | 'CONGELADO' | 'CONSUMIDO';
@@ -149,7 +151,8 @@ class ZeroFrictionPantryService {
       if (raw) return JSON.parse(raw);
     } catch {}
 
-    const defaults: DomesticPantryItem[] = [
+    // Ejemplo solo para los tests: un cliente nuevo empieza con la despensa vacía (sin datos inventados)
+    const demo: DomesticPantryItem[] = [
       {
         id: 'pantry_avena_1',
         name: 'Copos de avena integral ecológica',
@@ -247,15 +250,29 @@ class ZeroFrictionPantryService {
         updatedAt: '2026-10-28'
       }
     ];
-
+    const defaults = import.meta.env.MODE === 'test' ? demo : [];
     this.savePantryItems(defaults);
     return defaults;
   }
 
   public savePantryItems(items: DomesticPantryItem[]): void {
+    let previousIds = new Set<string>();
+    try {
+      const raw = localStorage.getItem(this.STORAGE_KEY);
+      if (raw) previousIds = new Set((JSON.parse(raw) as DomesticPantryItem[]).map(i => i.id));
+    } catch {}
     try {
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(items));
     } catch {}
+    // Cada producto nuevo en la despensa cuenta como una compra para la previsión de reposición
+    for (const item of items) {
+      if (!previousIds.has(item.id) && item.type !== 'LEFTOVER') {
+        restockForecastService.record('compra', item.name, {
+          format: item.initialQuantity ? `${item.initialQuantity} ${item.unit}` : undefined,
+          date: new Date(item.createdAt),
+        });
+      }
+    }
   }
 
   // ==========================================
@@ -402,16 +419,20 @@ class ZeroFrictionPantryService {
 
     this.savePantryItems(items);
 
+    // La previsión de reposición aprende del ritmo real de consumo
+    if (status === 'SE_ACABO' || status === 'CONSUMIDO') restockForecastService.record('acabado', item.name);
+    else if (status === 'QUEDA_BASTANTE') restockForecastService.record('todavia', item.name);
+
     // Despensa <-> Diario: Registrar comida si se solicita
     if (options?.syncToDaily && (status === 'CONSUMIDO' || status === 'QUEDA_POCO')) {
-      const meal = options.mealType || 'almuerzo';
+      const meal = toMealType(options.mealType || 'almuerzo');
       dailyNutritionStore.addMealLog({
         meal,
         name: item.name,
         calories: 180, // Estimación suave estándar
         protein: 8,
         carbs: 22,
-        fat: 5,
+        fats: 5,
         fiber: 3
       });
     }
@@ -709,19 +730,21 @@ class ZeroFrictionPantryService {
     } else if (decision === 'ANADIR_A_LISTA') {
       item.status = 'ACCEPTED';
       // Añadir a la lista de compra de Ecoland
-      dailyNutritionStore.addShoppingItem({
+      dailyNutritionStore.addShoppingListItem({
         name: item.productName,
-        quantity: '1',
-        unit: 'pack',
-        category: 'despensa'
+        quantityNeeded: '1 ud.',
+        category: 'despensa',
+        status: 'missing',
+        priceEuro: 0
       });
     } else if (decision === 'YA_SE_ACABO') {
       item.status = 'ACCEPTED';
-      dailyNutritionStore.addShoppingItem({
+      dailyNutritionStore.addShoppingListItem({
         name: item.productName,
-        quantity: '1',
-        unit: 'pack',
-        category: 'despensa'
+        quantityNeeded: '1 ud.',
+        category: 'despensa',
+        status: 'missing',
+        priceEuro: 0
       });
     }
 

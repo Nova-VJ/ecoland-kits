@@ -17,7 +17,7 @@ export const OfflineIndicatorBar: React.FC = () => {
   // Si está online y no hay cambios pendientes, mostramos un badge sutil y minimalista
   if (networkState.isOnline && networkState.pendingCount === 0 && networkState.status === 'ONLINE_SYNCED') {
     return (
-      <div className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50/80 border border-emerald-200/60 rounded-full text-[10px] text-emerald-800 font-medium">
+      <div className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50/80 border border-emerald-200/60 rounded-full text-xs text-emerald-800 font-medium">
         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
         <span>Todo sincronizado</span>
       </div>
@@ -27,7 +27,7 @@ export const OfflineIndicatorBar: React.FC = () => {
   // Estado Sincronizando
   if (networkState.status === 'SYNCING') {
     return (
-      <div className="flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 border border-blue-200 rounded-full text-[10px] text-blue-800 font-medium animate-pulse">
+      <div className="flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 border border-blue-200 rounded-full text-xs text-blue-800 font-medium animate-pulse">
         <RefreshCw className="w-3 h-3 animate-spin text-blue-600" />
         <span>Sincronizando cambios...</span>
       </div>

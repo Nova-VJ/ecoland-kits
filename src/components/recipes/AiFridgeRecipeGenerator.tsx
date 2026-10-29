@@ -11,6 +11,7 @@ import { useCart } from '@/context/CartContext';
 import { allCatalogProducts, CatalogProduct } from '@/data/catalog/individual-products';
 import { useToast } from '@/hooks/use-toast';
 import { dailyNutritionStore, MealType } from '@/services/dailyNutritionStore';
+import { formatPrice } from '@/lib/utils';
 
 const COMMON_FRIDGE_ITEMS = [
   'Garbanzos', 'Lentejas', 'Avena', 'Tomate', 'Espinacas', 
@@ -190,7 +191,7 @@ export const AiFridgeRecipeGenerator = () => {
     const sum = currentRecipe.missingProducts.reduce((acc, p) => acc + p.price, 0);
     toast({
       title: "Ingredientes añadidos al carrito",
-      description: `Se han sumado los ${currentRecipe.missingProducts.length} alimentos bio por ${sum.toFixed(2)}€.`,
+      description: `Se han sumado los ${currentRecipe.missingProducts.length} alimentos bio por ${formatPrice(sum)}.`,
     });
   };
 
@@ -204,7 +205,7 @@ export const AiFridgeRecipeGenerator = () => {
             <span className="text-xs uppercase font-extrabold tracking-wider text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
               Inteligencia Artificial Culinaria
             </span>
-            <Badge className="bg-amber-100 text-amber-900 border-0 text-[10px]">
+            <Badge className="bg-amber-100 text-amber-900 border-0 text-xs">
               Cero Desperdicio
             </Badge>
           </div>
@@ -258,7 +259,7 @@ export const AiFridgeRecipeGenerator = () => {
                   }`}
                 >
                   <span>{item}</span>
-                  {isSelected ? <CheckCircle2 className="h-3.5 w-3.5" /> : <Plus className="h-3 w-3 text-slate-400" />}
+                  {isSelected ? <CheckCircle2 className="h-3.5 w-3.5" /> : <Plus className="h-3 w-3 text-slate-500" />}
                 </button>
               );
             })}
@@ -291,7 +292,7 @@ export const AiFridgeRecipeGenerator = () => {
             {selectedItems.map(item => (
               <span key={item} className="inline-flex items-center gap-1 text-[11px] font-bold bg-white text-emerald-950 px-2.5 py-1 rounded-full border shadow-2xs">
                 <span>{item}</span>
-                <button onClick={() => removeSelectedItem(item)} className="text-slate-400 hover:text-red-600">×</button>
+                <button onClick={() => removeSelectedItem(item)} className="text-slate-500 hover:text-red-600">×</button>
               </span>
             ))}
           </div>
@@ -329,7 +330,7 @@ export const AiFridgeRecipeGenerator = () => {
               <div className="space-y-2">
                 <div className="flex flex-wrap gap-2">
                   {currentRecipe.tags.map(t => (
-                    <Badge key={t} className="bg-emerald-100 text-emerald-900 border-0 text-[10px]">
+                    <Badge key={t} className="bg-emerald-100 text-emerald-900 border-0 text-xs">
                       {t}
                     </Badge>
                   ))}
@@ -342,7 +343,7 @@ export const AiFridgeRecipeGenerator = () => {
                 </p>
               </div>
 
-              <div className="flex items-center gap-4 text-xs font-mono shrink-0 bg-white p-3 rounded-2xl border">
+              <div className="flex items-center gap-4 text-xs tabular-nums shrink-0 bg-white p-3 rounded-2xl border">
                 <div className="flex items-center gap-1.5">
                   <Clock className="h-4 w-4 text-emerald-700" />
                   <span>{currentRecipe.timeMinutes} min</span>
@@ -435,11 +436,11 @@ export const AiFridgeRecipeGenerator = () => {
               <div className="md:col-span-7 bg-emerald-950 text-white p-5 rounded-2xl space-y-4">
                 <div className="flex justify-between items-center">
                   <div>
-                    <span className="text-[10px] uppercase font-bold text-emerald-400">Despensa Ecoland</span>
+                    <span className="text-xs uppercase font-bold text-emerald-400">Despensa Ecoland</span>
                     <h5 className="font-bold text-sm">Ingredientes Bio Complementarios que te Faltan</h5>
                   </div>
-                  <span className="text-xs text-emerald-300 font-mono">
-                    Total: {currentRecipe.missingProducts.reduce((acc, p) => acc + p.price, 0).toFixed(2)}€
+                  <span className="text-xs text-emerald-300 tabular-nums">
+                    Total: {formatPrice(currentRecipe.missingProducts.reduce((acc, p) => acc + p.price, 0))}
                   </span>
                 </div>
 
@@ -449,7 +450,7 @@ export const AiFridgeRecipeGenerator = () => {
                       <img src={p.image} alt={p.name} className="w-9 h-9 object-contain rounded-lg bg-white p-0.5" />
                       <div className="truncate flex-1">
                         <span className="block font-bold text-white truncate text-[11px]">{p.name.split('–')[0]}</span>
-                        <span className="block text-[10px] text-emerald-300 font-mono">{p.price.toFixed(2)}€</span>
+                        <span className="block text-xs text-emerald-300 tabular-nums">{formatPrice(p.price)}</span>
                       </div>
                     </div>
                   ))}
@@ -460,7 +461,7 @@ export const AiFridgeRecipeGenerator = () => {
                   className="w-full bg-emerald-400 hover:bg-emerald-300 text-emerald-950 font-black py-4 text-xs rounded-xl shadow-sm gap-2"
                 >
                   <ShoppingBag className="h-4 w-4" />
-                  <span>Añadir los que me faltan al carrito ({currentRecipe.missingProducts.reduce((acc, p) => acc + p.price, 0).toFixed(2)}€)</span>
+                  <span>Añadir los que me faltan al carrito ({formatPrice(currentRecipe.missingProducts.reduce((acc, p) => acc + p.price, 0))})</span>
                 </Button>
               </div>
 

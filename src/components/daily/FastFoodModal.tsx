@@ -147,7 +147,8 @@ export const FastFoodModal = ({
         carbs: item.carbs,
         fats: item.fats,
         fiber: item.fiber,
-        source: parsedResult.source
+        // El diario no distingue texto escrito ni catálogo: ambos cuentan como entrada manual
+        source: parsedResult.source === 'text' || parsedResult.source === 'catalog' ? 'manual' : parsedResult.source
       });
 
       // Cruce inteligente con despensa (P1-C)
@@ -313,11 +314,11 @@ export const FastFoodModal = ({
           {!parsedResult && predictiveContext.suggestions.length > 0 && (
             <div className="p-3 bg-emerald-50/70 border border-emerald-200/80 rounded-2xl space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-900 flex items-center gap-1.5">
+                <span className="text-xs font-extrabold uppercase tracking-wider text-emerald-900 flex items-center gap-1.5">
                   <Clock className="w-3.5 h-3.5 text-emerald-700" />
                   Sugerencias para esta hora ({predictiveContext.recommendedMealType}):
                 </span>
-                <span className="text-[9px] text-emerald-700 font-medium">1 clic</span>
+                <span className="text-xs text-emerald-700 font-medium">1 clic</span>
               </div>
               <div className="flex flex-col gap-1.5">
                 {predictiveContext.suggestions.map(sug => (
@@ -331,12 +332,12 @@ export const FastFoodModal = ({
                       <strong className="block text-slate-900 text-[11px] truncate group-hover:text-emerald-950">
                         {sug.title}
                       </strong>
-                      <span className="text-[10px] text-slate-500 truncate block">
+                      <span className="text-xs text-slate-500 truncate block">
                         {sug.subtitle}
                       </span>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
-                      <span className="font-mono text-[10px] font-bold text-slate-700">
+                      <span className="tabular-nums text-xs font-bold text-slate-700">
                         {sug.calories} kcal
                       </span>
                       <span className="w-6 h-6 rounded-lg bg-emerald-800 text-white flex items-center justify-center font-bold text-xs group-hover:bg-emerald-900">
@@ -404,7 +405,7 @@ export const FastFoodModal = ({
                     </Button>
                   </div>
                   <div className="flex flex-wrap gap-1.5 pt-1">
-                    <span className="text-[10px] text-slate-400 font-semibold mr-1">Prueba rápida:</span>
+                    <span className="text-xs text-slate-500 font-semibold mr-1">Prueba rápida:</span>
                     {[
                       '2 tostadas integrales con aguacate y cafe',
                       'Porridge de avena con kefir y frutos secos',
@@ -415,7 +416,7 @@ export const FastFoodModal = ({
                         key={sample}
                         type="button"
                         onClick={() => { setTextInput(sample); const res = fastFoodParser.parseNaturalText(sample, 'text'); setParsedResult(res); }}
-                        className="text-[10px] bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-900 border rounded-lg px-2 py-1 transition-colors"
+                        className="text-xs bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-900 border rounded-lg px-2 py-1 transition-colors"
                       >
                         {sample}
                       </button>
@@ -437,7 +438,7 @@ export const FastFoodModal = ({
                     </p>
                   </div>
                   <div className="p-3 bg-slate-50 rounded-2xl border text-left text-[11px] text-slate-700">
-                    <span className="text-[10px] text-slate-400 font-bold block mb-1">Transcripción simulada:</span>
+                    <span className="text-xs text-slate-500 font-bold block mb-1">Transcripción simulada:</span>
                     <Input 
                       value={voiceText} 
                       onChange={(e) => setVoiceText(e.target.value)} 
@@ -479,7 +480,7 @@ export const FastFoodModal = ({
                       >
                         <Camera className="h-5 w-5 mx-auto mb-1 text-emerald-800" />
                         <span className="block text-[11px] leading-tight">{preset.label}</span>
-                        <span className="text-[10px] text-slate-400 font-mono">{preset.cals}</span>
+                        <span className="text-xs text-slate-500 tabular-nums">{preset.cals}</span>
                       </button>
                     ))}
                   </div>
@@ -497,7 +498,7 @@ export const FastFoodModal = ({
                       value={barcodeInput}
                       onChange={(e) => setBarcodeInput(e.target.value)}
                       placeholder="Ej: 8437004123019"
-                      className="rounded-xl h-11 text-xs font-mono"
+                      className="rounded-xl h-11 text-xs tabular-nums"
                     />
                     <Button
                       onClick={() => {
@@ -533,7 +534,7 @@ export const FastFoodModal = ({
                   </div>
 
                   <div className="space-y-1">
-                    <span className="text-[10px] uppercase font-bold text-slate-400 block">O elige un ejemplo habitual:</span>
+                    <span className="text-xs uppercase font-bold text-slate-500 block">O elige un ejemplo habitual:</span>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
                       {[
                         'Menú del día: lentejas estofadas y pollo con patatas',
@@ -586,7 +587,7 @@ export const FastFoodModal = ({
                           className="p-2.5 rounded-xl border hover:bg-emerald-50 cursor-pointer flex items-center justify-between text-xs"
                         >
                           <span className="font-bold text-slate-900 truncate pr-2">{p.name.split('–')[0]}</span>
-                          <span className="text-[10px] text-emerald-800 font-bold shrink-0">Seleccionar</span>
+                          <span className="text-xs text-emerald-800 font-bold shrink-0">Seleccionar</span>
                         </div>
                       ))}
                   </div>
@@ -642,7 +643,7 @@ export const FastFoodModal = ({
                       <div>
                         <div className="flex items-center gap-2">
                           <strong className="text-slate-900 text-xs">{item.name}</strong>
-                          <span className={`text-[9px] px-1.5 py-0.2 rounded-md font-bold uppercase ${
+                          <span className={`text-xs px-1.5 py-0.2 rounded-md font-bold uppercase ${
                             item.confidence === 'high' 
                               ? 'bg-emerald-100 text-emerald-800' 
                               : item.confidence === 'medium'
@@ -654,7 +655,7 @@ export const FastFoodModal = ({
                         </div>
                         <span className="text-[11px] text-slate-500">{item.quantityDescription}</span>
                         {item.confidenceReason && (
-                          <span className="text-[10px] text-amber-800 font-medium block mt-0.5">
+                          <span className="text-xs text-amber-800 font-medium block mt-0.5">
                             ⚠️ {item.confidenceReason}
                           </span>
                         )}
@@ -662,12 +663,12 @@ export const FastFoodModal = ({
 
                       <div className="flex items-center gap-3">
                         <div className="text-right">
-                          <span className="font-mono font-bold text-slate-900 text-xs">{item.calories} kcal</span>
-                          <span className="text-[10px] text-slate-500 block">P: {item.protein}g · F: {item.fiber}g</span>
+                          <span className="tabular-nums font-bold text-slate-900 text-xs">{item.calories} kcal</span>
+                          <span className="text-xs text-slate-500 block">P: {item.protein}g · F: {item.fiber}g</span>
                         </div>
                         <button
                           onClick={() => removeParsedItem(item.id)}
-                          className="text-slate-400 hover:text-rose-600 transition-colors p-1"
+                          className="text-slate-500 hover:text-rose-600 transition-colors p-1"
                           title="Eliminar alimento"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
@@ -676,8 +677,8 @@ export const FastFoodModal = ({
                     </div>
 
                     {/* Botones de micro-ajuste de ración */}
-                    <div className="flex items-center justify-end gap-1.5 pt-1 border-t border-slate-200/60 text-[10px]">
-                      <span className="text-slate-400 text-[10px]">Ajustar ración:</span>
+                    <div className="flex items-center justify-end gap-1.5 pt-1 border-t border-slate-200/60 text-xs">
+                      <span className="text-slate-500 text-xs">Ajustar ración:</span>
                       <button
                         type="button"
                         onClick={() => adjustItemQuantity(item.id, 0.8)}
@@ -701,24 +702,24 @@ export const FastFoodModal = ({
               <div className="p-4 rounded-2xl bg-emerald-950 text-white space-y-2">
                 <div className="flex justify-between items-center border-b border-emerald-800 pb-2">
                   <span className="text-xs text-emerald-300">Total a registrar en {selectedMeal}:</span>
-                  <span className="text-lg font-black font-mono">{parsedResult.totalEstimatedCalories} kcal</span>
+                  <span className="text-lg font-black tabular-nums">{parsedResult.totalEstimatedCalories} kcal</span>
                 </div>
-                <div className="grid grid-cols-4 gap-2 text-center text-[10px] pt-1">
+                <div className="grid grid-cols-4 gap-2 text-center text-xs pt-1">
                   <div className="bg-emerald-900/60 p-1.5 rounded-xl">
                     <span className="text-emerald-300 block">Proteína</span>
-                    <strong className="font-mono text-xs">{parsedResult.totalProtein}g</strong>
+                    <strong className="tabular-nums text-xs">{parsedResult.totalProtein}g</strong>
                   </div>
                   <div className="bg-emerald-900/60 p-1.5 rounded-xl">
                     <span className="text-emerald-300 block">Hidratos</span>
-                    <strong className="font-mono text-xs">{parsedResult.totalCarbs}g</strong>
+                    <strong className="tabular-nums text-xs">{parsedResult.totalCarbs}g</strong>
                   </div>
                   <div className="bg-emerald-900/60 p-1.5 rounded-xl">
                     <span className="text-emerald-300 block">Grasas</span>
-                    <strong className="font-mono text-xs">{parsedResult.totalFats}g</strong>
+                    <strong className="tabular-nums text-xs">{parsedResult.totalFats}g</strong>
                   </div>
                   <div className="bg-emerald-900/60 p-1.5 rounded-xl">
                     <span className="text-emerald-300 block">Fibra</span>
-                    <strong className="font-mono text-xs text-amber-300">{parsedResult.totalFiber}g</strong>
+                    <strong className="tabular-nums text-xs text-amber-300">{parsedResult.totalFiber}g</strong>
                   </div>
                 </div>
               </div>

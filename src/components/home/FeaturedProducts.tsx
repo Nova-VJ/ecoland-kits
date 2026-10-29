@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { allCatalogProducts, CatalogProduct } from '@/data/catalog/individual-products';
 import { useCart } from '@/context/CartContext';
 import { useToast } from '@/hooks/use-toast';
+import { formatPrice } from '@/lib/utils';
 
 // Limpiador estético del nombre del producto
 function cleanTitle(name: string): string {
@@ -37,7 +38,7 @@ export const FeaturedProducts = () => {
     setIsOpen(true);
     toast({
       title: "✓ Producto añadido al carrito",
-      description: `${cleanTitle(product.name)} (${product.price.toFixed(2)}€)`,
+      description: `${cleanTitle(product.name)} (${formatPrice(product.price)})`,
     });
   };
 
@@ -72,7 +73,7 @@ export const FeaturedProducts = () => {
         </div>
 
         {/* Cuadrícula de Productos con Microinteracciones */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
           {bestSellers.map((product, i) => (
             <motion.div
               key={product.id || product.slug}
@@ -81,11 +82,11 @@ export const FeaturedProducts = () => {
               viewport={{ once: true }}
               transition={{ delay: i * 0.08, duration: 0.4 }}
               whileHover={{ y: -6 }}
-              className="bg-white rounded-3xl p-5 border border-slate-200/80 shadow-2xs hover:shadow-xl hover:border-emerald-300 transition-all flex flex-col justify-between group"
+              className="bg-white rounded-2xl sm:rounded-3xl p-3 sm:p-5 border border-slate-200/80 shadow-2xs hover:shadow-xl hover:border-emerald-300 transition-all flex flex-col justify-between group"
             >
               <div className="space-y-3">
                 {/* Imagen del producto con efecto zoom sutil */}
-                <div className="w-full aspect-square rounded-2xl bg-slate-50 p-4 border border-slate-100 relative overflow-hidden flex items-center justify-center">
+                <div className="w-full aspect-square rounded-xl sm:rounded-2xl bg-slate-50 p-2 sm:p-4 border border-slate-100 relative overflow-hidden flex items-center justify-center">
                   <img
                     src={product.image}
                     alt={product.name}
@@ -96,32 +97,32 @@ export const FeaturedProducts = () => {
                   {/* Badges ecológicos */}
                   <div className="absolute top-3 left-3 flex flex-col gap-1">
                     {product.tags.includes('vegano') && (
-                      <Badge className="bg-emerald-900/85 backdrop-blur-xs text-white border-0 text-[10px] font-bold px-2 py-0.5 shadow-2xs">
+                      <Badge className="bg-emerald-900/85 backdrop-blur-xs text-white border-0 text-xs font-bold px-2 py-0.5 shadow-2xs">
                         Vegano
                       </Badge>
                     )}
                     {product.tags.includes('sin-gluten') && (
-                      <Badge className="bg-amber-800/85 backdrop-blur-xs text-white border-0 text-[10px] font-bold px-2 py-0.5 shadow-2xs">
+                      <Badge className="bg-amber-800/85 backdrop-blur-xs text-white border-0 text-xs font-bold px-2 py-0.5 shadow-2xs">
                         Sin Gluten
                       </Badge>
                     )}
                   </div>
 
-                  <span className="absolute bottom-2.5 right-3 text-[10px] font-mono text-slate-400 bg-white/90 px-2 py-0.5 rounded-full border shadow-2xs">
+                  <span className="hidden sm:inline absolute bottom-2.5 right-3 text-xs tabular-nums text-slate-500 bg-white/90 px-2 py-0.5 rounded-full border shadow-2xs">
                     {product.brand}
                   </span>
                 </div>
 
                 {/* Título y Categoría */}
                 <div>
-                  <span className="text-[10px] uppercase font-bold text-emerald-800 tracking-wider">
+                  <span className="text-xs uppercase font-bold text-emerald-800 tracking-wider">
                     {product.category}
                   </span>
                   <h3 className="font-display font-bold text-slate-900 text-sm md:text-base line-clamp-2 mt-0.5 group-hover:text-emerald-800 transition-colors">
                     {cleanTitle(product.name)}
                   </h3>
                   {product.weight && (
-                    <span className="text-xs text-slate-400 block mt-1">
+                    <span className="text-xs text-slate-500 block mt-1">
                       Formato: {product.weight}
                     </span>
                   )}
@@ -129,11 +130,11 @@ export const FeaturedProducts = () => {
               </div>
 
               {/* Precio y Botón CTA con microinteracción Framer Motion */}
-              <div className="pt-4 mt-3 border-t border-slate-100 flex items-center justify-between">
+              <div className="pt-3 sm:pt-4 mt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
-                  <span className="text-[10px] text-slate-400 block">PVP con IVA</span>
-                  <strong className="text-2xl font-black font-mono text-slate-900">
-                    {product.price.toFixed(2)}€
+                  <span className="text-xs text-slate-500 block">PVP con IVA</span>
+                  <strong className="text-lg sm:text-2xl font-black tabular-nums text-slate-900">
+                    {formatPrice(product.price)}
                   </strong>
                 </div>
 
@@ -141,7 +142,7 @@ export const FeaturedProducts = () => {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => handleAddToCart(product)}
-                  className="bg-emerald-900 hover:bg-emerald-800 text-white font-bold text-xs py-3 px-4 rounded-2xl shadow-sm hover:shadow-md transition-all flex items-center gap-2"
+                  className="bg-emerald-900 hover:bg-emerald-800 text-white font-bold text-xs h-10 px-4 rounded-xl shadow-sm hover:shadow-md transition-all flex items-center justify-center gap-2 w-full sm:w-auto"
                 >
                   <ShoppingBag className="h-4 w-4" />
                   <span>Añadir</span>

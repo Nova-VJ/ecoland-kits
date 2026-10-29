@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Heart, Sparkles, Scale, Apple, CheckCircle2, ShoppingBag, 
   ShieldCheck, ArrowRight, RefreshCw, AlertCircle, ChefHat, Wallet, MessageSquare,
-  Droplet, Plus, Trash2, Search, Barcode, Camera, Layers, Check, ChevronRight, Sliders
+  Droplet, Plus, Trash2, Search, Barcode, Camera, Layers, Check, ChevronRight, Sliders,
+  UtensilsCrossed, Flame, BarChart3, Wheat, Package
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -11,10 +12,11 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCart } from '@/context/CartContext';
 import { allCatalogProducts, CatalogProduct } from '@/data/catalog/individual-products';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { HarvardPlateInteractive } from '@/components/ecohealth/HarvardPlateInteractive';
 import { BudgetOptimizerInteractive } from '@/components/ecohealth/BudgetOptimizerInteractive';
+import { formatPrice } from '@/lib/utils';
 
 
 interface MealLogItem {
@@ -76,7 +78,15 @@ export const EcoHealth = () => {
   // PLATO HARVARD INTERACTIVO & COMPRAS SALUDABLES
   // ==========================================
     // Active Tab
-  const [activeTab, setActiveTab] = useState<'harvard' | 'diario' | 'calculadora' | 'perfil' | 'escaner' | 'comparador' | 'despensa' | 'presupuesto'>('harvard');
+  type EcoHealthTab = 'harvard' | 'diario' | 'calculadora' | 'perfil' | 'escaner' | 'comparador' | 'despensa' | 'presupuesto';
+  const ECOHEALTH_TABS: EcoHealthTab[] = ['harvard', 'diario', 'calculadora', 'perfil', 'escaner', 'comparador', 'despensa', 'presupuesto'];
+  const [searchParams] = useSearchParams();
+  const tabParam = searchParams.get('tab') as EcoHealthTab | null;
+  const [activeTab, setActiveTab] = useState<EcoHealthTab>(tabParam && ECOHEALTH_TABS.includes(tabParam) ? tabParam : 'harvard');
+  useEffect(() => {
+    if (tabParam && ECOHEALTH_TABS.includes(tabParam)) setActiveTab(tabParam);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tabParam]);
 
   // Diet Profile State
   const [dietTags, setDietTags] = useState<string[]>(() => {
@@ -257,7 +267,7 @@ export const EcoHealth = () => {
     setScannedProduct(found);
     toast({
       title: "Código escaneado con éxito",
-      description: `Identificado: ${found.name.split('–')[0]} (${found.price.toFixed(2)}€)`,
+      description: `Identificado: ${found.name.split('–')[0]} (${formatPrice(found.price)})`,
     });
   };
 
@@ -298,69 +308,77 @@ export const EcoHealth = () => {
           </p>
         </div>
 
-                {/* AVISO MÉDICO Y CLASIFICACIÓN DE FUNCIONALIDADES (PRIORIDAD 8) */}
-        <div className="mb-6 p-4 rounded-2xl bg-amber-50/80 border border-amber-200/80 text-xs text-amber-950 space-y-2 shadow-2xs">
-          <div className="flex items-center justify-between font-bold text-amber-900 border-b border-amber-200/60 pb-1.5">
-            <span className="flex items-center gap-1.5">
-              <span>⚖️</span> Marco de Transparencia Nutricional y Descargo Médico
+        {/* AVISO MÉDICO Y CLASIFICACIÓN DE FUNCIONALIDADES (PRIORIDAD 8) */}
+        <details className="group mb-6 rounded-2xl bg-amber-50/80 border border-amber-200/80 text-amber-950">
+          <summary className="flex items-center justify-between gap-3 px-4 py-3 cursor-pointer list-none text-sm [&::-webkit-details-marker]:hidden">
+            <span>
+              <strong className="font-semibold">Aviso de salud:</strong> herramientas informativas que no sustituyen a tu médico ni a tu dietista-nutricionista.
             </span>
-            <span className="text-[10px] bg-amber-200/70 text-amber-900 px-2 py-0.5 rounded-full font-mono">
-              Auditoría Sanitaria 2026
-            </span>
+            <span className="shrink-0 text-xs font-medium text-amber-800 underline underline-offset-2 group-open:hidden">Más información</span>
+            <span className="shrink-0 text-xs font-medium text-amber-800 underline underline-offset-2 hidden group-open:inline">Cerrar</span>
+          </summary>
+          <div className="px-4 pb-4 space-y-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-xs">
+            <div className="bg-white/80 p-2 rounded-xl border border-amber-100">
+              <strong className="block text-slate-800 text-xs uppercase font-bold">1. Información</strong>
+              <span className="text-slate-600 text-xs">Valores nutricionales y alérgenos de etiquetado oficial (Reglamento UE 1169/2011).</span>
+            </div>
+            <div className="bg-white/80 p-2 rounded-xl border border-amber-100">
+              <strong className="block text-slate-800 text-xs uppercase font-bold">2. Estimación</strong>
+              <span className="text-slate-600 text-xs">Fórmula bioenergética Mifflin-St Jeor para TDEE. Cálculo matemático orientativo.</span>
+            </div>
+            <div className="bg-white/80 p-2 rounded-xl border border-amber-100">
+              <strong className="block text-slate-800 text-xs uppercase font-bold">3. Recomendación</strong>
+              <span className="text-slate-600 text-xs">Guía visual Plato Harvard (Harvard T.H. Chan School of Public Health).</span>
+            </div>
+            <div className="bg-white/80 p-2 rounded-xl border border-amber-100">
+              <strong className="block text-slate-800 text-xs uppercase font-bold">4. Función Comercial</strong>
+              <span className="text-slate-600 text-xs">Asociación a productos biológicos en stock para confeccionar la cesta de compra.</span>
+            </div>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-[11px]">
-            <div className="bg-white/80 p-2 rounded-xl border border-amber-100">
-              <strong className="block text-slate-800 text-[10px] uppercase font-bold">1. Información</strong>
-              <span className="text-slate-600 text-[10px]">Valores nutricionales y alérgenos de etiquetado oficial (Reglamento UE 1169/2011).</span>
-            </div>
-            <div className="bg-white/80 p-2 rounded-xl border border-amber-100">
-              <strong className="block text-slate-800 text-[10px] uppercase font-bold">2. Estimación</strong>
-              <span className="text-slate-600 text-[10px]">Fórmula bioenergética Mifflin-St Jeor para TDEE. Cálculo matemático orientativo.</span>
-            </div>
-            <div className="bg-white/80 p-2 rounded-xl border border-amber-100">
-              <strong className="block text-slate-800 text-[10px] uppercase font-bold">3. Recomendación</strong>
-              <span className="text-slate-600 text-[10px]">Guía visual Plato Harvard (Harvard T.H. Chan School of Public Health).</span>
-            </div>
-            <div className="bg-white/80 p-2 rounded-xl border border-amber-100">
-              <strong className="block text-slate-800 text-[10px] uppercase font-bold">4. Función Comercial</strong>
-              <span className="text-slate-600 text-[10px]">Asociación a productos biológicos en stock para confeccionar la cesta de compra.</span>
-            </div>
-          </div>
-          <p className="text-[10px] text-amber-800/90 leading-relaxed pt-1">
+          <p className="text-xs text-amber-900/90 leading-relaxed pt-1">
             <strong>Aviso de Salud:</strong> Las herramientas de Ecoland EcoHealth tienen carácter exclusivamente informativo y de divulgación alimentaria. No constituyen diagnóstico médico, plan dietoterápico clínico ni prescripción individual. Las personas con patologías digestivas, enfermedad celíaca, alergias anafilácticas o mujeres embarazadas deben consultar siempre a su médico especialista o dietista-nutricionista colegiado.
           </p>
-        </div>
-
-        {/* Global Hub Navigation Tabs */}
-        <div className="bg-white p-1.5 rounded-2xl border shadow-xs mb-8 overflow-x-auto">
-          <div className="flex gap-1.5 min-w-max">
-            {[
-              { id: 'harvard', label: '🍽️ Plato Harvard Interactivo', desc: '¡Otra forma creativa de comprar!' },
-              { id: 'calculadora', label: '🔥 Gasto Calórico & TDEE', desc: 'Averigua cuánto quemas al día' },
-              { id: 'diario', label: '📊 Mi Diario & Calorías', desc: 'Seguimiento de comidas y macros' },
-              { id: 'perfil', label: '🌾 Perfil & Alergias', desc: 'Dietas e intolerancias' },
-              { id: 'escaner', label: '📷 Escáner EAN Bio', desc: 'Cámara y Nutri-Score' },
-              { id: 'comparador', label: '⚖️ Comparador 1 a 1', desc: 'Nutrientes y €/kg' },
-              { id: 'despensa', label: '🥫 Mi Despensa & Reposición', desc: 'Caducidad y stock en casa' },
-              { id: 'presupuesto', label: '💶 Modo Presupuesto', desc: 'Nutrición por euro' },
-            ].map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
-                className={`px-4 py-2.5 rounded-xl font-bold text-xs transition-all flex flex-col items-center gap-0.5 ${
-                  activeTab === tab.id
-                    ? 'bg-emerald-800 text-white shadow-sm'
-                    : 'text-slate-600 hover:bg-slate-100'
-                }`}
-              >
-                <span>{tab.label}</span>
-                <span className={`text-[10px] font-normal ${activeTab === tab.id ? 'text-emerald-200' : 'text-slate-400'}`}>
-                  {tab.desc}
-                </span>
-              </button>
-            ))}
           </div>
-        </div>
+        </details>
+
+        {/* Global Hub Navigation Tabs: en móvil fila deslizable; desde tablet, cuadrícula sin scroll */}
+        <nav aria-label="Herramientas de EcoHealth" className="mb-8 -mx-4 px-4 sm:mx-0 sm:px-0 overflow-x-auto sm:overflow-visible [scrollbar-width:none]">
+          <div className="flex sm:grid sm:grid-cols-4 gap-2 min-w-max sm:min-w-0">
+            {([
+              { id: 'harvard', label: 'Plato Harvard', desc: 'Compra equilibrada', icon: UtensilsCrossed },
+              { id: 'calculadora', label: 'Gasto calórico', desc: 'Cuánto quemas al día', icon: Flame },
+              { id: 'diario', label: 'Mi diario', desc: 'Comidas y macros', icon: BarChart3 },
+              { id: 'perfil', label: 'Perfil y alergias', desc: 'Dietas e intolerancias', icon: Wheat },
+              { id: 'escaner', label: 'Escáner', desc: 'Código de barras y Nutri-Score', icon: Barcode },
+              { id: 'comparador', label: 'Comparador', desc: 'Nutrientes y €/kg', icon: Scale },
+              { id: 'despensa', label: 'Mi despensa', desc: 'Caducidad y reposición', icon: Package },
+              { id: 'presupuesto', label: 'Presupuesto', desc: 'Nutrición por euro', icon: Wallet },
+            ] as const).map(tab => {
+              const Icon = tab.icon;
+              const active = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActiveTab(tab.id as any)}
+                  aria-current={active ? 'page' : undefined}
+                  className={`flex items-center gap-2.5 rounded-xl border px-3.5 py-2.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-700 ${
+                    active
+                      ? 'bg-emerald-900 border-emerald-900 text-white shadow-sm'
+                      : 'bg-white border-slate-200 text-slate-700 hover:border-emerald-300 hover:bg-emerald-50/50'
+                  }`}
+                >
+                  <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-emerald-200' : 'text-emerald-700'}`} />
+                  <span className="min-w-0">
+                    <span className="block text-sm font-semibold whitespace-nowrap">{tab.label}</span>
+                    <span className={`hidden sm:block text-xs truncate ${active ? 'text-emerald-100/80' : 'text-slate-500'}`}>{tab.desc}</span>
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </nav>
 
         {/* ============================================================== */}
         {/* TAB 1: DIARIO NUTRICIONAL (CALORÍAS, MACROS, COMIDAS, AGUA) */}
@@ -486,12 +504,12 @@ export const EcoHealth = () => {
 
                 <div className="space-y-3 text-xs">
                   <div className="flex justify-between items-center py-1 border-b border-slate-800/80">
-                    <span className="text-slate-400">Metabolismo Basal (BMR - quema en reposo):</span>
-                    <strong className="text-white font-mono text-sm">{bmr} kcal</strong>
+                    <span className="text-slate-500">Metabolismo Basal (BMR - quema en reposo):</span>
+                    <strong className="text-white tabular-nums text-sm">{bmr} kcal</strong>
                   </div>
                   <div className="flex justify-between items-center py-1 border-b border-slate-800/80">
-                    <span className="text-slate-400">Gasto Total Diario (TDEE - con tu actividad):</span>
-                    <strong className="text-emerald-400 font-mono text-base">{tdee} kcal</strong>
+                    <span className="text-slate-500">Gasto Total Diario (TDEE - con tu actividad):</span>
+                    <strong className="text-emerald-400 tabular-nums text-base">{tdee} kcal</strong>
                   </div>
                   <div className="p-3.5 rounded-2xl bg-emerald-950/80 border border-emerald-800/60 flex justify-between items-center">
                     <div>
@@ -500,7 +518,7 @@ export const EcoHealth = () => {
                         {fitnessGoal === 'perder' ? 'Déficit calórico moderado' : fitnessGoal === 'ganar' ? 'Superávit limpio para masa' : 'Mantenimiento de energía'}
                       </span>
                     </div>
-                    <strong className="text-2xl font-black text-white font-mono">{targetCaloriesCalculated} kcal</strong>
+                    <strong className="text-2xl font-black text-white tabular-nums">{targetCaloriesCalculated} kcal</strong>
                   </div>
                 </div>
 
@@ -537,7 +555,7 @@ export const EcoHealth = () => {
                 <span className="text-xs uppercase font-bold tracking-wider text-slate-500">Energía Diaria</span>
                 <div className="flex items-baseline gap-1">
                   <span className="text-3xl font-display font-extrabold text-slate-900">{currentTotals.calories}</span>
-                  <span className="text-xs text-slate-400">/ {dailyGoals.calories} kcal</span>
+                  <span className="text-xs text-slate-500">/ {dailyGoals.calories} kcal</span>
                 </div>
                 <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
                   <div 
@@ -554,48 +572,48 @@ export const EcoHealth = () => {
                 <span className="text-xs uppercase font-bold tracking-wider text-slate-500">Proteína Vegetal</span>
                 <div className="flex items-baseline gap-1">
                   <span className="text-2xl font-display font-bold text-emerald-800">{currentTotals.protein}g</span>
-                  <span className="text-xs text-slate-400">/ {dailyGoals.protein}g</span>
+                  <span className="text-xs text-slate-500">/ {dailyGoals.protein}g</span>
                 </div>
                 <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
                   <div className="bg-emerald-500 h-full rounded-full" style={{ width: `${Math.min(100, (currentTotals.protein / dailyGoals.protein) * 100)}%` }} />
                 </div>
-                <span className="text-[10px] text-slate-500">Legumbres y cereal bio</span>
+                <span className="text-xs text-slate-500">Legumbres y cereal bio</span>
               </div>
 
               <div className="bg-white p-5 rounded-3xl border shadow-2xs space-y-2">
                 <span className="text-xs uppercase font-bold tracking-wider text-slate-500">Carbohidratos</span>
                 <div className="flex items-baseline gap-1">
                   <span className="text-2xl font-display font-bold text-amber-700">{currentTotals.carbs}g</span>
-                  <span className="text-xs text-slate-400">/ {dailyGoals.carbs}g</span>
+                  <span className="text-xs text-slate-500">/ {dailyGoals.carbs}g</span>
                 </div>
                 <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
                   <div className="bg-amber-500 h-full rounded-full" style={{ width: `${Math.min(100, (currentTotals.carbs / dailyGoals.carbs) * 100)}%` }} />
                 </div>
-                <span className="text-[10px] text-slate-500">Granos enteros y fibra</span>
+                <span className="text-xs text-slate-500">Granos enteros y fibra</span>
               </div>
 
               <div className="bg-white p-5 rounded-3xl border shadow-2xs space-y-2">
                 <span className="text-xs uppercase font-bold tracking-wider text-slate-500">Grasas Saludables</span>
                 <div className="flex items-baseline gap-1">
                   <span className="text-2xl font-display font-bold text-teal-700">{currentTotals.fats}g</span>
-                  <span className="text-xs text-slate-400">/ {dailyGoals.fats}g</span>
+                  <span className="text-xs text-slate-500">/ {dailyGoals.fats}g</span>
                 </div>
                 <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
                   <div className="bg-teal-500 h-full rounded-full" style={{ width: `${Math.min(100, (currentTotals.fats / dailyGoals.fats) * 100)}%` }} />
                 </div>
-                <span className="text-[10px] text-slate-500">AOVE y frutos secos</span>
+                <span className="text-xs text-slate-500">AOVE y frutos secos</span>
               </div>
 
               <div className="bg-white p-5 rounded-3xl border shadow-2xs space-y-2">
                 <span className="text-xs uppercase font-bold tracking-wider text-slate-500">Fibra Prebiótica</span>
                 <div className="flex items-baseline gap-1">
                   <span className="text-2xl font-display font-bold text-emerald-900">{currentTotals.fiber}g</span>
-                  <span className="text-xs text-slate-400">/ {dailyGoals.fiber}g</span>
+                  <span className="text-xs text-slate-500">/ {dailyGoals.fiber}g</span>
                 </div>
                 <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
                   <div className="bg-emerald-700 h-full rounded-full" style={{ width: `${Math.min(100, (currentTotals.fiber / dailyGoals.fiber) * 100)}%` }} />
                 </div>
-                <span className="text-[10px] text-emerald-700 font-semibold">Microbiota sana</span>
+                <span className="text-xs text-emerald-700 font-semibold">Microbiota sana</span>
               </div>
             </div>
 
@@ -626,32 +644,32 @@ export const EcoHealth = () => {
                           {mealName === 'cena' && '🌙 Cena'}
                           {mealName === 'snacks' && '🍎 Snacks & Media Mañana'}
                         </span>
-                        <span className="text-xs font-mono font-bold text-emerald-800">{mealCal} kcal</span>
+                        <span className="text-xs tabular-nums font-bold text-emerald-800">{mealCal} kcal</span>
                       </div>
 
                       {itemsOfMeal.length === 0 ? (
-                        <p className="text-xs text-slate-400 italic py-2">No has registrado alimentos en esta comida todavía.</p>
+                        <p className="text-xs text-slate-500 italic py-2">No has registrado alimentos en esta comida todavía.</p>
                       ) : (
                         <div className="space-y-2">
                           {itemsOfMeal.map(item => (
                             <div key={item.id} className="flex items-center justify-between text-xs p-2.5 rounded-xl bg-slate-50/70 border border-slate-100 hover:bg-slate-50 transition-colors">
                               <div className="space-y-0.5">
                                 <span className="font-semibold text-slate-900 block">{item.name}</span>
-                                <span className="text-[11px] text-slate-500 font-mono">
+                                <span className="text-[11px] text-slate-500 tabular-nums">
                                   {item.calories} kcal • P: {item.protein}g • C: {item.carbs}g • G: {item.fats}g • Fibra: {item.fiber}g
                                 </span>
                               </div>
                               <div className="flex items-center gap-2">
                                 {item.productSlug && (
                                   <Link to={`/tienda/producto/${item.productSlug}`}>
-                                    <Badge variant="secondary" className="text-[10px] bg-emerald-100 text-emerald-800 hover:bg-emerald-200">
+                                    <Badge variant="secondary" className="text-xs bg-emerald-100 text-emerald-800 hover:bg-emerald-200">
                                       Ver en tienda
                                     </Badge>
                                   </Link>
                                 )}
                                 <button 
                                   onClick={() => removeMealLog(item.id)}
-                                  className="text-slate-400 hover:text-red-600 transition-colors p-1"
+                                  className="text-slate-500 hover:text-red-600 transition-colors p-1"
                                   title="Eliminar"
                                 >
                                   <Trash2 className="h-3.5 w-3.5" />
@@ -734,7 +752,7 @@ export const EcoHealth = () => {
                       <Droplet className="h-5 w-5 text-teal-600" />
                       <h4 className="font-bold text-slate-900 text-sm">Hidratación Diaria</h4>
                     </div>
-                    <span className="text-xs font-mono font-bold text-teal-800">
+                    <span className="text-xs tabular-nums font-bold text-teal-800">
                       {(waterGlasses * 0.25).toFixed(2)} L / 2.0 L
                     </span>
                   </div>
@@ -787,6 +805,16 @@ export const EcoHealth = () => {
         {/* ============================================================== */}
         {activeTab === 'perfil' && (
           <div className="bg-white rounded-3xl p-6 md:p-8 border shadow-xs max-w-4xl mx-auto space-y-8">
+            <Link
+              to="/salud"
+              className="flex items-center justify-between gap-3 rounded-2xl bg-emerald-900 p-4 text-white hover:bg-emerald-800 transition-colors"
+            >
+              <span>
+                <strong className="block">Nuevo: Ecoland Salud</strong>
+                <span className="text-sm text-emerald-100">Alergias, celiaquía, azúcar, sal… Productos que encajan contigo, con avisos en la cesta.</span>
+              </span>
+              <ArrowRight className="w-5 h-5 shrink-0" />
+            </Link>
             <div className="border-b pb-4">
               <h2 className="font-bold text-slate-900 text-xl">Configuración de Perfil Alimentario y Alergias</h2>
               <p className="text-xs text-slate-500 mt-1">
@@ -855,10 +883,10 @@ export const EcoHealth = () => {
             {/* Simulated Barcode Input */}
             <div className="p-6 rounded-3xl bg-slate-900 text-white space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-mono text-emerald-400 flex items-center gap-2">
+                <span className="text-xs tabular-nums text-emerald-400 flex items-center gap-2">
                   <Camera className="h-4 w-4" /> Lector de código activado
                 </span>
-                <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 text-[10px]">
+                <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 text-xs">
                   Modo Tienda Física
                 </Badge>
               </div>
@@ -868,7 +896,7 @@ export const EcoHealth = () => {
                   value={scanCode}
                   onChange={(e) => setScanCode(e.target.value)}
                   placeholder="Introduce código EAN o nombre de producto..."
-                  className="bg-slate-800 border-slate-700 text-white text-xs h-11 font-mono"
+                  className="bg-slate-800 border-slate-700 text-white text-xs h-11 tabular-nums"
                 />
                 <Button 
                   onClick={() => handleSimulateScan(scanCode)}
@@ -878,7 +906,7 @@ export const EcoHealth = () => {
                 </Button>
               </div>
 
-              <div className="flex gap-2 flex-wrap pt-1 text-[11px] text-slate-400">
+              <div className="flex gap-2 flex-wrap pt-1 text-[11px] text-slate-500">
                 <span>Pruebas rápidas:</span>
                 <button onClick={() => handleSimulateScan('avena')} className="underline hover:text-white">Avena Sin Gluten</button>
                 <span>•</span>
@@ -899,13 +927,13 @@ export const EcoHealth = () => {
                   </div>
                   <div className="flex-1 space-y-1 text-center sm:text-left">
                     <div className="flex items-center gap-2 justify-center sm:justify-start">
-                      <Badge className="bg-emerald-100 text-emerald-800 border-0 text-[10px]">100% Bio Certificado</Badge>
-                      <Badge variant="outline" className="text-[10px]">{scannedProduct.brand}</Badge>
+                      <Badge className="bg-emerald-100 text-emerald-800 border-0 text-xs">100% Bio Certificado</Badge>
+                      <Badge variant="outline" className="text-xs">{scannedProduct.brand}</Badge>
                     </div>
                     <h3 className="font-bold text-slate-900 text-base">{scannedProduct.name}</h3>
                     <p className="text-xs text-slate-600 line-clamp-2">{scannedProduct.description}</p>
                     <div className="pt-1 flex items-center justify-center sm:justify-start gap-4">
-                      <span className="text-xl font-extrabold text-emerald-800">{scannedProduct.price.toFixed(2)}€</span>
+                      <span className="text-xl font-extrabold text-emerald-800">{formatPrice(scannedProduct.price)}</span>
                       <span className="text-xs text-slate-500">Stock físico verificado</span>
                     </div>
                   </div>
@@ -921,15 +949,15 @@ export const EcoHealth = () => {
                 {/* Semáforo Nutricional */}
                 <div className="grid grid-cols-3 gap-3 pt-3 border-t border-emerald-200/70 text-center text-xs">
                   <div className="p-2.5 rounded-xl bg-white border border-emerald-100">
-                    <span className="block text-[10px] text-slate-400">Nutri-Score</span>
+                    <span className="block text-xs text-slate-500">Nutri-Score</span>
                     <strong className="text-emerald-700 text-sm font-black">A (Excelente)</strong>
                   </div>
                   <div className="p-2.5 rounded-xl bg-white border border-emerald-100">
-                    <span className="block text-[10px] text-slate-400">Eco-Score</span>
+                    <span className="block text-xs text-slate-500">Eco-Score</span>
                     <strong className="text-emerald-700 text-sm font-black">A (Impacto Mínimo)</strong>
                   </div>
                   <div className="p-2.5 rounded-xl bg-white border border-emerald-100">
-                    <span className="block text-[10px] text-slate-400">Aditivos Químicos</span>
+                    <span className="block text-xs text-slate-500">Aditivos Químicos</span>
                     <strong className="text-emerald-700 text-sm font-black">0% Limpio</strong>
                   </div>
                 </div>
@@ -964,7 +992,7 @@ export const EcoHealth = () => {
                           <img src={p.image} alt={p.name} className="w-full h-full object-contain" />
                         </div>
                         <span className="line-clamp-2 text-xs font-bold">{p.name.split('–')[1]?.trim() || p.name.split('–')[0]}</span>
-                        <span className="text-emerald-800 font-extrabold text-sm block mt-1">{p.price.toFixed(2)}€</span>
+                        <span className="text-emerald-800 font-extrabold text-sm block mt-1">{formatPrice(p.price)}</span>
                       </th>
                     ))}
                   </tr>
@@ -974,10 +1002,10 @@ export const EcoHealth = () => {
                     <td className="p-3 font-bold text-emerald-950">EcoScore Sostenibilidad</td>
                     {compareProducts.map((p, idx) => (
                       <td key={p.id} className="p-3 text-center">
-                        <span className="inline-block bg-emerald-900 text-white font-black px-2 py-0.5 rounded text-[10px]">
+                        <span className="inline-block bg-emerald-900 text-white font-black px-2 py-0.5 rounded text-xs">
                           EcoScore A (★★★)
                         </span>
-                        <span className="block text-[10px] text-emerald-800 mt-0.5">~0.24 kg CO₂e</span>
+                        <span className="block text-xs text-emerald-800 mt-0.5">~0.24 kg CO₂e</span>
                       </td>
                     ))}
                   </tr>
@@ -1068,7 +1096,7 @@ export const EcoHealth = () => {
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-slate-900 text-sm">{item.name}</span>
                         {isLow && (
-                          <Badge className="bg-amber-100 text-amber-800 border-0 text-[10px]">
+                          <Badge className="bg-amber-100 text-amber-800 border-0 text-xs">
                             ⚠️ Quedan pocos días
                           </Badge>
                         )}
@@ -1076,7 +1104,7 @@ export const EcoHealth = () => {
                       <div className="flex items-center gap-3 text-xs text-slate-500">
                         <span>Consumo estimado: <strong>{item.daysLeft} días restantes</strong></span>
                         <span>•</span>
-                        <span>{item.price.toFixed(2)}€</span>
+                        <span>{formatPrice(item.price)}</span>
                       </div>
                       <div className="w-full max-w-xs bg-slate-200 rounded-full h-1.5 overflow-hidden mt-1">
                         <div 
@@ -1094,7 +1122,7 @@ export const EcoHealth = () => {
                           className={`text-xs font-bold gap-1.5 ${isLow ? 'bg-amber-600 hover:bg-amber-500 text-white' : 'bg-emerald-800 hover:bg-emerald-700 text-white'}`}
                         >
                           <ShoppingBag className="h-3.5 w-3.5" />
-                          Reponer ({item.price.toFixed(2)}€)
+                          Reponer ({formatPrice(item.price)})
                         </Button>
                       )}
                     </div>
