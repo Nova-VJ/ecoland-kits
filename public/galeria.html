@@ -1,0 +1,3760 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
+    <title>Ecoland – Galería de Fotografías Oficiales Frontales</title>
+    <style>
+        :root {
+            --primary: #15803d;
+            --primary-dark: #166534;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --border-hover: #15803d;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            padding: 24px;
+        }
+        .header {
+            max-width: 1400px;
+            margin: 0 auto 28px;
+            background: #ffffff;
+            padding: 28px 32px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+            border: 1px solid var(--border);
+        }
+        .badge {
+            display: inline-block;
+            background: #dcfce7;
+            color: #166534;
+            padding: 6px 14px;
+            border-radius: 9999px;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+        h1 {
+            font-size: 26px;
+            color: #0f172a;
+            margin-bottom: 8px;
+            font-weight: 800;
+        }
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 15px;
+            line-height: 1.5;
+            max-width: 900px;
+        }
+        .stats-bar {
+            display: flex;
+            gap: 20px;
+            margin-top: 18px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+            font-size: 14px;
+        }
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .stat-item strong {
+            color: var(--primary);
+            font-size: 16px;
+        }
+        .search-bar {
+            margin-top: 18px;
+            display: flex;
+            gap: 12px;
+        }
+        .search-input {
+            flex: 1;
+            padding: 12px 18px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .search-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.15);
+        }
+        .grid {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background: var(--card-bg);
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.07);
+            border-color: var(--primary);
+        }
+        .img-wrap {
+            width: 100%;
+            height: 250px;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            position: relative;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .img-wrap img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            transition: transform 0.2s;
+        }
+        .card:hover .img-wrap img {
+            transform: scale(1.04);
+        }
+        .badge-idx {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(15, 23, 42, 0.75);
+            color: #fff;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+        .badge-brand {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+        .card-body {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+        .code {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+        .title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-main);
+            line-height: 1.35;
+            margin-bottom: 8px;
+            flex: 1;
+        }
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 10px;
+            border-top: 1px solid #f1f5f9;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        .status-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            color: #166534;
+            font-weight: 700;
+        }
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #22c55e;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <span class="badge">Catálogo Ecoland – Packshots Oficiales</span>
+        <h1>Galería de Fotografías de Productos</h1>
+        <p class="subtitle">
+            Cada producto cuenta con su fotografía individual oficial de fabricante: toma <strong>frontal pura a 0°</strong> mirando a la cámara, aislada sobre fondo blanco puro <code>(255, 255, 255)</code> y lienzo cuadrado de 600×600 px. Se han sustituido todas las fotos repetidas por su imagen específica.
+        </p>
+        <div class="stats-bar">
+            <div class="stat-item">
+                <span>Fotografías verificadas:</span>
+                <strong>219 productos</strong>
+            </div>
+            <div class="stat-item">
+                <span>Fondo:</span>
+                <strong>Blanco Puro (255, 255, 255)</strong>
+            </div>
+            <div class="stat-item">
+                <span>Encuadre:</span>
+                <strong>Frontal 0° sin inclinación</strong>
+            </div>
+            <div class="stat-item">
+                <span>Resolución:</span>
+                <strong>600×600 px + miniatura 150×150 px</strong>
+            </div>
+        </div>
+        <div class="search-bar">
+            <input type="text" id="searchInput" class="search-input" placeholder="Buscar por nombre, marca o código..." onkeyup="filterCards()" />
+        </div>
+    </div>
+
+    <div class="grid" id="productGrid">
+
+        <div class="card" data-name="copos de avena 500gr \ ecosana erp-4081">
+            <div class="img-wrap">
+                <img src="/fotos/c-4081.jpg" alt="COPOS DE AVENA 500gr \" loading="lazy" />
+                <span class="badge-idx">#1</span>
+                <span class="badge-brand">Ecosana</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-4081</div>
+                <div class="title">COPOS DE AVENA 500gr \</div>
+                <div class="footer">
+                    <span>Eco</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="copos de avena sin gluten 1k formato estándar ecosana erp-26044">
+            <div class="img-wrap">
+                <img src="/fotos/c-26044.jpg" alt="COPOS DE AVENA SIN GLUTEN 1K Formato estándar" loading="lazy" />
+                <span class="badge-idx">#2</span>
+                <span class="badge-brand">Ecosana</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-26044</div>
+                <div class="title">COPOS DE AVENA SIN GLUTEN 1K Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="copos de espelta 350gr 350gr ecosana erp-4177">
+            <div class="img-wrap">
+                <img src="/fotos/c-4177.jpg" alt="COPOS DE ESPELTA 350gr 350gr" loading="lazy" />
+                <span class="badge-idx">#3</span>
+                <span class="badge-brand">Ecosana</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-4177</div>
+                <div class="title">COPOS DE ESPELTA 350gr 350gr</div>
+                <div class="footer">
+                    <span>Eco</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="copos de avena finos a granel formato estándar general / multimarca erp-25057">
+            <div class="img-wrap">
+                <img src="/fotos/c-25057.jpg" alt="COPOS DE AVENA FINOS A GRANEL Formato estándar" loading="lazy" />
+                <span class="badge-idx">#4</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-25057</div>
+                <div class="title">COPOS DE AVENA FINOS A GRANEL Formato estándar</div>
+                <div class="footer">
+                    <span>Eco</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="adzuki a granel formato estándar general / multimarca erp-20108">
+            <div class="img-wrap">
+                <img src="/fotos/c-20108.jpg" alt="ADZUKI A GRANEL Formato estándar" loading="lazy" />
+                <span class="badge-idx">#5</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-20108</div>
+                <div class="title">ADZUKI A GRANEL Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="arroz basmati 500gr 500gr ecosana erp-20045">
+            <div class="img-wrap">
+                <img src="/fotos/c-20045.jpg" alt="ARROZ BASMATI 500gr 500gr" loading="lazy" />
+                <span class="badge-idx">#6</span>
+                <span class="badge-brand">Ecosana</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-20045</div>
+                <div class="title">ARROZ BASMATI 500gr 500gr</div>
+                <div class="footer">
+                    <span>500gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="arroz basmati blanco 500gr 500gr ecosana erp-20146">
+            <div class="img-wrap">
+                <img src="/fotos/c-20146.jpg" alt="ARROZ BASMATI BLANCO 500gr 500gr" loading="lazy" />
+                <span class="badge-idx">#7</span>
+                <span class="badge-brand">Ecosana</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-20146</div>
+                <div class="title">ARROZ BASMATI BLANCO 500gr 500gr</div>
+                <div class="footer">
+                    <span>500gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="arroz basmati integral 1kg 1kg ecosana erp-20072">
+            <div class="img-wrap">
+                <img src="/fotos/c-20072.jpg" alt="ARROZ BASMATI INTEGRAL 1KG 1kg" loading="lazy" />
+                <span class="badge-idx">#8</span>
+                <span class="badge-brand">Ecosana</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-20072</div>
+                <div class="title">ARROZ BASMATI INTEGRAL 1KG 1kg</div>
+                <div class="footer">
+                    <span>1kg</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="arroz blanco a granel formato estándar general / multimarca erp-2058">
+            <div class="img-wrap">
+                <img src="/fotos/c-2058.jpg" alt="ARROZ BLANCO A GRANEL Formato estándar" loading="lazy" />
+                <span class="badge-idx">#9</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-2058</div>
+                <div class="title">ARROZ BLANCO A GRANEL Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="arroz de calasparra integral 1k formato estándar general / multimarca erp-20076">
+            <div class="img-wrap">
+                <img src="/fotos/c-20076.jpg" alt="ARROZ DE CALASPARRA INTEGRAL 1K Formato estándar" loading="lazy" />
+                <span class="badge-idx">#10</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-20076</div>
+                <div class="title">ARROZ DE CALASPARRA INTEGRAL 1K Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="arroz de calasparra integral a granel formato estándar general / multimarca erp-20109">
+            <div class="img-wrap">
+                <img src="/fotos/c-20109.jpg" alt="ARROZ DE CALASPARRA INTEGRAL A GRANEL Formato estándar" loading="lazy" />
+                <span class="badge-idx">#11</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-20109</div>
+                <div class="title">ARROZ DE CALASPARRA INTEGRAL A GRANEL Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="arroz de calasparra semi integral 1k formato estándar general / multimarca erp-20074">
+            <div class="img-wrap">
+                <img src="/fotos/c-20074.jpg" alt="ARROZ DE CALASPARRA SEMI INTEGRAL 1K Formato estándar" loading="lazy" />
+                <span class="badge-idx">#12</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-20074</div>
+                <div class="title">ARROZ DE CALASPARRA SEMI INTEGRAL 1K Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="arroz integral a granel formato estándar general / multimarca erp-20063">
+            <div class="img-wrap">
+                <img src="/fotos/c-20063.jpg" alt="ARROZ INTEGRAL A GRANEL Formato estándar" loading="lazy" />
+                <span class="badge-idx">#13</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-20063</div>
+                <div class="title">ARROZ INTEGRAL A GRANEL Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="arroz rojo a granel formato estándar general / multimarca erp-20105">
+            <div class="img-wrap">
+                <img src="/fotos/c-20105.jpg" alt="ARROZ ROJO A GRANEL Formato estándar" loading="lazy" />
+                <span class="badge-idx">#14</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-20105</div>
+                <div class="title">ARROZ ROJO A GRANEL Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="avena desnuda a granel formato estándar general / multimarca erp-25021">
+            <div class="img-wrap">
+                <img src="/fotos/c-25021.jpg" alt="AVENA DESNUDA A GRANEL Formato estándar" loading="lazy" />
+                <span class="badge-idx">#15</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-25021</div>
+                <div class="title">AVENA DESNUDA A GRANEL Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="bolitas de maiz y miel 400gr 400gr ecosana erp-4194">
+            <div class="img-wrap">
+                <img src="/fotos/c-4194.jpg" alt="BOLITAS DE MAIZ Y MIEL 400gr 400gr" loading="lazy" />
+                <span class="badge-idx">#16</span>
+                <span class="badge-brand">Ecosana</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-4194</div>
+                <div class="title">BOLITAS DE MAIZ Y MIEL 400gr 400gr</div>
+                <div class="footer">
+                    <span>400gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="coco rallado 150gr bio 150gr ecosana erp-4088">
+            <div class="img-wrap">
+                <img src="/fotos/c-4088.jpg" alt="COCO RALLADO 150gr BIO 150gr" loading="lazy" />
+                <span class="badge-idx">#17</span>
+                <span class="badge-brand">Ecosana</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-4088</div>
+                <div class="title">COCO RALLADO 150gr BIO 150gr</div>
+                <div class="footer">
+                    <span>150gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="cous cous blanco 400gr 400gr ecosana erp-4106">
+            <div class="img-wrap">
+                <img src="/fotos/c-4106.jpg" alt="COUS COUS BLANCO 400gr 400gr" loading="lazy" />
+                <span class="badge-idx">#18</span>
+                <span class="badge-brand">Ecosana</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-4106</div>
+                <div class="title">COUS COUS BLANCO 400gr 400gr</div>
+                <div class="footer">
+                    <span>400gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="cous cous integral bio 400gr 400gr ecosana erp-4022">
+            <div class="img-wrap">
+                <img src="/fotos/c-4022.jpg" alt="COUS COUS INTEGRAL BIO 400gr 400gr" loading="lazy" />
+                <span class="badge-idx">#19</span>
+                <span class="badge-brand">Ecosana</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-4022</div>
+                <div class="title">COUS COUS INTEGRAL BIO 400gr 400gr</div>
+                <div class="footer">
+                    <span>400gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="espelta hinchada con miel 100gr 100gr ecosana erp-4183">
+            <div class="img-wrap">
+                <img src="/fotos/c-4183.jpg" alt="ESPELTA HINCHADA CON MIEL 100gr 100gr" loading="lazy" />
+                <span class="badge-idx">#20</span>
+                <span class="badge-brand">Ecosana</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-4183</div>
+                <div class="title">ESPELTA HINCHADA CON MIEL 100gr 100gr</div>
+                <div class="footer">
+                    <span>100gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="lino marron a granel formato estándar general / multimarca erp-25058">
+            <div class="img-wrap">
+                <img src="/fotos/c-25058.jpg" alt="LINO MARRON A GRANEL Formato estándar" loading="lazy" />
+                <span class="badge-idx">#21</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-25058</div>
+                <div class="title">LINO MARRON A GRANEL Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="pipas de girasol \ general / multimarca erp-6038">
+            <div class="img-wrap">
+                <img src="/fotos/c-6038.jpg" alt="PIPAS DE GIRASOL \" loading="lazy" />
+                <span class="badge-idx">#22</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-6038</div>
+                <div class="title">PIPAS DE GIRASOL \</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="semilla de calabaza \ general / multimarca erp-6039">
+            <div class="img-wrap">
+                <img src="/fotos/c-6039.jpg" alt="SEMILLA DE CALABAZA \" loading="lazy" />
+                <span class="badge-idx">#23</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-6039</div>
+                <div class="title">SEMILLA DE CALABAZA \</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="semilla de calabaza 250gr 250gr ecosana erp-6050">
+            <div class="img-wrap">
+                <img src="/fotos/c-6050.jpg" alt="SEMILLA DE CALABAZA 250gr 250gr" loading="lazy" />
+                <span class="badge-idx">#24</span>
+                <span class="badge-brand">Ecosana</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-6050</div>
+                <div class="title">SEMILLA DE CALABAZA 250gr 250gr</div>
+                <div class="footer">
+                    <span>250gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="semillas de amapola 250gr 250gr ecosana erp-4087">
+            <div class="img-wrap">
+                <img src="/fotos/c-4087.jpg" alt="SEMILLAS DE AMAPOLA 250gr 250gr" loading="lazy" />
+                <span class="badge-idx">#25</span>
+                <span class="badge-brand">Ecosana</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-4087</div>
+                <div class="title">SEMILLAS DE AMAPOLA 250gr 250gr</div>
+                <div class="footer">
+                    <span>250gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="sesamo a granel formato estándar general / multimarca erp-3182">
+            <div class="img-wrap">
+                <img src="/fotos/c-3182.jpg" alt="SESAMO A GRANEL Formato estándar" loading="lazy" />
+                <span class="badge-idx">#26</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3182</div>
+                <div class="title">SESAMO A GRANEL Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="sesamo tostado 500gr 500gr ecosana erp-4090">
+            <div class="img-wrap">
+                <img src="/fotos/c-4090.jpg" alt="SESAMO TOSTADO 500gr 500gr" loading="lazy" />
+                <span class="badge-idx">#27</span>
+                <span class="badge-brand">Ecosana</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-4090</div>
+                <div class="title">SESAMO TOSTADO 500gr 500gr</div>
+                <div class="footer">
+                    <span>500gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="soja texturizada gruesa 150gr 150gr ecosana erp-4124">
+            <div class="img-wrap">
+                <img src="/fotos/c-4124.jpg" alt="SOJA TEXTURIZADA GRUESA 150gr 150gr" loading="lazy" />
+                <span class="badge-idx">#28</span>
+                <span class="badge-brand">Ecosana</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-4124</div>
+                <div class="title">SOJA TEXTURIZADA GRUESA 150gr 150gr</div>
+                <div class="footer">
+                    <span>150gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="copos de cebada 500gr \ el granero integral erp-4079">
+            <div class="img-wrap">
+                <img src="/fotos/c-4079.jpg" alt="COPOS DE CEBADA 500gr \" loading="lazy" />
+                <span class="badge-idx">#29</span>
+                <span class="badge-brand">El Granero Integra</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-4079</div>
+                <div class="title">COPOS DE CEBADA 500gr \</div>
+                <div class="footer">
+                    <span>Eco</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="tortas quinoa y tamari bio 140gr granero 140gr el granero integral erp-10031">
+            <div class="img-wrap">
+                <img src="/fotos/c-10031.jpg" alt="TORTAS QUINOA Y TAMARI BIO 140gr GRANERO 140gr" loading="lazy" />
+                <span class="badge-idx">#30</span>
+                <span class="badge-brand">El Granero Integra</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-10031</div>
+                <div class="title">TORTAS QUINOA Y TAMARI BIO 140gr GRANERO 140gr</div>
+                <div class="footer">
+                    <span>Eco</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="copos de amaranto 250gr el granero int 250gr el granero integral erp-4175">
+            <div class="img-wrap">
+                <img src="/fotos/c-4175.jpg" alt="COPOS DE AMARANTO 250gr EL GRANERO INT 250gr" loading="lazy" />
+                <span class="badge-idx">#31</span>
+                <span class="badge-brand">El Granero Integra</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-4175</div>
+                <div class="title">COPOS DE AMARANTO 250gr EL GRANERO INT 250gr</div>
+                <div class="footer">
+                    <span>250gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="gluten de trigo 500gr granero 500gr el granero integral erp-10122">
+            <div class="img-wrap">
+                <img src="/fotos/c-10122.jpg" alt="GLUTEN DE TRIGO 500gr GRANERO 500gr" loading="lazy" />
+                <span class="badge-idx">#32</span>
+                <span class="badge-brand">El Granero Integra</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-10122</div>
+                <div class="title">GLUTEN DE TRIGO 500gr GRANERO 500gr</div>
+                <div class="footer">
+                    <span>500gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="levadura de cerveza 300gr el granero int 300gr el granero integral erp-10223">
+            <div class="img-wrap">
+                <img src="/fotos/c-10223.jpg" alt="LEVADURA DE CERVEZA 300gr EL GRANERO INT 300gr" loading="lazy" />
+                <span class="badge-idx">#33</span>
+                <span class="badge-brand">El Granero Integra</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-10223</div>
+                <div class="title">LEVADURA DE CERVEZA 300gr EL GRANERO INT 300gr</div>
+                <div class="footer">
+                    <span>300gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="quinoa bio 500gr granero 500gr el granero integral erp-4005">
+            <div class="img-wrap">
+                <img src="/fotos/c-4005.jpg" alt="QUINOA BIO 500gr GRANERO 500gr" loading="lazy" />
+                <span class="badge-idx">#34</span>
+                <span class="badge-brand">El Granero Integra</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-4005</div>
+                <div class="title">QUINOA BIO 500gr GRANERO 500gr</div>
+                <div class="footer">
+                    <span>500gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="quinoa roja a granel formato estándar general / multimarca erp-25096">
+            <div class="img-wrap">
+                <img src="/fotos/c-25096.jpg" alt="QUINOA ROJA A GRANEL Formato estándar" loading="lazy" />
+                <span class="badge-idx">#35</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-25096</div>
+                <div class="title">QUINOA ROJA A GRANEL Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="quinoa tricolor a granel formato estándar general / multimarca erp-25097">
+            <div class="img-wrap">
+                <img src="/fotos/c-25097.jpg" alt="QUINOA TRICOLOR A GRANEL Formato estándar" loading="lazy" />
+                <span class="badge-idx">#36</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-25097</div>
+                <div class="title">QUINOA TRICOLOR A GRANEL Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="tortas de trigo sarraceno 100gr el grane 100gr general / multimarca erp-10263">
+            <div class="img-wrap">
+                <img src="/fotos/c-10263.jpg" alt="TORTAS DE TRIGO SARRACENO 100gr EL GRANE 100gr" loading="lazy" />
+                <span class="badge-idx">#37</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-10263</div>
+                <div class="title">TORTAS DE TRIGO SARRACENO 100gr EL GRANE 100gr</div>
+                <div class="footer">
+                    <span>100gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="copos de maiz tostados 400gr el granero 400gr el granero integral erp-4083">
+            <div class="img-wrap">
+                <img src="/fotos/c-4083.jpg" alt="COPOS DE MAIZ TOSTADOS 400gr EL GRANERO 400gr" loading="lazy" />
+                <span class="badge-idx">#38</span>
+                <span class="badge-brand">El Granero Integra</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-4083</div>
+                <div class="title">COPOS DE MAIZ TOSTADOS 400gr EL GRANERO 400gr</div>
+                <div class="footer">
+                    <span>Eco</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="muesli cereales integrales 1k el granero formato estándar el granero integral erp-4216">
+            <div class="img-wrap">
+                <img src="/fotos/c-4216.jpg" alt="MUESLI CEREALES INTEGRALES 1K EL GRANERO Formato estándar" loading="lazy" />
+                <span class="badge-idx">#39</span>
+                <span class="badge-brand">El Granero Integra</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-4216</div>
+                <div class="title">MUESLI CEREALES INTEGRALES 1K EL GRANERO Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="muesli original 1k el granero formato estándar el granero integral erp-4203">
+            <div class="img-wrap">
+                <img src="/fotos/c-4203.jpg" alt="MUESLI ORIGINAL 1K EL GRANERO Formato estándar" loading="lazy" />
+                <span class="badge-idx">#40</span>
+                <span class="badge-brand">El Granero Integra</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-4203</div>
+                <div class="title">MUESLI ORIGINAL 1K EL GRANERO Formato estándar</div>
+                <div class="footer">
+                    <span>Eco</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="copos espelta integral bio 250gr granero 250gr el granero integral erp-4025">
+            <div class="img-wrap">
+                <img src="/fotos/c-4025.jpg" alt="COPOS ESPELTA INTEGRAL BIO 250gr GRANERO 250gr" loading="lazy" />
+                <span class="badge-idx">#41</span>
+                <span class="badge-brand">El Granero Integra</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-4025</div>
+                <div class="title">COPOS ESPELTA INTEGRAL BIO 250gr GRANERO 250gr</div>
+                <div class="footer">
+                    <span>250gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="levadura de cerveza bio granero formato estándar el granero integral erp-10032">
+            <div class="img-wrap">
+                <img src="/fotos/c-10032.jpg" alt="LEVADURA DE CERVEZA BIO GRANERO Formato estándar" loading="lazy" />
+                <span class="badge-idx">#42</span>
+                <span class="badge-brand">El Granero Integra</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-10032</div>
+                <div class="title">LEVADURA DE CERVEZA BIO GRANERO Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="muesli con chocolate sin gluten formato estándar general / multimarca erp-4217">
+            <div class="img-wrap">
+                <img src="/fotos/c-4217.jpg" alt="MUESLI CON CHOCOLATE SIN GLUTEN Formato estándar" loading="lazy" />
+                <span class="badge-idx">#43</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-4217</div>
+                <div class="title">MUESLI CON CHOCOLATE SIN GLUTEN Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="muesli crujiente con frutos rojos el gra formato estándar general / multimarca erp-4072">
+            <div class="img-wrap">
+                <img src="/fotos/c-4072.jpg" alt="MUESLI CRUJIENTE CON FRUTOS ROJOS EL GRA Formato estándar" loading="lazy" />
+                <span class="badge-idx">#44</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-4072</div>
+                <div class="title">MUESLI CRUJIENTE CON FRUTOS ROJOS EL GRA Formato estándar</div>
+                <div class="footer">
+                    <span>Eco</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="muesli frutos rojos sin gluten formato estándar general / multimarca erp-4218">
+            <div class="img-wrap">
+                <img src="/fotos/c-4218.jpg" alt="MUESLI FRUTOS ROJOS SIN GLUTEN Formato estándar" loading="lazy" />
+                <span class="badge-idx">#45</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-4218</div>
+                <div class="title">MUESLI FRUTOS ROJOS SIN GLUTEN Formato estándar</div>
+                <div class="footer">
+                    <span>Eco</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="muesli frutas bio 500gr granero 500gr el granero integral erp-4016">
+            <div class="img-wrap">
+                <img src="/fotos/c-4016.jpg" alt="MUESLI FRUTAS BIO 500gr GRANERO 500gr" loading="lazy" />
+                <span class="badge-idx">#46</span>
+                <span class="badge-brand">El Granero Integra</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-4016</div>
+                <div class="title">MUESLI FRUTAS BIO 500gr GRANERO 500gr</div>
+                <div class="footer">
+                    <span>Eco</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="alcaparras 100gr campomar 100gr general / multimarca erp-7285">
+            <div class="img-wrap">
+                <img src="/fotos/c-7285.jpg" alt="ALCAPARRAS 100gr CAMPOMAR 100gr" loading="lazy" />
+                <span class="badge-idx">#47</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-7285</div>
+                <div class="title">ALCAPARRAS 100gr CAMPOMAR 100gr</div>
+                <div class="footer">
+                    <span>100gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="bulgur bio 500gr granero 500gr el granero integral erp-4033">
+            <div class="img-wrap">
+                <img src="/fotos/c-4033.jpg" alt="BULGUR BIO 500gr GRANERO 500gr" loading="lazy" />
+                <span class="badge-idx">#48</span>
+                <span class="badge-brand">El Granero Integra</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-4033</div>
+                <div class="title">BULGUR BIO 500gr GRANERO 500gr</div>
+                <div class="footer">
+                    <span>500gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="leche solar niños 30 alphanova sun formato estándar general / multimarca erp-15157">
+            <div class="img-wrap">
+                <img src="/fotos/c-15157.jpg" alt="LECHE SOLAR NIÑOS 30 ALPHANOVA SUN Formato estándar" loading="lazy" />
+                <span class="badge-idx">#49</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-15157</div>
+                <div class="title">LECHE SOLAR NIÑOS 30 ALPHANOVA SUN Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="vinagre de vino blanco 250ml el granero 250ml el granero integral erp-2114">
+            <div class="img-wrap">
+                <img src="/fotos/c-2114.jpg" alt="VINAGRE DE VINO BLANCO 250ml EL GRANERO 250ml" loading="lazy" />
+                <span class="badge-idx">#50</span>
+                <span class="badge-brand">El Granero Integra</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-2114</div>
+                <div class="title">VINAGRE DE VINO BLANCO 250ml EL GRANERO 250ml</div>
+                <div class="footer">
+                    <span>250ml</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="zumo de naranja 100% 750ml jugoso 750ml general / multimarca erp-5013">
+            <div class="img-wrap">
+                <img src="/fotos/c-5013.jpg" alt="ZUMO DE NARANJA 100% 750ML JUGOSO 750ml" loading="lazy" />
+                <span class="badge-idx">#51</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-5013</div>
+                <div class="title">ZUMO DE NARANJA 100% 750ML JUGOSO 750ml</div>
+                <div class="footer">
+                    <span>750ml</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="acai en polvo 70gr 70gr drasanvi erp-23188">
+            <div class="img-wrap">
+                <img src="/fotos/c-23188.jpg" alt="ACAI EN POLVO 70gr 70gr" loading="lazy" />
+                <span class="badge-idx">#52</span>
+                <span class="badge-brand">Drasanvi</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-23188</div>
+                <div class="title">ACAI EN POLVO 70gr 70gr</div>
+                <div class="footer">
+                    <span>Eco</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="azucar de coco 300gr 300gr drasanvi erp-23165">
+            <div class="img-wrap">
+                <img src="/fotos/c-23165.jpg" alt="AZUCAR DE COCO 300gr 300gr" loading="lazy" />
+                <span class="badge-idx">#53</span>
+                <span class="badge-brand">Drasanvi</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-23165</div>
+                <div class="title">AZUCAR DE COCO 300gr 300gr</div>
+                <div class="footer">
+                    <span>300gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="azucar de coco 500gr 500gr drasanvi erp-8117">
+            <div class="img-wrap">
+                <img src="/fotos/c-8117.jpg" alt="AZUCAR DE COCO 500gr 500gr" loading="lazy" />
+                <span class="badge-idx">#54</span>
+                <span class="badge-brand">Drasanvi</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-8117</div>
+                <div class="title">AZUCAR DE COCO 500gr 500gr</div>
+                <div class="footer">
+                    <span>500gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="acai en polvo 70gr 70gr iswari erp-23148">
+            <div class="img-wrap">
+                <img src="/fotos/c-23148.jpg" alt="ACAI EN POLVO 70gr 70gr" loading="lazy" />
+                <span class="badge-idx">#55</span>
+                <span class="badge-brand">Iswari</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-23148</div>
+                <div class="title">ACAI EN POLVO 70gr 70gr</div>
+                <div class="footer">
+                    <span>Eco</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="alga chlorella 125gr 125gr iswari erp-23117">
+            <div class="img-wrap">
+                <img src="/fotos/c-23117.jpg" alt="ALGA CHLORELLA 125gr 125gr" loading="lazy" />
+                <span class="badge-idx">#56</span>
+                <span class="badge-brand">Iswari</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-23117</div>
+                <div class="title">ALGA CHLORELLA 125gr 125gr</div>
+                <div class="footer">
+                    <span>Eco</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="lentejas al natural 660gr 660gr gumendi erp-7207">
+            <div class="img-wrap">
+                <img src="/fotos/c-7207.jpg" alt="LENTEJAS AL NATURAL 660gr 660gr" loading="lazy" />
+                <span class="badge-idx">#57</span>
+                <span class="badge-brand">Gumendi</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-7207</div>
+                <div class="title">LENTEJAS AL NATURAL 660gr 660gr</div>
+                <div class="footer">
+                    <span>Eco</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="lentejas con verduras 720gr 720gr gumendi erp-7364">
+            <div class="img-wrap">
+                <img src="/fotos/c-7364.jpg" alt="LENTEJAS CON VERDURAS 720gr 720gr" loading="lazy" />
+                <span class="badge-idx">#58</span>
+                <span class="badge-brand">Gumendi</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-7364</div>
+                <div class="title">LENTEJAS CON VERDURAS 720gr 720gr</div>
+                <div class="footer">
+                    <span>Eco</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="salsa de soja tamari 250ml 250ml ecosana erp-14197">
+            <div class="img-wrap">
+                <img src="/fotos/c-14197.jpg" alt="SALSA DE SOJA TAMARI 250ml 250ml" loading="lazy" />
+                <span class="badge-idx">#59</span>
+                <span class="badge-brand">Ecosana</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-14197</div>
+                <div class="title">SALSA DE SOJA TAMARI 250ml 250ml</div>
+                <div class="footer">
+                    <span>Eco</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="salsa de soja tamari 250ml 250ml naturgreen erp-7192">
+            <div class="img-wrap">
+                <img src="/fotos/c-7192.jpg" alt="SALSA DE SOJA TAMARI 250ml 250ml" loading="lazy" />
+                <span class="badge-idx">#60</span>
+                <span class="badge-brand">NaturGreen</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-7192</div>
+                <div class="title">SALSA DE SOJA TAMARI 250ml 250ml</div>
+                <div class="footer">
+                    <span>Eco</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="aceite de oliva virgen extra 1l la castr 1l general / multimarca erp-2143">
+            <div class="img-wrap">
+                <img src="/fotos/c-2143.jpg" alt="ACEITE DE OLIVA VIRGEN EXTRA 1L LA CASTR 1l" loading="lazy" />
+                <span class="badge-idx">#61</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-2143</div>
+                <div class="title">ACEITE DE OLIVA VIRGEN EXTRA 1L LA CASTR 1l</div>
+                <div class="footer">
+                    <span>1l</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="aceite virgen de lino 250ml 250ml naturgreen erp-2024">
+            <div class="img-wrap">
+                <img src="/fotos/c-2024.jpg" alt="ACEITE VIRGEN DE LINO 250ml 250ml" loading="lazy" />
+                <span class="badge-idx">#62</span>
+                <span class="badge-brand">NaturGreen</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-2024</div>
+                <div class="title">ACEITE VIRGEN DE LINO 250ml 250ml</div>
+                <div class="footer">
+                    <span>250ml</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="aceite de aguacate 250ml young phorever 250ml general / multimarca erp-2071">
+            <div class="img-wrap">
+                <img src="/fotos/c-2071.jpg" alt="ACEITE DE AGUACATE 250ml YOUNG PHOREVER 250ml" loading="lazy" />
+                <span class="badge-idx">#63</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-2071</div>
+                <div class="title">ACEITE DE AGUACATE 250ml YOUNG PHOREVER 250ml</div>
+                <div class="footer">
+                    <span>250ml</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="aceite de almendras 250ml 250ml naturgreen erp-2123">
+            <div class="img-wrap">
+                <img src="/fotos/c-2123.jpg" alt="ACEITE DE ALMENDRAS 250ml 250ml" loading="lazy" />
+                <span class="badge-idx">#64</span>
+                <span class="badge-brand">NaturGreen</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-2123</div>
+                <div class="title">ACEITE DE ALMENDRAS 250ml 250ml</div>
+                <div class="footer">
+                    <span>250ml</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="aceite de cañamo 500ml 500ml naturgreen erp-2065">
+            <div class="img-wrap">
+                <img src="/fotos/c-2065.jpg" alt="ACEITE DE CAÑAMO 500ml 500ml" loading="lazy" />
+                <span class="badge-idx">#65</span>
+                <span class="badge-brand">NaturGreen</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-2065</div>
+                <div class="title">ACEITE DE CAÑAMO 500ml 500ml</div>
+                <div class="footer">
+                    <span>500ml</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="aceite girasol 250ml 250ml naturgreen erp-2018">
+            <div class="img-wrap">
+                <img src="/fotos/c-2018.jpg" alt="ACEITE GIRASOL 250ml 250ml" loading="lazy" />
+                <span class="badge-idx">#66</span>
+                <span class="badge-brand">NaturGreen</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-2018</div>
+                <div class="title">ACEITE GIRASOL 250ml 250ml</div>
+                <div class="footer">
+                    <span>250ml</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="aceite girasol 500ml 500ml naturgreen erp-2019">
+            <div class="img-wrap">
+                <img src="/fotos/c-2019.jpg" alt="ACEITE GIRASOL 500ml 500ml" loading="lazy" />
+                <span class="badge-idx">#67</span>
+                <span class="badge-brand">NaturGreen</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-2019</div>
+                <div class="title">ACEITE GIRASOL 500ml 500ml</div>
+                <div class="footer">
+                    <span>500ml</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="aceite oliva picual 500ml 500ml naturgreen erp-2048">
+            <div class="img-wrap">
+                <img src="/fotos/c-2048.jpg" alt="ACEITE OLIVA PICUAL 500ml 500ml" loading="lazy" />
+                <span class="badge-idx">#68</span>
+                <span class="badge-brand">NaturGreen</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-2048</div>
+                <div class="title">ACEITE OLIVA PICUAL 500ml 500ml</div>
+                <div class="footer">
+                    <span>500ml</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="aceite semilla de calabaza 250ml \ general / multimarca erp-2032">
+            <div class="img-wrap">
+                <img src="/fotos/c-2032.jpg" alt="ACEITE SEMILLA DE CALABAZA 250ml \" loading="lazy" />
+                <span class="badge-idx">#69</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-2032</div>
+                <div class="title">ACEITE SEMILLA DE CALABAZA 250ml \</div>
+                <div class="footer">
+                    <span>250ml</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="aceite semilla de calabaza 500ml \ general / multimarca erp-2026">
+            <div class="img-wrap">
+                <img src="/fotos/c-2026.jpg" alt="ACEITE SEMILLA DE CALABAZA 500ml \" loading="lazy" />
+                <span class="badge-idx">#70</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-2026</div>
+                <div class="title">ACEITE SEMILLA DE CALABAZA 500ml \</div>
+                <div class="footer">
+                    <span>500ml</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="aceite sesamo 500ml \ general / multimarca erp-2028">
+            <div class="img-wrap">
+                <img src="/fotos/c-2028.jpg" alt="ACEITE SESAMO 500ml \" loading="lazy" />
+                <span class="badge-idx">#71</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-2028</div>
+                <div class="title">ACEITE SESAMO 500ml \</div>
+                <div class="footer">
+                    <span>500ml</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="agua de mar del océano atlántico 1l alga 1l general / multimarca erp-5072">
+            <div class="img-wrap">
+                <img src="/fotos/c-5072.jpg" alt="AGUA DE MAR DEL OCÉANO ATLÁNTICO 1L ALGA 1l" loading="lazy" />
+                <span class="badge-idx">#72</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-5072</div>
+                <div class="title">AGUA DE MAR DEL OCÉANO ATLÁNTICO 1L ALGA 1l</div>
+                <div class="footer">
+                    <span>Eco</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="miel 1k formato estándar ecoflor erp-21017">
+            <div class="img-wrap">
+                <img src="/fotos/c-21017.jpg" alt="MIEL 1K Formato estándar" loading="lazy" />
+                <span class="badge-idx">#73</span>
+                <span class="badge-brand">Ecoflor</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-21017</div>
+                <div class="title">MIEL 1K Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="miel 500gr 500gr ecoflor erp-21018">
+            <div class="img-wrap">
+                <img src="/fotos/c-21018.jpg" alt="MIEL 500GR 500gr" loading="lazy" />
+                <span class="badge-idx">#74</span>
+                <span class="badge-brand">Ecoflor</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-21018</div>
+                <div class="title">MIEL 500GR 500gr</div>
+                <div class="footer">
+                    <span>500gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="miel de eucalipto 1k formato estándar ecoflor erp-13073">
+            <div class="img-wrap">
+                <img src="/fotos/c-13073.jpg" alt="MIEL DE EUCALIPTO 1K Formato estándar" loading="lazy" />
+                <span class="badge-idx">#75</span>
+                <span class="badge-brand">Ecoflor</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-13073</div>
+                <div class="title">MIEL DE EUCALIPTO 1K Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="miel de eucalipto 500gr 500gr ecoflor erp-13077">
+            <div class="img-wrap">
+                <img src="/fotos/c-13077.jpg" alt="MIEL DE EUCALIPTO 500gr 500gr" loading="lazy" />
+                <span class="badge-idx">#76</span>
+                <span class="badge-brand">Ecoflor</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-13077</div>
+                <div class="title">MIEL DE EUCALIPTO 500gr 500gr</div>
+                <div class="footer">
+                    <span>500gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="semillas de cañamo peladas a granel formato estándar general / multimarca erp-25071">
+            <div class="img-wrap">
+                <img src="/fotos/c-25071.jpg" alt="SEMILLAS DE CAÑAMO PELADAS A GRANEL Formato estándar" loading="lazy" />
+                <span class="badge-idx">#77</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-25071</div>
+                <div class="title">SEMILLAS DE CAÑAMO PELADAS A GRANEL Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="zumo de melocoton y uva 750ml enara 750ml general / multimarca erp-5038">
+            <div class="img-wrap">
+                <img src="/fotos/c-5038.jpg" alt="ZUMO DE MELOCOTON Y UVA 750ML ENARA 750ml" loading="lazy" />
+                <span class="badge-idx">#78</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-5038</div>
+                <div class="title">ZUMO DE MELOCOTON Y UVA 750ML ENARA 750ml</div>
+                <div class="footer">
+                    <span>750ml</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="zumo mandarina 750ml enara 750ml general / multimarca erp-5017">
+            <div class="img-wrap">
+                <img src="/fotos/c-5017.jpg" alt="ZUMO MANDARINA 750ml ENARA 750ml" loading="lazy" />
+                <span class="badge-idx">#79</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-5017</div>
+                <div class="title">ZUMO MANDARINA 750ml ENARA 750ml</div>
+                <div class="footer">
+                    <span>750ml</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="salsa de soja tamari fuerte 500ml lima 500ml lima bio erp-7351">
+            <div class="img-wrap">
+                <img src="/fotos/c-7351.jpg" alt="SALSA DE SOJA TAMARI FUERTE 500ml LIMA 500ml" loading="lazy" />
+                <span class="badge-idx">#80</span>
+                <span class="badge-brand">Lima Bio</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-7351</div>
+                <div class="title">SALSA DE SOJA TAMARI FUERTE 500ml LIMA 500ml</div>
+                <div class="footer">
+                    <span>Eco</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="tamari strong 0,25l lima 0,25l lima bio erp-14069">
+            <div class="img-wrap">
+                <img src="/fotos/c-14069.jpg" alt="TAMARI STRONG 0,25L LIMA 0,25l" loading="lazy" />
+                <span class="badge-idx">#81</span>
+                <span class="badge-brand">Lima Bio</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-14069</div>
+                <div class="title">TAMARI STRONG 0,25L LIMA 0,25l</div>
+                <div class="footer">
+                    <span>Eco</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="tamari strong 1l lima 1l lima bio erp-14059">
+            <div class="img-wrap">
+                <img src="/fotos/c-14059.jpg" alt="TAMARI STRONG 1L LIMA 1l" loading="lazy" />
+                <span class="badge-idx">#82</span>
+                <span class="badge-brand">Lima Bio</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-14059</div>
+                <div class="title">TAMARI STRONG 1L LIMA 1l</div>
+                <div class="footer">
+                    <span>Eco</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="aceite de girasol 2l bibesol 2l general / multimarca erp-2064">
+            <div class="img-wrap">
+                <img src="/fotos/c-2064.jpg" alt="ACEITE DE GIRASOL 2L BIBESOL 2l" loading="lazy" />
+                <span class="badge-idx">#83</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-2064</div>
+                <div class="title">ACEITE DE GIRASOL 2L BIBESOL 2l</div>
+                <div class="footer">
+                    <span>Eco</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="ajo granulado especias 48gr artemis 48gr artemis bio erp-3014">
+            <div class="img-wrap">
+                <img src="/fotos/c-3014.jpg" alt="AJO GRANULADO ESPECIAS 48gr ARTEMIS 48gr" loading="lazy" />
+                <span class="badge-idx">#84</span>
+                <span class="badge-brand">Artemis Bio</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3014</div>
+                <div class="title">AJO GRANULADO ESPECIAS 48gr ARTEMIS 48gr</div>
+                <div class="footer">
+                    <span>48gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="pimenton picante 1k formato estándar biospirit erp-3142">
+            <div class="img-wrap">
+                <img src="/fotos/c-3142.jpg" alt="PIMENTON PICANTE 1K Formato estándar" loading="lazy" />
+                <span class="badge-idx">#85</span>
+                <span class="badge-brand">BioSpirit</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3142</div>
+                <div class="title">PIMENTON PICANTE 1K Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="pimienta negra a granel herbes del moli formato estándar herbes del molí erp-25053">
+            <div class="img-wrap">
+                <img src="/fotos/c-25053.jpg" alt="PIMIENTA NEGRA A GRANEL HERBES DEL MOLI Formato estándar" loading="lazy" />
+                <span class="badge-idx">#86</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-25053</div>
+                <div class="title">PIMIENTA NEGRA A GRANEL HERBES DEL MOLI Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="aceite de oliva virgen 2l biobadlands 2l general / multimarca erp-2141">
+            <div class="img-wrap">
+                <img src="/fotos/c-2141.jpg" alt="ACEITE DE OLIVA VIRGEN 2L BIOBADLANDS 2l" loading="lazy" />
+                <span class="badge-idx">#87</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-2141</div>
+                <div class="title">ACEITE DE OLIVA VIRGEN 2L BIOBADLANDS 2l</div>
+                <div class="footer">
+                    <span>Eco</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="aceite oliva virgen \ el granero integral erp-2051">
+            <div class="img-wrap">
+                <img src="/fotos/c-2051.jpg" alt="ACEITE OLIVA VIRGEN \" loading="lazy" />
+                <span class="badge-idx">#88</span>
+                <span class="badge-brand">El Granero Integra</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-2051</div>
+                <div class="title">ACEITE OLIVA VIRGEN \</div>
+                <div class="footer">
+                    <span>750ml</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="aceite balsamico de modena 250ml 250ml general / multimarca erp-2015">
+            <div class="img-wrap">
+                <img src="/fotos/c-2015.jpg" alt="ACEITE BALSAMICO DE MODENA 250ml 250ml" loading="lazy" />
+                <span class="badge-idx">#89</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-2015</div>
+                <div class="title">ACEITE BALSAMICO DE MODENA 250ml 250ml</div>
+                <div class="footer">
+                    <span>250ml</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="vinagre de manzana 750ml demeter 750ml general / multimarca erp-2130">
+            <div class="img-wrap">
+                <img src="/fotos/c-2130.jpg" alt="VINAGRE DE MANZANA 750ml DEMETER 750ml" loading="lazy" />
+                <span class="badge-idx">#90</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-2130</div>
+                <div class="title">VINAGRE DE MANZANA 750ml DEMETER 750ml</div>
+                <div class="footer">
+                    <span>750ml</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="vinagre de manzana ecologico 750ml ecosn 750ml general / multimarca erp-2009">
+            <div class="img-wrap">
+                <img src="/fotos/c-2009.jpg" alt="VINAGRE DE MANZANA ECOLOGICO 750ml ECOSN 750ml" loading="lazy" />
+                <span class="badge-idx">#91</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-2009</div>
+                <div class="title">VINAGRE DE MANZANA ECOLOGICO 750ml ECOSN 750ml</div>
+                <div class="footer">
+                    <span>750ml</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="vino viña placentina formato estándar general / multimarca erp-17060">
+            <div class="img-wrap">
+                <img src="/fotos/c-17060.jpg" alt="VINO VIÑA PLACENTINA Formato estándar" loading="lazy" />
+                <span class="badge-idx">#92</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-17060</div>
+                <div class="title">VINO VIÑA PLACENTINA Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="zumo de manzana 750ml jugoso 750ml general / multimarca erp-5053">
+            <div class="img-wrap">
+                <img src="/fotos/c-5053.jpg" alt="ZUMO DE MANZANA 750ml JUGOSO 750ml" loading="lazy" />
+                <span class="badge-idx">#93</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-5053</div>
+                <div class="title">ZUMO DE MANZANA 750ml JUGOSO 750ml</div>
+                <div class="footer">
+                    <span>750ml</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="aceite esencial de cipres 10ml naturkiva 10ml general / multimarca erp-15207">
+            <div class="img-wrap">
+                <img src="/fotos/c-15207.jpg" alt="ACEITE ESENCIAL DE CIPRES 10ml NATURKIVA 10ml" loading="lazy" />
+                <span class="badge-idx">#94</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-15207</div>
+                <div class="title">ACEITE ESENCIAL DE CIPRES 10ml NATURKIVA 10ml</div>
+                <div class="footer">
+                    <span>10ml</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="aceite esencial de geranio 10ml naturkiv 10ml general / multimarca erp-15208">
+            <div class="img-wrap">
+                <img src="/fotos/c-15208.jpg" alt="ACEITE ESENCIAL DE GERANIO 10ml NATURKIV 10ml" loading="lazy" />
+                <span class="badge-idx">#95</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-15208</div>
+                <div class="title">ACEITE ESENCIAL DE GERANIO 10ml NATURKIV 10ml</div>
+                <div class="footer">
+                    <span>10ml</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="aceite esencial de citronela 10ml physal 10ml general / multimarca erp-15209">
+            <div class="img-wrap">
+                <img src="/fotos/c-15209.jpg" alt="ACEITE ESENCIAL DE CITRONELA 10ml PHYSAL 10ml" loading="lazy" />
+                <span class="badge-idx">#96</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-15209</div>
+                <div class="title">ACEITE ESENCIAL DE CITRONELA 10ml PHYSAL 10ml</div>
+                <div class="footer">
+                    <span>10ml</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="aceite esencial de limon 10ml physalis 10ml general / multimarca erp-15206">
+            <div class="img-wrap">
+                <img src="/fotos/c-15206.jpg" alt="ACEITE ESENCIAL DE LIMON 10ml PHYSALIS 10ml" loading="lazy" />
+                <span class="badge-idx">#97</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-15206</div>
+                <div class="title">ACEITE ESENCIAL DE LIMON 10ml PHYSALIS 10ml</div>
+                <div class="footer">
+                    <span>10ml</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="albahaca 20gr herbes del moli 20gr herbes del molí erp-3146">
+            <div class="img-wrap">
+                <img src="/fotos/c-3146.jpg" alt="ALBAHACA 20gr HERBES DEL MOLI 20gr" loading="lazy" />
+                <span class="badge-idx">#98</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3146</div>
+                <div class="title">ALBAHACA 20gr HERBES DEL MOLI 20gr</div>
+                <div class="footer">
+                    <span>20gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="cayena especia 20gr bio artemis 20gr artemis bio erp-3018">
+            <div class="img-wrap">
+                <img src="/fotos/c-3018.jpg" alt="CAYENA ESPECIA 20gr BIO ARTEMIS 20gr" loading="lazy" />
+                <span class="badge-idx">#99</span>
+                <span class="badge-brand">Artemis Bio</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3018</div>
+                <div class="title">CAYENA ESPECIA 20gr BIO ARTEMIS 20gr</div>
+                <div class="footer">
+                    <span>20gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="cebolla 45 gr artemis 45 gr artemis bio erp-3163">
+            <div class="img-wrap">
+                <img src="/fotos/c-3163.jpg" alt="CEBOLLA 45 GR ARTEMIS 45 gr" loading="lazy" />
+                <span class="badge-idx">#100</span>
+                <span class="badge-brand">Artemis Bio</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3163</div>
+                <div class="title">CEBOLLA 45 GR ARTEMIS 45 gr</div>
+                <div class="footer">
+                    <span>45 gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="cilantro 60gr herbes del moli 60gr herbes del molí erp-3167">
+            <div class="img-wrap">
+                <img src="/fotos/c-3167.jpg" alt="CILANTRO 60gr HERBES DEL MOLI 60gr" loading="lazy" />
+                <span class="badge-idx">#101</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3167</div>
+                <div class="title">CILANTRO 60gr HERBES DEL MOLI 60gr</div>
+                <div class="footer">
+                    <span>60gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="eneldo 30gr herbes del moli 30gr herbes del molí erp-3199">
+            <div class="img-wrap">
+                <img src="/fotos/c-3199.jpg" alt="ENELDO 30gr HERBES DEL MOLI 30gr" loading="lazy" />
+                <span class="badge-idx">#102</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3199</div>
+                <div class="title">ENELDO 30gr HERBES DEL MOLI 30gr</div>
+                <div class="footer">
+                    <span>30gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="mezcla de 4 pimientas especias 45gr 45gr general / multimarca erp-3076">
+            <div class="img-wrap">
+                <img src="/fotos/c-3076.jpg" alt="MEZCLA DE 4 PIMIENTAS ESPECIAS 45gr 45gr" loading="lazy" />
+                <span class="badge-idx">#103</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3076</div>
+                <div class="title">MEZCLA DE 4 PIMIENTAS ESPECIAS 45gr 45gr</div>
+                <div class="footer">
+                    <span>45gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="nuez moscada especias bio 25gr artemis 25gr artemis bio erp-3006">
+            <div class="img-wrap">
+                <img src="/fotos/c-3006.jpg" alt="NUEZ MOSCADA ESPECIAS BIO 25gr ARTEMIS 25gr" loading="lazy" />
+                <span class="badge-idx">#104</span>
+                <span class="badge-brand">Artemis Bio</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3006</div>
+                <div class="title">NUEZ MOSCADA ESPECIAS BIO 25gr ARTEMIS 25gr</div>
+                <div class="footer">
+                    <span>25gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="oregano 30gr \ herbes del molí erp-3109">
+            <div class="img-wrap">
+                <img src="/fotos/c-3109.jpg" alt="OREGANO 30gr \" loading="lazy" />
+                <span class="badge-idx">#105</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3109</div>
+                <div class="title">OREGANO 30gr \</div>
+                <div class="footer">
+                    <span>30gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="romero herbes del moli formato estándar herbes del molí erp-3094">
+            <div class="img-wrap">
+                <img src="/fotos/c-3094.jpg" alt="ROMERO HERBES DEL MOLI Formato estándar" loading="lazy" />
+                <span class="badge-idx">#106</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3094</div>
+                <div class="title">ROMERO HERBES DEL MOLI Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="salvia 35gr \ herbes del molí erp-3103">
+            <div class="img-wrap">
+                <img src="/fotos/c-3103.jpg" alt="SALVIA 35gr \" loading="lazy" />
+                <span class="badge-idx">#107</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3103</div>
+                <div class="title">SALVIA 35gr \</div>
+                <div class="footer">
+                    <span>35gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="alcachofera 30gr herbes del moli 30gr herbes del molí erp-3212">
+            <div class="img-wrap">
+                <img src="/fotos/c-3212.jpg" alt="ALCACHOFERA 30gr HERBES DEL MOLI 30gr" loading="lazy" />
+                <span class="badge-idx">#108</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3212</div>
+                <div class="title">ALCACHOFERA 30gr HERBES DEL MOLI 30gr</div>
+                <div class="footer">
+                    <span>30gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="anis estrellado 60gr \ herbes del molí erp-3107">
+            <div class="img-wrap">
+                <img src="/fotos/c-3107.jpg" alt="ANIS ESTRELLADO 60gr \" loading="lazy" />
+                <span class="badge-idx">#109</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3107</div>
+                <div class="title">ANIS ESTRELLADO 60gr \</div>
+                <div class="footer">
+                    <span>60gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="artemisa 45 gr herbes del moli 45 gr herbes del molí erp-3191">
+            <div class="img-wrap">
+                <img src="/fotos/c-3191.jpg" alt="ARTEMISA 45 gr HERBES DEL MOLI 45 gr" loading="lazy" />
+                <span class="badge-idx">#110</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3191</div>
+                <div class="title">ARTEMISA 45 gr HERBES DEL MOLI 45 gr</div>
+                <div class="footer">
+                    <span>45 gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="cardo mariano 100gr \ herbes del molí erp-3102">
+            <div class="img-wrap">
+                <img src="/fotos/c-3102.jpg" alt="CARDO MARIANO 100gr \" loading="lazy" />
+                <span class="badge-idx">#111</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3102</div>
+                <div class="title">CARDO MARIANO 100gr \</div>
+                <div class="footer">
+                    <span>100gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="hierba luisa 15gr herbes del moli 15gr herbes del molí erp-3152">
+            <div class="img-wrap">
+                <img src="/fotos/c-3152.jpg" alt="HIERBA LUISA 15gr HERBES DEL MOLI 15gr" loading="lazy" />
+                <span class="badge-idx">#112</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3152</div>
+                <div class="title">HIERBA LUISA 15gr HERBES DEL MOLI 15gr</div>
+                <div class="footer">
+                    <span>15gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="te verde 70gr \ herbes del molí erp-3108">
+            <div class="img-wrap">
+                <img src="/fotos/c-3108.jpg" alt="TE VERDE 70gr \" loading="lazy" />
+                <span class="badge-idx">#113</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3108</div>
+                <div class="title">TE VERDE 70gr \</div>
+                <div class="footer">
+                    <span>70gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="te verde granel herbes del moli formato estándar herbes del molí erp-25040">
+            <div class="img-wrap">
+                <img src="/fotos/c-25040.jpg" alt="TE VERDE GRANEL HERBES DEL MOLI Formato estándar" loading="lazy" />
+                <span class="badge-idx">#114</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-25040</div>
+                <div class="title">TE VERDE GRANEL HERBES DEL MOLI Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="anís estrellado formato estándar general / multimarca nuevo-454">
+            <div class="img-wrap">
+                <img src="/fotos/c-454.jpg" alt="Anís Estrellado Formato estándar" loading="lazy" />
+                <span class="badge-idx">#115</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">nuevo-454</div>
+                <div class="title">Anís Estrellado Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="alcaravea 90gr herbes del moli 90gr herbes del molí erp-3220">
+            <div class="img-wrap">
+                <img src="/fotos/c-3220.jpg" alt="ALCARAVEA 90gr HERBES DEL MOLI 90gr" loading="lazy" />
+                <span class="badge-idx">#116</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3220</div>
+                <div class="title">ALCARAVEA 90gr HERBES DEL MOLI 90gr</div>
+                <div class="footer">
+                    <span>90gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="alfalfa 45gr herbes del moli 45gr herbes del molí erp-3183">
+            <div class="img-wrap">
+                <img src="/fotos/c-3183.jpg" alt="ALFALFA 45gr HERBES DEL MOLI 45gr" loading="lazy" />
+                <span class="badge-idx">#117</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3183</div>
+                <div class="title">ALFALFA 45gr HERBES DEL MOLI 45gr</div>
+                <div class="footer">
+                    <span>45gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="amapola 20gr herbes del moli 20gr herbes del molí erp-3203">
+            <div class="img-wrap">
+                <img src="/fotos/c-3203.jpg" alt="AMAPOLA 20gr HERBES DEL MOLI 20gr" loading="lazy" />
+                <span class="badge-idx">#118</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3203</div>
+                <div class="title">AMAPOLA 20gr HERBES DEL MOLI 20gr</div>
+                <div class="footer">
+                    <span>20gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="anis verde herbes del moli formato estándar herbes del molí erp-3089">
+            <div class="img-wrap">
+                <img src="/fotos/c-3089.jpg" alt="ANIS VERDE HERBES DEL MOLI Formato estándar" loading="lazy" />
+                <span class="badge-idx">#119</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3089</div>
+                <div class="title">ANIS VERDE HERBES DEL MOLI Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="azahar 35gr herbes del moli 35gr herbes del molí erp-3227">
+            <div class="img-wrap">
+                <img src="/fotos/c-3227.jpg" alt="AZAHAR 35gr HERBES DEL MOLI 35gr" loading="lazy" />
+                <span class="badge-idx">#120</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3227</div>
+                <div class="title">AZAHAR 35gr HERBES DEL MOLI 35gr</div>
+                <div class="footer">
+                    <span>35gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="boldo 35gr herbes del moli 35gr herbes del molí erp-3147">
+            <div class="img-wrap">
+                <img src="/fotos/c-3147.jpg" alt="BOLDO 35gr HERBES DEL MOLI 35gr" loading="lazy" />
+                <span class="badge-idx">#121</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3147</div>
+                <div class="title">BOLDO 35gr HERBES DEL MOLI 35gr</div>
+                <div class="footer">
+                    <span>35gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="borraja 40gr herbes del moli 40gr herbes del molí erp-3170">
+            <div class="img-wrap">
+                <img src="/fotos/c-3170.jpg" alt="BORRAJA 40gr HERBES DEL MOLI 40gr" loading="lazy" />
+                <span class="badge-idx">#122</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3170</div>
+                <div class="title">BORRAJA 40gr HERBES DEL MOLI 40gr</div>
+                <div class="footer">
+                    <span>40gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="brezo 50gr herbes del moli 50gr herbes del molí erp-3129">
+            <div class="img-wrap">
+                <img src="/fotos/c-3129.jpg" alt="BREZO 50gr HERBES DEL MOLI 50gr" loading="lazy" />
+                <span class="badge-idx">#123</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3129</div>
+                <div class="title">BREZO 50gr HERBES DEL MOLI 50gr</div>
+                <div class="footer">
+                    <span>50gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="calendula flor 15gr herbes del moli 15gr herbes del molí erp-3205">
+            <div class="img-wrap">
+                <img src="/fotos/c-3205.jpg" alt="CALENDULA FLOR 15gr HERBES DEL MOLI 15gr" loading="lazy" />
+                <span class="badge-idx">#124</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3205</div>
+                <div class="title">CALENDULA FLOR 15gr HERBES DEL MOLI 15gr</div>
+                <div class="footer">
+                    <span>15gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="cola de caballo 30gr \ herbes del molí erp-3118">
+            <div class="img-wrap">
+                <img src="/fotos/c-3118.jpg" alt="COLA DE CABALLO 30gr \" loading="lazy" />
+                <span class="badge-idx">#125</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3118</div>
+                <div class="title">COLA DE CABALLO 30gr \</div>
+                <div class="footer">
+                    <span>30gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="comino 100gr herbes del moli 100gr herbes del molí erp-3145">
+            <div class="img-wrap">
+                <img src="/fotos/c-3145.jpg" alt="COMINO 100gr HERBES DEL MOLI 100gr" loading="lazy" />
+                <span class="badge-idx">#126</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3145</div>
+                <div class="title">COMINO 100gr HERBES DEL MOLI 100gr</div>
+                <div class="footer">
+                    <span>100gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="diente de leon 40gr herbes del moli 40gr herbes del molí erp-3215">
+            <div class="img-wrap">
+                <img src="/fotos/c-3215.jpg" alt="DIENTE DE LEON 40gr HERBES DEL MOLI 40gr" loading="lazy" />
+                <span class="badge-idx">#127</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3215</div>
+                <div class="title">DIENTE DE LEON 40gr HERBES DEL MOLI 40gr</div>
+                <div class="footer">
+                    <span>40gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="equinacea 60gr herbes del moli 60gr herbes del molí erp-3187">
+            <div class="img-wrap">
+                <img src="/fotos/c-3187.jpg" alt="EQUINACEA 60gr HERBES DEL MOLI 60gr" loading="lazy" />
+                <span class="badge-idx">#128</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3187</div>
+                <div class="title">EQUINACEA 60gr HERBES DEL MOLI 60gr</div>
+                <div class="footer">
+                    <span>60gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="espino blanco herbes del moli 25gr 25gr herbes del molí erp-3113">
+            <div class="img-wrap">
+                <img src="/fotos/c-3113.jpg" alt="ESPINO BLANCO HERBES DEL MOLI 25gr 25gr" loading="lazy" />
+                <span class="badge-idx">#129</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3113</div>
+                <div class="title">ESPINO BLANCO HERBES DEL MOLI 25gr 25gr</div>
+                <div class="footer">
+                    <span>25gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="eucalipto molido 70gr \ herbes del molí erp-3097">
+            <div class="img-wrap">
+                <img src="/fotos/c-3097.jpg" alt="EUCALIPTO MOLIDO 70gr \" loading="lazy" />
+                <span class="badge-idx">#130</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3097</div>
+                <div class="title">EUCALIPTO MOLIDO 70gr \</div>
+                <div class="footer">
+                    <span>70gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="eufrasia 60gr herbes del moli 60gr herbes del molí erp-3235">
+            <div class="img-wrap">
+                <img src="/fotos/c-3235.jpg" alt="EUFRASIA 60gr HERBES DEL MOLI 60gr" loading="lazy" />
+                <span class="badge-idx">#131</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3235</div>
+                <div class="title">EUFRASIA 60gr HERBES DEL MOLI 60gr</div>
+                <div class="footer">
+                    <span>60gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="hibisco 30gr herbes del moli 30gr herbes del molí erp-3210">
+            <div class="img-wrap">
+                <img src="/fotos/c-3210.jpg" alt="HIBISCO 30gr HERBES DEL MOLI 30gr" loading="lazy" />
+                <span class="badge-idx">#132</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3210</div>
+                <div class="title">HIBISCO 30gr HERBES DEL MOLI 30gr</div>
+                <div class="footer">
+                    <span>30gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="hierba buena herbes del moli formato estándar herbes del molí erp-3093">
+            <div class="img-wrap">
+                <img src="/fotos/c-3093.jpg" alt="HIERBA BUENA HERBES DEL MOLI Formato estándar" loading="lazy" />
+                <span class="badge-idx">#133</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3093</div>
+                <div class="title">HIERBA BUENA HERBES DEL MOLI Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="hinojo 90gr \ herbes del molí erp-3092">
+            <div class="img-wrap">
+                <img src="/fotos/c-3092.jpg" alt="HINOJO 90gr \" loading="lazy" />
+                <span class="badge-idx">#134</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3092</div>
+                <div class="title">HINOJO 90gr \</div>
+                <div class="footer">
+                    <span>90gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="lavanda 45gr herbes del moli 45gr herbes del molí erp-3232">
+            <div class="img-wrap">
+                <img src="/fotos/c-3232.jpg" alt="LAVANDA 45gr HERBES DEL MOLI 45gr" loading="lazy" />
+                <span class="badge-idx">#135</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3232</div>
+                <div class="title">LAVANDA 45gr HERBES DEL MOLI 45gr</div>
+                <div class="footer">
+                    <span>45gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="llanten 30gr herbes del moli 30gr herbes del molí erp-3168">
+            <div class="img-wrap">
+                <img src="/fotos/c-3168.jpg" alt="LLANTEN 30gr HERBES DEL MOLI 30gr" loading="lazy" />
+                <span class="badge-idx">#136</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3168</div>
+                <div class="title">LLANTEN 30gr HERBES DEL MOLI 30gr</div>
+                <div class="footer">
+                    <span>30gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="malvavisco 75gr herbes del moli 75gr herbes del molí erp-3228">
+            <div class="img-wrap">
+                <img src="/fotos/c-3228.jpg" alt="MALVAVISCO 75gr HERBES DEL MOLI 75gr" loading="lazy" />
+                <span class="badge-idx">#137</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3228</div>
+                <div class="title">MALVAVISCO 75gr HERBES DEL MOLI 75gr</div>
+                <div class="footer">
+                    <span>75gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="manzanilla dulce 30gr \ herbes del molí erp-3095">
+            <div class="img-wrap">
+                <img src="/fotos/c-3095.jpg" alt="MANZANILLA DULCE 30gr \" loading="lazy" />
+                <span class="badge-idx">#138</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3095</div>
+                <div class="title">MANZANILLA DULCE 30gr \</div>
+                <div class="footer">
+                    <span>30gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="melisa herbes del moli formato estándar herbes del molí erp-3088">
+            <div class="img-wrap">
+                <img src="/fotos/c-3088.jpg" alt="MELISA HERBES DEL MOLI Formato estándar" loading="lazy" />
+                <span class="badge-idx">#139</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3088</div>
+                <div class="title">MELISA HERBES DEL MOLI Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="olivo 50gr herbes del moli 50gr herbes del molí erp-3123">
+            <div class="img-wrap">
+                <img src="/fotos/c-3123.jpg" alt="OLIVO 50gr HERBES DEL MOLI 50gr" loading="lazy" />
+                <span class="badge-idx">#140</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3123</div>
+                <div class="title">OLIVO 50gr HERBES DEL MOLI 50gr</div>
+                <div class="footer">
+                    <span>50gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="oregano a granel formato estándar general / multimarca erp-25067">
+            <div class="img-wrap">
+                <img src="/fotos/c-25067.jpg" alt="OREGANO A GRANEL Formato estándar" loading="lazy" />
+                <span class="badge-idx">#141</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-25067</div>
+                <div class="title">OREGANO A GRANEL Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="ortiga blanca 35gr \ herbes del molí erp-3104">
+            <div class="img-wrap">
+                <img src="/fotos/c-3104.jpg" alt="ORTIGA BLANCA 35gr \" loading="lazy" />
+                <span class="badge-idx">#142</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3104</div>
+                <div class="title">ORTIGA BLANCA 35gr \</div>
+                <div class="footer">
+                    <span>35gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="ortiga verde 25gr herbes del moli 25gr herbes del molí erp-3126">
+            <div class="img-wrap">
+                <img src="/fotos/c-3126.jpg" alt="ORTIGA VERDE 25gr HERBES DEL MOLI 25gr" loading="lazy" />
+                <span class="badge-idx">#143</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3126</div>
+                <div class="title">ORTIGA VERDE 25gr HERBES DEL MOLI 25gr</div>
+                <div class="footer">
+                    <span>25gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="pasiflora 40gr herbes del moli 40gr herbes del molí erp-3087">
+            <div class="img-wrap">
+                <img src="/fotos/c-3087.jpg" alt="PASIFLORA 40gr HERBES DEL MOLI 40gr" loading="lazy" />
+                <span class="badge-idx">#144</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3087</div>
+                <div class="title">PASIFLORA 40gr HERBES DEL MOLI 40gr</div>
+                <div class="footer">
+                    <span>40gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="regaliz especia \ herbes del molí erp-4115">
+            <div class="img-wrap">
+                <img src="/fotos/c-4115.jpg" alt="REGALIZ ESPECIA \" loading="lazy" />
+                <span class="badge-idx">#145</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-4115</div>
+                <div class="title">REGALIZ ESPECIA \</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="ruda 30gr herbes del moli 30gr herbes del molí erp-3188">
+            <div class="img-wrap">
+                <img src="/fotos/c-3188.jpg" alt="RUDA 30gr HERBES DEL MOLI 30gr" loading="lazy" />
+                <span class="badge-idx">#146</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3188</div>
+                <div class="title">RUDA 30gr HERBES DEL MOLI 30gr</div>
+                <div class="footer">
+                    <span>30gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="sauco 40gr herbes del moli 40gr herbes del molí erp-3226">
+            <div class="img-wrap">
+                <img src="/fotos/c-3226.jpg" alt="SAUCO 40gr HERBES DEL MOLI 40gr" loading="lazy" />
+                <span class="badge-idx">#147</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3226</div>
+                <div class="title">SAUCO 40gr HERBES DEL MOLI 40gr</div>
+                <div class="footer">
+                    <span>40gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="te kukicha de 3 años ramitas formato estándar general / multimarca erp-25039">
+            <div class="img-wrap">
+                <img src="/fotos/c-25039.jpg" alt="TE KUKICHA DE 3 AÑOS RAMITAS Formato estándar" loading="lazy" />
+                <span class="badge-idx">#148</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-25039</div>
+                <div class="title">TE KUKICHA DE 3 AÑOS RAMITAS Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="te negro 70gr herbes del moli 70gr herbes del molí erp-3204">
+            <div class="img-wrap">
+                <img src="/fotos/c-3204.jpg" alt="TE NEGRO 70gr HERBES DEL MOLI 70gr" loading="lazy" />
+                <span class="badge-idx">#149</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3204</div>
+                <div class="title">TE NEGRO 70gr HERBES DEL MOLI 70gr</div>
+                <div class="footer">
+                    <span>70gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="te rojo 70gr herbes del moli 70gr herbes del molí erp-3185">
+            <div class="img-wrap">
+                <img src="/fotos/c-3185.jpg" alt="TE ROJO 70gr HERBES DEL MOLI 70gr" loading="lazy" />
+                <span class="badge-idx">#150</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3185</div>
+                <div class="title">TE ROJO 70gr HERBES DEL MOLI 70gr</div>
+                <div class="footer">
+                    <span>70gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="tila 25gr herbes del moli 25gr herbes del molí erp-3148">
+            <div class="img-wrap">
+                <img src="/fotos/c-3148.jpg" alt="TILA 25gr HERBES DEL MOLI 25gr" loading="lazy" />
+                <span class="badge-idx">#151</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3148</div>
+                <div class="title">TILA 25gr HERBES DEL MOLI 25gr</div>
+                <div class="footer">
+                    <span>25gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="tomillo 50gr \ herbes del molí erp-3096">
+            <div class="img-wrap">
+                <img src="/fotos/c-3096.jpg" alt="TOMILLO 50gr \" loading="lazy" />
+                <span class="badge-idx">#152</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3096</div>
+                <div class="title">TOMILLO 50gr \</div>
+                <div class="footer">
+                    <span>50gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="valeriana herbes del moli formato estándar herbes del molí erp-3091">
+            <div class="img-wrap">
+                <img src="/fotos/c-3091.jpg" alt="VALERIANA HERBES DEL MOLI Formato estándar" loading="lazy" />
+                <span class="badge-idx">#153</span>
+                <span class="badge-brand">Herbes del Molí</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3091</div>
+                <div class="title">VALERIANA HERBES DEL MOLI Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="tomillo ecológico formato estándar general / multimarca nuevo-442">
+            <div class="img-wrap">
+                <img src="/fotos/c-442.jpg" alt="Tomillo ecológico Formato estándar" loading="lazy" />
+                <span class="badge-idx">#154</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">nuevo-442</div>
+                <div class="title">Tomillo ecológico Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="romero formato estándar general / multimarca nuevo-457">
+            <div class="img-wrap">
+                <img src="/fotos/c-457.jpg" alt="Romero Formato estándar" loading="lazy" />
+                <span class="badge-idx">#155</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">nuevo-457</div>
+                <div class="title">Romero Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="alga espagheti de mar a granel formato estándar algamar erp-25054">
+            <div class="img-wrap">
+                <img src="/fotos/c-25054.jpg" alt="ALGA ESPAGHETI DE MAR A GRANEL Formato estándar" loading="lazy" />
+                <span class="badge-idx">#156</span>
+                <span class="badge-brand">Algamar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-25054</div>
+                <div class="title">ALGA ESPAGHETI DE MAR A GRANEL Formato estándar</div>
+                <div class="footer">
+                    <span>Eco</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="serum reafirmante de granada formato estándar weleda erp-15278">
+            <div class="img-wrap">
+                <img src="/fotos/c-15278.jpg" alt="SERUM REAFIRMANTE DE GRANADA Formato estándar" loading="lazy" />
+                <span class="badge-idx">#157</span>
+                <span class="badge-brand">Weleda</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-15278</div>
+                <div class="title">SERUM REAFIRMANTE DE GRANADA Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="anchoas tarro de cristal 95gr ortiz 95gr general / multimarca erp-7378">
+            <div class="img-wrap">
+                <img src="/fotos/c-7378.jpg" alt="ANCHOAS TARRO DE CRISTAL 95GR ORTIZ 95gr" loading="lazy" />
+                <span class="badge-idx">#158</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-7378</div>
+                <div class="title">ANCHOAS TARRO DE CRISTAL 95GR ORTIZ 95gr</div>
+                <div class="footer">
+                    <span>95gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="zumo de piña 750ml jugoso 750ml general / multimarca erp-5090">
+            <div class="img-wrap">
+                <img src="/fotos/c-5090.jpg" alt="ZUMO DE PIÑA 750ml JUGOSO 750ml" loading="lazy" />
+                <span class="badge-idx">#159</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-5090</div>
+                <div class="title">ZUMO DE PIÑA 750ml JUGOSO 750ml</div>
+                <div class="footer">
+                    <span>750ml</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="arbol del te 15ml 15ml drasanvi erp-23015">
+            <div class="img-wrap">
+                <img src="/fotos/c-23015.jpg" alt="ARBOL DEL TE 15ml 15ml" loading="lazy" />
+                <span class="badge-idx">#160</span>
+                <span class="badge-brand">Drasanvi</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-23015</div>
+                <div class="title">ARBOL DEL TE 15ml 15ml</div>
+                <div class="footer">
+                    <span>15ml</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="champu 250ml 250ml drasanvi erp-15238">
+            <div class="img-wrap">
+                <img src="/fotos/c-15238.jpg" alt="CHAMPU 250ml 250ml" loading="lazy" />
+                <span class="badge-idx">#161</span>
+                <span class="badge-brand">Drasanvi</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-15238</div>
+                <div class="title">CHAMPU 250ml 250ml</div>
+                <div class="footer">
+                    <span>250ml</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="arroz basmati blanco 500gr granero 500gr el granero integral erp-20054">
+            <div class="img-wrap">
+                <img src="/fotos/c-20054.jpg" alt="ARROZ BASMATI BLANCO 500gr GRANERO 500gr" loading="lazy" />
+                <span class="badge-idx">#162</span>
+                <span class="badge-brand">El Granero Integra</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-20054</div>
+                <div class="title">ARROZ BASMATI BLANCO 500gr GRANERO 500gr</div>
+                <div class="footer">
+                    <span>500gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="cebada grano perlada 500gr granero 500gr el granero integral erp-4086">
+            <div class="img-wrap">
+                <img src="/fotos/c-4086.jpg" alt="CEBADA GRANO PERLADA 500gr GRANERO 500gr" loading="lazy" />
+                <span class="badge-idx">#163</span>
+                <span class="badge-brand">El Granero Integra</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-4086</div>
+                <div class="title">CEBADA GRANO PERLADA 500gr GRANERO 500gr</div>
+                <div class="footer">
+                    <span>500gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="copos 5 cereales 500gr \ el granero integral erp-4078">
+            <div class="img-wrap">
+                <img src="/fotos/c-4078.jpg" alt="COPOS 5 CEREALES 500gr \" loading="lazy" />
+                <span class="badge-idx">#164</span>
+                <span class="badge-brand">El Granero Integra</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-4078</div>
+                <div class="title">COPOS 5 CEREALES 500gr \</div>
+                <div class="footer">
+                    <span>500gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="azucar de abedul 300gr 300gr drasanvi erp-8126">
+            <div class="img-wrap">
+                <img src="/fotos/c-8126.jpg" alt="AZUCAR DE ABEDUL 300gr 300gr" loading="lazy" />
+                <span class="badge-idx">#165</span>
+                <span class="badge-brand">Drasanvi</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-8126</div>
+                <div class="title">AZUCAR DE ABEDUL 300gr 300gr</div>
+                <div class="footer">
+                    <span>300gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="azucar de abedul xilitol 500gr 500gr ecosana erp-8204">
+            <div class="img-wrap">
+                <img src="/fotos/c-8204.jpg" alt="AZUCAR DE ABEDUL XILITOL 500gr 500gr" loading="lazy" />
+                <span class="badge-idx">#166</span>
+                <span class="badge-brand">Ecosana</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-8204</div>
+                <div class="title">AZUCAR DE ABEDUL XILITOL 500gr 500gr</div>
+                <div class="footer">
+                    <span>500gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="bebida avellana bio 1l k 1l ecomil erp-9025">
+            <div class="img-wrap">
+                <img src="/fotos/c-9025.jpg" alt="BEBIDA AVELLANA BIO 1l K 1l" loading="lazy" />
+                <span class="badge-idx">#167</span>
+                <span class="badge-brand">EcoMil</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-9025</div>
+                <div class="title">BEBIDA AVELLANA BIO 1l K 1l</div>
+                <div class="footer">
+                    <span>1l</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="bebida de avellana 1l 1l ecomil erp-9134">
+            <div class="img-wrap">
+                <img src="/fotos/c-9134.jpg" alt="BEBIDA DE AVELLANA 1L 1l" loading="lazy" />
+                <span class="badge-idx">#168</span>
+                <span class="badge-brand">EcoMil</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-9134</div>
+                <div class="title">BEBIDA DE AVELLANA 1L 1l</div>
+                <div class="footer">
+                    <span>1l</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="leche de coco 1l 1l ecomil erp-9108">
+            <div class="img-wrap">
+                <img src="/fotos/c-9108.jpg" alt="LECHE DE COCO 1L 1l" loading="lazy" />
+                <span class="badge-idx">#169</span>
+                <span class="badge-brand">EcoMil</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-9108</div>
+                <div class="title">LECHE DE COCO 1L 1l</div>
+                <div class="footer">
+                    <span>1l</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="biochips espelta 75gr granero 75gr el granero integral erp-6052">
+            <div class="img-wrap">
+                <img src="/fotos/c-6052.jpg" alt="BIOCHIPS ESPELTA 75gr GRANERO 75gr" loading="lazy" />
+                <span class="badge-idx">#170</span>
+                <span class="badge-brand">El Granero Integra</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-6052</div>
+                <div class="title">BIOCHIPS ESPELTA 75gr GRANERO 75gr</div>
+                <div class="footer">
+                    <span>75gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="bionachos paprika 125gr granero 125gr el granero integral erp-6004">
+            <div class="img-wrap">
+                <img src="/fotos/c-6004.jpg" alt="BIONACHOS PAPRIKA 125gr GRANERO 125gr" loading="lazy" />
+                <span class="badge-idx">#171</span>
+                <span class="badge-brand">El Granero Integra</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-6004</div>
+                <div class="title">BIONACHOS PAPRIKA 125gr GRANERO 125gr</div>
+                <div class="footer">
+                    <span>125gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="calabaza ecologica formato estándar general / multimarca erp-1058">
+            <div class="img-wrap">
+                <img src="/fotos/c-1058.jpg" alt="CALABAZA ECOLOGICA Formato estándar" loading="lazy" />
+                <span class="badge-idx">#172</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-1058</div>
+                <div class="title">CALABAZA ECOLOGICA Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="calabaza potimarron ecologica formato estándar general / multimarca erp-1135">
+            <div class="img-wrap">
+                <img src="/fotos/c-1135.jpg" alt="CALABAZA POTIMARRON ECOLOGICA Formato estándar" loading="lazy" />
+                <span class="badge-idx">#173</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-1135</div>
+                <div class="title">CALABAZA POTIMARRON ECOLOGICA Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="cepillos de bambu carbon activo vamboo formato estándar general / multimarca erp-15262">
+            <div class="img-wrap">
+                <img src="/fotos/c-15262.jpg" alt="CEPILLOS DE BAMBU CARBON ACTIVO VAMBOO Formato estándar" loading="lazy" />
+                <span class="badge-idx">#174</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-15262</div>
+                <div class="title">CEPILLOS DE BAMBU CARBON ACTIVO VAMBOO Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="crema solar niños 50 formato estándar alga maris erp-15191">
+            <div class="img-wrap">
+                <img src="/fotos/c-15191.jpg" alt="CREMA SOLAR NIÑOS 50 Formato estándar" loading="lazy" />
+                <span class="badge-idx">#175</span>
+                <span class="badge-brand">Alga Maris</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-15191</div>
+                <div class="title">CREMA SOLAR NIÑOS 50 Formato estándar</div>
+                <div class="footer">
+                    <span>Eco</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="mousse desmaquillante 150ml 150ml drasanvi erp-15248">
+            <div class="img-wrap">
+                <img src="/fotos/c-15248.jpg" alt="MOUSSE DESMAQUILLANTE 150ml 150ml" loading="lazy" />
+                <span class="badge-idx">#176</span>
+                <span class="badge-brand">Drasanvi</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-15248</div>
+                <div class="title">MOUSSE DESMAQUILLANTE 150ml 150ml</div>
+                <div class="footer">
+                    <span>150ml</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="cereza ecologica formato estándar general / multimarca erp-1040">
+            <div class="img-wrap">
+                <img src="/fotos/c-1040.jpg" alt="CEREZA ECOLOGICA Formato estándar" loading="lazy" />
+                <span class="badge-idx">#177</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-1040</div>
+                <div class="title">CEREZA ECOLOGICA Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="papaya ecologica formato estándar general / multimarca erp-1139">
+            <div class="img-wrap">
+                <img src="/fotos/c-1139.jpg" alt="PAPAYA ECOLOGICA Formato estándar" loading="lazy" />
+                <span class="badge-idx">#178</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-1139</div>
+                <div class="title">PAPAYA ECOLOGICA Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="chips de maiz con chile formato estándar natursoy erp-6120">
+            <div class="img-wrap">
+                <img src="/fotos/c-6120.jpg" alt="CHIPS DE MAIZ CON CHILE Formato estándar" loading="lazy" />
+                <span class="badge-idx">#179</span>
+                <span class="badge-brand">Natursoy</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-6120</div>
+                <div class="title">CHIPS DE MAIZ CON CHILE Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="nachos maiz queso 75gr 75gr natursoy erp-6114">
+            <div class="img-wrap">
+                <img src="/fotos/c-6114.jpg" alt="NACHOS MAIZ QUESO 75gr 75gr" loading="lazy" />
+                <span class="badge-idx">#180</span>
+                <span class="badge-brand">Natursoy</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-6114</div>
+                <div class="title">NACHOS MAIZ QUESO 75gr 75gr</div>
+                <div class="footer">
+                    <span>75gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="chocolate negro 73% 100 gr sole 100 gr chocolates sole erp-8074">
+            <div class="img-wrap">
+                <img src="/fotos/c-8074.jpg" alt="CHOCOLATE NEGRO 73% 100 GR SOLE 100 gr" loading="lazy" />
+                <span class="badge-idx">#181</span>
+                <span class="badge-brand">Chocolates Sole</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-8074</div>
+                <div class="title">CHOCOLATE NEGRO 73% 100 GR SOLE 100 gr</div>
+                <div class="footer">
+                    <span>100 gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="chocolate negro 86% 100gr sole 100gr chocolates sole erp-8049">
+            <div class="img-wrap">
+                <img src="/fotos/c-8049.jpg" alt="CHOCOLATE NEGRO 86% 100gr SOLE 100gr" loading="lazy" />
+                <span class="badge-idx">#182</span>
+                <span class="badge-brand">Chocolates Sole</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-8049</div>
+                <div class="title">CHOCOLATE NEGRO 86% 100gr SOLE 100gr</div>
+                <div class="footer">
+                    <span>100gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="chocolate negro con almendras 150gr 150gr general / multimarca erp-8068">
+            <div class="img-wrap">
+                <img src="/fotos/c-8068.jpg" alt="CHOCOLATE NEGRO CON ALMENDRAS 150gr 150gr" loading="lazy" />
+                <span class="badge-idx">#183</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-8068</div>
+                <div class="title">CHOCOLATE NEGRO CON ALMENDRAS 150gr 150gr</div>
+                <div class="footer">
+                    <span>150gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="chocolate negro con canela formato estándar general / multimarca erp-8033">
+            <div class="img-wrap">
+                <img src="/fotos/c-8033.jpg" alt="CHOCOLATE NEGRO CON CANELA Formato estándar" loading="lazy" />
+                <span class="badge-idx">#184</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-8033</div>
+                <div class="title">CHOCOLATE NEGRO CON CANELA Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="citrato de magnesio 90 comp. 90 comp drasanvi erp-23181">
+            <div class="img-wrap">
+                <img src="/fotos/c-23181.jpg" alt="CITRATO DE MAGNESIO 90 comp. 90 comp" loading="lazy" />
+                <span class="badge-idx">#185</span>
+                <span class="badge-brand">Drasanvi</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-23181</div>
+                <div class="title">CITRATO DE MAGNESIO 90 comp. 90 comp</div>
+                <div class="footer">
+                    <span>90 comp</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="hierro 90 comprimidos formato estándar drasanvi erp-23199">
+            <div class="img-wrap">
+                <img src="/fotos/c-23199.jpg" alt="HIERRO 90 comprimidos Formato estándar" loading="lazy" />
+                <span class="badge-idx">#186</span>
+                <span class="badge-brand">Drasanvi</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-23199</div>
+                <div class="title">HIERRO 90 comprimidos Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="magnesio complex 180comp. 180comp drasanvi erp-23059">
+            <div class="img-wrap">
+                <img src="/fotos/c-23059.jpg" alt="MAGNESIO COMPLEX 180comp. 180comp" loading="lazy" />
+                <span class="badge-idx">#187</span>
+                <span class="badge-brand">Drasanvi</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-23059</div>
+                <div class="title">MAGNESIO COMPLEX 180comp. 180comp</div>
+                <div class="footer">
+                    <span>180comp</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="propolis 30 comp. 30 comp drasanvi erp-23053">
+            <div class="img-wrap">
+                <img src="/fotos/c-23053.jpg" alt="PROPOLIS 30 comp. 30 comp" loading="lazy" />
+                <span class="badge-idx">#188</span>
+                <span class="badge-brand">Drasanvi</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-23053</div>
+                <div class="title">PROPOLIS 30 comp. 30 comp</div>
+                <div class="footer">
+                    <span>30 comp</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="crema facial de rosa mosqueta 50ml drasa 50ml general / multimarca erp-15174">
+            <div class="img-wrap">
+                <img src="/fotos/c-15174.jpg" alt="CREMA FACIAL DE ROSA MOSQUETA 50ml DRASA 50ml" loading="lazy" />
+                <span class="badge-idx">#189</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-15174</div>
+                <div class="title">CREMA FACIAL DE ROSA MOSQUETA 50ml DRASA 50ml</div>
+                <div class="footer">
+                    <span>50ml</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="serum facial 30ml 30ml drasanvi erp-15241">
+            <div class="img-wrap">
+                <img src="/fotos/c-15241.jpg" alt="SERUM FACIAL 30ml 30ml" loading="lazy" />
+                <span class="badge-idx">#190</span>
+                <span class="badge-brand">Drasanvi</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-15241</div>
+                <div class="title">SERUM FACIAL 30ml 30ml</div>
+                <div class="footer">
+                    <span>30ml</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="detergente liquido lavadora 2l 2l solyeco erp-22046">
+            <div class="img-wrap">
+                <img src="/fotos/c-22046.jpg" alt="DETERGENTE LIQUIDO LAVADORA 2L 2l" loading="lazy" />
+                <span class="badge-idx">#191</span>
+                <span class="badge-brand">Solyeco</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-22046</div>
+                <div class="title">DETERGENTE LIQUIDO LAVADORA 2L 2l</div>
+                <div class="footer">
+                    <span>2l</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="detergente liquido lavadora 5l 5l solyeco erp-22045">
+            <div class="img-wrap">
+                <img src="/fotos/c-22045.jpg" alt="DETERGENTE LIQUIDO LAVADORA 5L 5l" loading="lazy" />
+                <span class="badge-idx">#192</span>
+                <span class="badge-brand">Solyeco</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-22045</div>
+                <div class="title">DETERGENTE LIQUIDO LAVADORA 5L 5l</div>
+                <div class="footer">
+                    <span>5l</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="endivia ecologica formato estándar general / multimarca erp-1037">
+            <div class="img-wrap">
+                <img src="/fotos/c-1037.jpg" alt="ENDIVIA ECOLOGICA Formato estándar" loading="lazy" />
+                <span class="badge-idx">#193</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-1037</div>
+                <div class="title">ENDIVIA ECOLOGICA Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="escarola unidad formato estándar general / multimarca erp-1134">
+            <div class="img-wrap">
+                <img src="/fotos/c-1134.jpg" alt="ESCAROLA UNIDAD Formato estándar" loading="lazy" />
+                <span class="badge-idx">#194</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-1134</div>
+                <div class="title">ESCAROLA UNIDAD Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="epatik detox 30 comprimidos formato estándar drasanvi erp-23088">
+            <div class="img-wrap">
+                <img src="/fotos/c-23088.jpg" alt="EPATIK DETOX 30 COMPRIMIDOS Formato estándar" loading="lazy" />
+                <span class="badge-idx">#195</span>
+                <span class="badge-brand">Drasanvi</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-23088</div>
+                <div class="title">EPATIK DETOX 30 COMPRIMIDOS Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="epatik detox formato estándar drasanvi erp-4070">
+            <div class="img-wrap">
+                <img src="/fotos/c-4070.jpg" alt="EPATIK DETOX Formato estándar" loading="lazy" />
+                <span class="badge-idx">#196</span>
+                <span class="badge-brand">Drasanvi</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-4070</div>
+                <div class="title">EPATIK DETOX Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="jabon liquido sensible 1l 1l solyeco erp-22040">
+            <div class="img-wrap">
+                <img src="/fotos/c-22040.jpg" alt="JABON LIQUIDO SENSIBLE 1L 1l" loading="lazy" />
+                <span class="badge-idx">#197</span>
+                <span class="badge-brand">Solyeco</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-22040</div>
+                <div class="title">JABON LIQUIDO SENSIBLE 1L 1l</div>
+                <div class="footer">
+                    <span>1l</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="jabon liquido sensible 5l 5l solyeco erp-22051">
+            <div class="img-wrap">
+                <img src="/fotos/c-22051.jpg" alt="JABON LIQUIDO SENSIBLE 5L 5l" loading="lazy" />
+                <span class="badge-idx">#198</span>
+                <span class="badge-brand">Solyeco</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-22051</div>
+                <div class="title">JABON LIQUIDO SENSIBLE 5L 5l</div>
+                <div class="footer">
+                    <span>5l</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="krunchy al chocolate 375gr 375gr barnhouse erp-4118">
+            <div class="img-wrap">
+                <img src="/fotos/c-4118.jpg" alt="KRUNCHY AL CHOCOLATE 375gr 375gr" loading="lazy" />
+                <span class="badge-idx">#199</span>
+                <span class="badge-brand">BarnHouse</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-4118</div>
+                <div class="title">KRUNCHY AL CHOCOLATE 375gr 375gr</div>
+                <div class="footer">
+                    <span>375gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="krunchy chocolate avella 375gr 375gr barnhouse erp-4137">
+            <div class="img-wrap">
+                <img src="/fotos/c-4137.jpg" alt="KRUNCHY CHOCOLATE AVELLA 375gr 375gr" loading="lazy" />
+                <span class="badge-idx">#200</span>
+                <span class="badge-brand">BarnHouse</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-4137</div>
+                <div class="title">KRUNCHY CHOCOLATE AVELLA 375gr 375gr</div>
+                <div class="footer">
+                    <span>375gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="leche entera de vaca 1l el buen pastor 1l general / multimarca erp-9143">
+            <div class="img-wrap">
+                <img src="/fotos/c-9143.jpg" alt="LECHE ENTERA DE VACA 1L EL BUEN PASTOR 1l" loading="lazy" />
+                <span class="badge-idx">#201</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-9143</div>
+                <div class="title">LECHE ENTERA DE VACA 1L EL BUEN PASTOR 1l</div>
+                <div class="footer">
+                    <span>1l</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="leche semidesnatada 1l el buen pastor 1l general / multimarca erp-9144">
+            <div class="img-wrap">
+                <img src="/fotos/c-9144.jpg" alt="LECHE SEMIDESNATADA 1L EL BUEN PASTOR 1l" loading="lazy" />
+                <span class="badge-idx">#202</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-9144</div>
+                <div class="title">LECHE SEMIDESNATADA 1L EL BUEN PASTOR 1l</div>
+                <div class="footer">
+                    <span>1l</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="miel de brezo 500gr 500gr ecoflor erp-13078">
+            <div class="img-wrap">
+                <img src="/fotos/c-13078.jpg" alt="MIEL DE BREZO 500gr 500gr" loading="lazy" />
+                <span class="badge-idx">#203</span>
+                <span class="badge-brand">Ecoflor</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-13078</div>
+                <div class="title">MIEL DE BREZO 500gr 500gr</div>
+                <div class="footer">
+                    <span>500gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="miel de brezo1k formato estándar ecoflor erp-13082">
+            <div class="img-wrap">
+                <img src="/fotos/c-13082.jpg" alt="MIEL DE BREZO1K Formato estándar" loading="lazy" />
+                <span class="badge-idx">#204</span>
+                <span class="badge-brand">Ecoflor</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-13082</div>
+                <div class="title">MIEL DE BREZO1K Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="miel de milflores 1k formato estándar ecoflor erp-13080">
+            <div class="img-wrap">
+                <img src="/fotos/c-13080.jpg" alt="MIEL DE MILFLORES 1K Formato estándar" loading="lazy" />
+                <span class="badge-idx">#205</span>
+                <span class="badge-brand">Ecoflor</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-13080</div>
+                <div class="title">MIEL DE MILFLORES 1K Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="miel de milflores 500gr 500gr ecoflor erp-13072">
+            <div class="img-wrap">
+                <img src="/fotos/c-13072.jpg" alt="MIEL DE MILFLORES 500gr 500gr" loading="lazy" />
+                <span class="badge-idx">#206</span>
+                <span class="badge-brand">Ecoflor</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-13072</div>
+                <div class="title">MIEL DE MILFLORES 500gr 500gr</div>
+                <div class="footer">
+                    <span>500gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="mijo a granel formato estándar general / multimarca erp-25048">
+            <div class="img-wrap">
+                <img src="/fotos/c-25048.jpg" alt="MIJO A GRANEL Formato estándar" loading="lazy" />
+                <span class="badge-idx">#207</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-25048</div>
+                <div class="title">MIJO A GRANEL Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="sesamo natural 500gr \ ecosana erp-4071">
+            <div class="img-wrap">
+                <img src="/fotos/c-4071.jpg" alt="SESAMO NATURAL 500gr \" loading="lazy" />
+                <span class="badge-idx">#208</span>
+                <span class="badge-brand">Ecosana</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-4071</div>
+                <div class="title">SESAMO NATURAL 500gr \</div>
+                <div class="footer">
+                    <span>500gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="polen 225gr 225gr ecoflor erp-21006">
+            <div class="img-wrap">
+                <img src="/fotos/c-21006.jpg" alt="POLEN 225gr 225gr" loading="lazy" />
+                <span class="badge-idx">#209</span>
+                <span class="badge-brand">Ecoflor</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-21006</div>
+                <div class="title">POLEN 225gr 225gr</div>
+                <div class="footer">
+                    <span>225gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="soja amarilla 500gr 500gr ecosana erp-4127">
+            <div class="img-wrap">
+                <img src="/fotos/c-4127.jpg" alt="SOJA AMARILLA 500gr 500gr" loading="lazy" />
+                <span class="badge-idx">#210</span>
+                <span class="badge-brand">Ecosana</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-4127</div>
+                <div class="title">SOJA AMARILLA 500gr 500gr</div>
+                <div class="footer">
+                    <span>500gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="sal de atlantis a granel formato estándar general / multimarca erp-25093">
+            <div class="img-wrap">
+                <img src="/fotos/c-25093.jpg" alt="SAL DE ATLANTIS A GRANEL Formato estándar" loading="lazy" />
+                <span class="badge-idx">#211</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-25093</div>
+                <div class="title">SAL DE ATLANTIS A GRANEL Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="sal del himalaya a granel formato estándar general / multimarca erp-25088">
+            <div class="img-wrap">
+                <img src="/fotos/c-25088.jpg" alt="SAL DEL HIMALAYA A GRANEL Formato estándar" loading="lazy" />
+                <span class="badge-idx">#212</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-25088</div>
+                <div class="title">SAL DEL HIMALAYA A GRANEL Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="sal del himalaya fina 1k formato estándar ecosana erp-2036">
+            <div class="img-wrap">
+                <img src="/fotos/c-2036.jpg" alt="SAL DEL HIMALAYA FINA 1K Formato estándar" loading="lazy" />
+                <span class="badge-idx">#213</span>
+                <span class="badge-brand">Ecosana</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-2036</div>
+                <div class="title">SAL DEL HIMALAYA FINA 1K Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="sal rosa del himalaya 1k formato estándar sakai erp-2079">
+            <div class="img-wrap">
+                <img src="/fotos/c-2079.jpg" alt="SAL ROSA DEL HIMALAYA 1K Formato estándar" loading="lazy" />
+                <span class="badge-idx">#214</span>
+                <span class="badge-brand">Sakai</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-2079</div>
+                <div class="title">SAL ROSA DEL HIMALAYA 1K Formato estándar</div>
+                <div class="footer">
+                    <span>Formato estándar</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="tomate triturado 660gr el viejo molino 660gr general / multimarca erp-7228">
+            <div class="img-wrap">
+                <img src="/fotos/c-7228.jpg" alt="TOMATE TRITURADO 660gr EL VIEJO MOLINO 660gr" loading="lazy" />
+                <span class="badge-idx">#215</span>
+                <span class="badge-brand">General / Multimar</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-7228</div>
+                <div class="title">TOMATE TRITURADO 660gr EL VIEJO MOLINO 660gr</div>
+                <div class="footer">
+                    <span>660gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="tomate triturado extra 660gr 660gr gumendi erp-7068">
+            <div class="img-wrap">
+                <img src="/fotos/c-7068.jpg" alt="TOMATE TRITURADO EXTRA 660gr 660gr" loading="lazy" />
+                <span class="badge-idx">#216</span>
+                <span class="badge-brand">Gumendi</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-7068</div>
+                <div class="title">TOMATE TRITURADO EXTRA 660gr 660gr</div>
+                <div class="footer">
+                    <span>660gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="yannoh instant original \ lima bio erp-3144">
+            <div class="img-wrap">
+                <img src="/fotos/c-3144.jpg" alt="YANNOH INSTANT ORIGINAL \" loading="lazy" />
+                <span class="badge-idx">#217</span>
+                <span class="badge-brand">Lima Bio</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3144</div>
+                <div class="title">YANNOH INSTANT ORIGINAL \</div>
+                <div class="footer">
+                    <span>250gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="yannoh instantaneo 250gr lima 250gr lima bio erp-3207">
+            <div class="img-wrap">
+                <img src="/fotos/c-3207.jpg" alt="YANNOH INSTANTANEO 250gr LIMA 250gr" loading="lazy" />
+                <span class="badge-idx">#218</span>
+                <span class="badge-brand">Lima Bio</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-3207</div>
+                <div class="title">YANNOH INSTANTANEO 250gr LIMA 250gr</div>
+                <div class="footer">
+                    <span>250gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" data-name="tempeh clasico 310gr granero 310gr el granero integral erp-14051">
+            <div class="img-wrap">
+                <img src="/fotos/c-14051.jpg" alt="TEMPEH CLASICO 310gr GRANERO 310gr" loading="lazy" />
+                <span class="badge-idx">#219</span>
+                <span class="badge-brand">El Granero Integra</span>
+            </div>
+            <div class="card-body">
+                <div class="code">erp-14051</div>
+                <div class="title">TEMPEH CLASICO 310gr GRANERO 310gr</div>
+                <div class="footer">
+                    <span>310gr</span>
+                    <span class="status-tag"><span class="status-dot"></span> Frontal 0°</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function filterCards() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                const text = card.getAttribute('data-name');
+                if (text.includes(input)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
