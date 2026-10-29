@@ -4,7 +4,7 @@ import {
   ShoppingBag, CheckCircle2, RotateCcw, AlertCircle, 
   HelpCircle, ChevronRight, Check, Trash2, ArrowRight, Search,
   Activity, ShieldCheck, Heart, Flame, Scale, Plus, Calendar,
-  Filter, Sparkles, X, ChevronDown, CheckCircle
+  Filter, Sparkles, X, ChevronDown, CheckCircle, Droplet, Utensils, Info, Sparkle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -20,10 +20,12 @@ export interface HarvardPlateProps {
 export interface PlateFoodItem {
   id: string;
   category: 'vegetales' | 'granos' | 'proteinas' | 'grasas';
+  subcategoryKey: string;
   product: CatalogProduct;
-  grams: number; // 250, 500, 1000, 2000, etc.
+  grams: number;
   iconLabel: string;
   displayName: string;
+  emoji: string;
 }
 
 // Limpiador estético del nombre del producto
@@ -33,19 +35,19 @@ function cleanProductName(name: string): string {
     let clean = parts[1].trim();
     clean = clean.replace(/""/g, '').replace(/Formato estándar/gi, '').trim();
     clean = clean.split('“')[0].split('"')[0].trim();
-    return clean.length > 36 ? clean.substring(0, 36) + '…' : clean;
+    return clean.length > 32 ? clean.substring(0, 32) + '…' : clean;
   }
-  return name.length > 36 ? name.substring(0, 36) + '…' : name;
+  return name.length > 32 ? name.substring(0, 32) + '…' : name;
 }
 
-// Opciones de horizonte temporal según solicitud del usuario
+// Horizontes temporales
 export type TimeHorizon = '1-semana' | '1-mes' | '1.5-meses' | '2-meses' | '3-meses' | '6-meses' | '1-ano';
 
 interface HorizonConfig {
   id: TimeHorizon;
   label: string;
   days: number;
-  mealsPerPerson: number; // Almuerzos + Cenas
+  mealsPerPerson: number;
 }
 
 const HORIZONS: HorizonConfig[] = [
@@ -58,230 +60,408 @@ const HORIZONS: HorizonConfig[] = [
   { id: '1-ano', label: '1 Año Completo', days: 365, mealsPerPerson: 730 },
 ];
 
-// Alimentos universales representativos con estilo minimalista
-interface UniversalFood {
+// Estructura de Subcategoría Genérica para el Plato de Harvard
+export interface FoodSubcategory {
   id: string;
   category: 'vegetales' | 'granos' | 'proteinas' | 'grasas';
-  iconType: 'leaf' | 'tomato' | 'broccoli' | 'berry' | 'bowl' | 'wheat' | 'rice' | 'bean' | 'lentil' | 'tofu' | 'seed' | 'oil';
-  label: string;
-  iconLabel: string;
+  name: string;
+  subtitle: string;
+  emoji: string;
   defaultGrams: number;
   keywords: string[];
+  harvardRecommendation: string;
 }
 
-const UNIVERSAL_FOODS: UniversalFood[] = [
-  // 50% Vegetales y Frutas
-  { id: 'u-lechuga', category: 'vegetales', iconType: 'leaf', label: 'Hortaliza / Hoja Verde', iconLabel: 'HOJA VERDE', defaultGrams: 500, keywords: ['verdura', 'espinaca', 'menestra', 'gazpacho', 'hortaliza'] },
-  { id: 'u-tomate', category: 'vegetales', iconType: 'tomato', label: 'Tomate / Huerta Bio', iconLabel: 'TOMATE BIO', defaultGrams: 500, keywords: ['tomate', 'gazpacho', 'salsa', 'pimiento'] },
-  { id: 'u-brocoli', category: 'vegetales', iconType: 'broccoli', label: 'Menestra / Verdura Vapor', iconLabel: 'MENESTRA', defaultGrams: 500, keywords: ['menestra', 'esparrago', 'verduras', 'alcachofa'] },
-  { id: 'u-acai', category: 'vegetales', iconType: 'berry', label: 'Frutos Silvestres / Açaí', iconLabel: 'FRUTA ANTIOX', defaultGrams: 250, keywords: ['acai', 'arándano', 'fruta', 'frambuesa', 'superfoods'] },
-  
-  // 25% Granos Integrales
-  { id: 'u-avena', category: 'granos', iconType: 'bowl', label: 'Copos de Avena Integral', iconLabel: 'AVENA PURA', defaultGrams: 500, keywords: ['avena', 'copos', 'muesli', 'porridge'] },
-  { id: 'u-quinoa', category: 'granos', iconType: 'wheat', label: 'Quinoa Real / Espelta', iconLabel: 'QUINOA REAL', defaultGrams: 500, keywords: ['quinoa', 'espelta', 'trigo', 'cebada', 'sarraceno'] },
-  { id: 'u-arroz', category: 'granos', iconType: 'rice', label: 'Arroz Integral / Tortas', iconLabel: 'ARROZ BIO', defaultGrams: 500, keywords: ['arroz', 'torta', 'tortitas'] },
+// LAS 16 SUBCATEGORÍAS DETALLADAS (MÍNIMO 4 POR CADA CUADRANTE DE HARVARD)
+export const HARVARD_SUBCATEGORIES: FoodSubcategory[] = [
+  // ==========================================
+  // 1. VEGETALES, HORTALIZAS Y FRUTAS (50%)
+  // ==========================================
+  {
+    id: 'sub-hojas-verdes',
+    category: 'vegetales',
+    name: 'Hojas Verdes & Ensaladas',
+    subtitle: 'Lechuga batavia bio, espinacas tiernas, acelgas, rúcula',
+    emoji: '🥬',
+    defaultGrams: 500,
+    keywords: ['lechuga', 'espinaca', 'acelga', 'brotes', 'rucula', 'ensalada'],
+    harvardRecommendation: 'Base rica en folatos, clorofila y fibra viva.'
+  },
+  {
+    id: 'sub-hortalizas-raiz',
+    category: 'vegetales',
+    name: 'Hortalizas de Raíz & Tubérculos Bio',
+    subtitle: 'Zanahorias dulces de huerta, remolacha, puerros, rábanos',
+    emoji: '🥕',
+    defaultGrams: 500,
+    keywords: ['zanahoria', 'remolacha', 'puerro', 'rabano', 'nabo'],
+    harvardRecommendation: 'Carotenos protectores y minerales del suelo fértil.'
+  },
+  {
+    id: 'sub-cruciferas-huerta',
+    category: 'vegetales',
+    name: 'Crucíferas & Verduras de Huerta',
+    subtitle: 'Brócoli al vapor, coliflor, calabacín, tomate bio, pimiento',
+    emoji: '🥦',
+    defaultGrams: 500,
+    keywords: ['brocoli', 'coliflor', 'calabacin', 'tomate', 'pimiento', 'menestra', 'alcachofa'],
+    harvardRecommendation: 'Sulforafano antioxidante y vitamina C sin procesar.'
+  },
+  {
+    id: 'sub-frutas-bayas',
+    category: 'vegetales',
+    name: 'Frutas Frescas & Frutos Rojos',
+    subtitle: 'Manzanas bio, plátano ecológico, arándanos, compota pura',
+    emoji: '🍎',
+    defaultGrams: 250,
+    keywords: ['manzana', 'platano', 'arandano', 'acai', 'frambuesa', 'compota', 'fruta'],
+    harvardRecommendation: 'Fruta entera de todos los colores. Evitar zumos industriales.'
+  },
 
-  // 25% Proteínas Limpias
-  { id: 'u-garbanzo', category: 'proteinas', iconType: 'bean', label: 'Garbanzos Castellanos', iconLabel: 'GARBANZO BIO', defaultGrams: 500, keywords: ['garbanzo', 'hummus'] },
-  { id: 'u-lenteja', category: 'proteinas', iconType: 'lentil', label: 'Lentejas con Verduras', iconLabel: 'LENTEJA BIO', defaultGrams: 500, keywords: ['lenteja', 'lentejas'] },
-  { id: 'u-tofu', category: 'proteinas', iconType: 'tofu', label: 'Tofu / Proteína Vegetal', iconLabel: 'PROTEÍNA BIO', defaultGrams: 500, keywords: ['tofu', 'proteina', 'protein', 'alubia'] },
-  { id: 'u-semillas', category: 'proteinas', iconType: 'seed', label: 'Semillas Chía / Frutos Secos', iconLabel: 'SEMILLAS', defaultGrams: 250, keywords: ['chia', 'semillas', 'nuez', 'almendra', 'lino'] },
+  // ==========================================
+  // 2. GRANOS Y CEREALES INTEGRALES (25%)
+  // ==========================================
+  {
+    id: 'sub-copos-avena',
+    category: 'granos',
+    name: 'Copos & Avena para Desayuno',
+    subtitle: 'Copos de avena integral finos y gruesos, muesli de frutas',
+    emoji: '🥣',
+    defaultGrams: 500,
+    keywords: ['avena', 'copos de avena', 'muesli', 'porridge'],
+    harvardRecommendation: 'Betaglucanos para el colesterol y energía matutina sostenida.'
+  },
+  {
+    id: 'sub-arroces-integrales',
+    category: 'granos',
+    name: 'Arroces Integrales & Salvajes',
+    subtitle: 'Arroz integral redondo, arroz basmati bio, arroz con miso genmai',
+    emoji: '🍚',
+    defaultGrams: 500,
+    keywords: ['arroz', 'basmati', 'genmai'],
+    harvardRecommendation: 'El grano completo preserva el germen y el salvado nutritivo.'
+  },
+  {
+    id: 'sub-pseudocereales',
+    category: 'granos',
+    name: 'Pseudocereales & Granos Ancestrales',
+    subtitle: 'Quinoa real bio de los Andes, trigo sarraceno, copos de espelta',
+    emoji: '🌾',
+    defaultGrams: 500,
+    keywords: ['quinoa', 'sarraceno', 'espelta', 'cebada', 'mijo'],
+    harvardRecommendation: 'Ricos en magnesio y aminoácidos esenciales sin picos de glucosa.'
+  },
+  {
+    id: 'sub-pastas-panes',
+    category: 'granos',
+    name: 'Pastas & Panes 100% Integrales',
+    subtitle: 'Macarrones de espelta integral, espaguetis bio, tortas crujientes',
+    emoji: '🥖',
+    defaultGrams: 500,
+    keywords: ['macarron', 'espelta', 'pasta', 'torta', 'tortitas'],
+    harvardRecommendation: 'Harina de molienda integral completa en lugar de grano refinado.'
+  },
 
-  // Centro: Aceite Noble
-  { id: 'u-aove', category: 'grasas', iconType: 'oil', label: 'AOVE Ecológico Extra', iconLabel: 'AOVE 100% BIO', defaultGrams: 250, keywords: ['aceite', 'oliva', 'aove', 'virgen'] },
+  // ==========================================
+  // 3. PROTEÍNAS SALUDABLES (25%)
+  // ==========================================
+  {
+    id: 'sub-legumbres',
+    category: 'proteinas',
+    name: 'Legumbres Castellanas & Guisos',
+    subtitle: 'Garbanzos cocidos castellanos, lentejas pardinas bio, alubias',
+    emoji: '🫘',
+    defaultGrams: 500,
+    keywords: ['garbanzo', 'lenteja', 'alubia'],
+    harvardRecommendation: 'La mejor fuente proteica: fibra, hierro y cero grasas saturadas.'
+  },
+  {
+    id: 'sub-proteina-vegetal',
+    category: 'proteinas',
+    name: 'Proteína Vegetal, Tofu & Tempeh',
+    subtitle: 'Tofu fresco bio, vegenuggets bio, tempeh clásico ecológico',
+    emoji: '🧊',
+    defaultGrams: 250,
+    keywords: ['tofu', 'tempeh', 'proteina'],
+    harvardRecommendation: 'Proteína vegetal de alta digestibilidad y sostenibilidad.'
+  },
+  {
+    id: 'sub-huevos-lacteos',
+    category: 'proteinas',
+    name: 'Huevos Camperos & Lácteos Bio',
+    subtitle: 'Huevos ecológicos camperos, kéfir artesano, yogur bio de cabra',
+    emoji: '🥚',
+    defaultGrams: 500,
+    keywords: ['huevo', 'huevos', 'colageno'],
+    harvardRecommendation: 'Origen ecológico de gallinas libres. Moderar quesos grasos.'
+  },
+  {
+    id: 'sub-pescados-conservas',
+    category: 'proteinas',
+    name: 'Pescados Azules & Conservas Nobles',
+    subtitle: 'Bonito del norte en AOVE, atún claro al natural, filetes de caballa',
+    emoji: '🐟',
+    defaultGrams: 250,
+    keywords: ['bonito', 'atun', 'caballa'],
+    harvardRecommendation: 'Ácidos grasos Omega-3 de pescados pequeños y limpios.'
+  },
+
+  // ==========================================
+  // 4. GRASAS SALUDABLES & ADEREZOS (CENTRO)
+  // ==========================================
+  {
+    id: 'sub-aove',
+    category: 'grasas',
+    name: 'Aceite de Oliva Virgen Extra (AOVE)',
+    subtitle: 'AOVE ecológico de primera presión en frío, oro líquido de olivares',
+    emoji: '🫒',
+    defaultGrams: 250,
+    keywords: ['oliva', 'aceite de oliva', 'virgen extra'],
+    harvardRecommendation: 'Grasa monoinsaturada principal. Usar en crudo y cocina suave.'
+  },
+  {
+    id: 'sub-frutos-secos',
+    category: 'grasas',
+    name: 'Frutos Secos Crudos & Tostados',
+    subtitle: 'Almendras crudas con piel bio, nueces de Castilla, macadamias',
+    emoji: '🥜',
+    defaultGrams: 250,
+    keywords: ['almendra', 'nuez', 'macadamia'],
+    harvardRecommendation: 'Grasas cardioprotectoras, vitamina E y efecto saciante.'
+  },
+  {
+    id: 'sub-semillas-omega',
+    category: 'grasas',
+    name: 'Semillas Bio & Omega-3',
+    subtitle: 'Semillas de chía bio, lino dorado molido, semillas de calabaza',
+    emoji: '🌻',
+    defaultGrams: 250,
+    keywords: ['chia', 'lino', 'sesamo', 'semillas'],
+    harvardRecommendation: 'Ácido alfa-linolénico (ALA) y fibra mucilaginosa para el colon.'
+  },
+  {
+    id: 'sub-aguacate-especiales',
+    category: 'grasas',
+    name: 'Aguacate Bio & Aceites Nobles',
+    subtitle: 'Aguacate fresco ecológico en su punto, aceite de aguacate y coco',
+    emoji: '🥑',
+    defaultGrams: 250,
+    keywords: ['aguacate', 'coco'],
+    harvardRecommendation: 'Ácido oleico natural y cremosidad vegetal sin grasas trans.'
+  }
 ];
 
 export const HarvardPlateInteractive = ({ onGoToStore }: HarvardPlateProps) => {
   const { addCatalogProduct, setIsOpen } = useCart();
   const { toast } = useToast();
 
-  // 1. HORIZONTE TEMPORAL SELECCIONADO (Semana a 1 año)
+  // Horizonte temporal & Hogar
   const [selectedHorizon, setSelectedHorizon] = useState<TimeHorizon>('1-semana');
   const [householdSize, setHouseholdSize] = useState<number>(2);
 
-  // 2. TEST DE PERFIL DIETÉTICO (No se abre automáticamente al entrar)
+  // Perfil dietético (vegano, celíaco, omnívoro)
+  const [dietType, setDietType] = useState<string>(() => {
+    try {
+      const saved = localStorage.getItem('ecoland-harvard-diet');
+      return saved || 'omnivoro';
+    } catch {
+      return 'omnivoro';
+    }
+  });
+
   const [hasCompletedTest, setHasCompletedTest] = useState<boolean>(() => {
     try {
-      return localStorage.getItem('ecoland-plate-test-done') === 'true';
-    } catch { return false; }
+      return Boolean(localStorage.getItem('ecoland-harvard-diet'));
+    } catch {
+      return false;
+    }
   });
 
-  const [dietType, setDietType] = useState<string>(() => {
-    try { return localStorage.getItem('ecoland-user-diet-type') || 'vegano'; } catch { return 'vegano'; }
-  });
-  
-  // El modal NUNCA sale de una, solo si el usuario pulsa en iniciarlo
   const [isTestModalOpen, setIsTestModalOpen] = useState(false);
 
-  // Buscadores específicos por sección
-  const [searchVeg, setSearchVeg] = useState<string>('');
-  const [searchGrains, setSearchGrains] = useState<string>('');
-  const [searchProt, setSearchProt] = useState<string>('');
+  // Buscadores individuales por categoría
+  const [searchVeg, setSearchVeg] = useState('');
+  const [searchGrains, setSearchGrains] = useState('');
+  const [searchProt, setSearchProt] = useState('');
+  const [searchOils, setSearchOils] = useState('');
 
-  // Explorador General de Todo el Catálogo (+1.000 productos)
+  // Explorador general de todo el catálogo (+1.000)
   const [isCatalogExplorerOpen, setIsCatalogExplorerOpen] = useState(false);
   const [explorerCategory, setExplorerCategory] = useState<'todos' | 'vegetales' | 'granos' | 'proteinas' | 'aceites'>('todos');
   const [explorerSearch, setExplorerSearch] = useState('');
 
-  // Drop hover state
-  const [dragOverZone, setDragOverZone] = useState<string | null>(null);
+  // Drag and drop & animación de pulso
+  const [dragOverZone, setDragOverZone] = useState<'vegetales' | 'granos' | 'proteinas' | 'grasas' | null>(null);
+  const [lastAddedZone, setLastAddedZone] = useState<string | null>(null);
 
-  const saveQuickTest = () => {
-    try {
-      localStorage.setItem('ecoland-plate-test-done', 'true');
-      localStorage.setItem('ecoland-user-diet-type', dietType);
-      const tags = dietType === 'vegano' ? ['vegano', 'bio'] : dietType === 'celiaco' ? ['sin-gluten', 'bio'] : ['bio'];
-      localStorage.setItem('ecoland-diet-tags', JSON.stringify(tags));
-    } catch {}
-    setHasCompletedTest(true);
-    setIsTestModalOpen(false);
-    toast({
-      title: "✓ Perfil dietético configurado",
-      description: "Los cálculos de raciones y recomendaciones se han ajustado a tu dieta y hogar.",
-    });
-  };
-
-  // Filtrado de productos disponibles por dieta
-  const filteredCatalog = useMemo(() => {
-    let pool = allCatalogProducts.filter(p => p.price > 0 && p.inStock);
-    if (dietType === 'vegano') {
-      pool = pool.filter(p => p.tags.includes('vegano'));
-    } else if (dietType === 'celiaco') {
-      pool = pool.filter(p => p.tags.includes('sin-gluten'));
+  // Alimentos colocados en el plato (arranque equilibrado por defecto)
+  const [plateItems, setPlateItems] = useState<PlateFoodItem[]>(() => [
+    {
+      id: 'default-1',
+      category: 'vegetales',
+      subcategoryKey: 'sub-cruciferas-huerta',
+      product: allCatalogProducts.find(p => p.slug.includes('lentejas-con-verduras') || p.slug.includes('tomate')) || allCatalogProducts[0],
+      grams: 500,
+      iconLabel: 'HUERTA BIO',
+      displayName: 'Zanahoria & Hortalizas de Huerta',
+      emoji: '🥕'
+    },
+    {
+      id: 'default-2',
+      category: 'vegetales',
+      subcategoryKey: 'sub-hojas-verdes',
+      product: allCatalogProducts.find(p => p.slug.includes('lechuga') || p.slug.includes('espinaca')) || allCatalogProducts[1],
+      grams: 500,
+      iconLabel: 'HOJA VERDE',
+      displayName: 'Lechuga Batavia Ecológica',
+      emoji: '🥬'
+    },
+    {
+      id: 'default-3',
+      category: 'granos',
+      subcategoryKey: 'sub-copos-avena',
+      product: allCatalogProducts.find(p => p.slug.includes('copos-de-avena')) || allCatalogProducts[2],
+      grams: 500,
+      iconLabel: 'AVENA BIO',
+      displayName: 'Copos de Avena Integral Suaves',
+      emoji: '🥣'
+    },
+    {
+      id: 'default-4',
+      category: 'proteinas',
+      subcategoryKey: 'sub-legumbres',
+      product: allCatalogProducts.find(p => p.slug.includes('garbanzo')) || allCatalogProducts[3],
+      grams: 660,
+      iconLabel: 'GARBANZO BIO',
+      displayName: 'Garbanzos Cocidos Castellanos',
+      emoji: '🫘'
+    },
+    {
+      id: 'default-5',
+      category: 'grasas',
+      subcategoryKey: 'sub-aove',
+      product: allCatalogProducts.find(p => p.slug.includes('aceite-de-oliva') || p.slug.includes('oliva')) || allCatalogProducts[4],
+      grams: 250,
+      iconLabel: 'AOVE BIO',
+      displayName: 'Aceite Oliva Virgen Extra Ecológico',
+      emoji: '🫒'
     }
-    return pool;
+  ]);
+
+  // Filtrado de catálogo según perfil
+  const filteredCatalog = useMemo(() => {
+    let prods = allCatalogProducts;
+    if (dietType === 'vegano') {
+      prods = prods.filter(p => p.tags.includes('vegano') || p.category === 'legumbres' || p.category === 'desayunos' || p.category === 'aceites');
+    } else if (dietType === 'celiaco') {
+      prods = prods.filter(p => p.tags.includes('sin-gluten') || p.category === 'aceites');
+    }
+    return prods;
   }, [dietType]);
 
-  // Catálogos específicos
+  // Catálogos específicos por grupo
   const vegCatalog = useMemo(() => {
     return filteredCatalog.filter(p => {
-      const matchCat = p.category === 'legumbres' || p.category === 'salsas' || p.category === 'superfoods';
-      const text = (p.name + ' ' + p.description).toLowerCase();
-      const matchWord = text.includes('verdura') || text.includes('tomate') || text.includes('gazpacho') || text.includes('esparrago') || text.includes('acai');
-      return matchCat || matchWord;
+      const name = (p.name + ' ' + p.description).toLowerCase();
+      return name.includes('verdura') || name.includes('tomate') || name.includes('zanahoria') || 
+             name.includes('lechuga') || name.includes('espinaca') || name.includes('brocoli') ||
+             name.includes('arandano') || name.includes('fruta') || name.includes('acai') ||
+             name.includes('manzana') || name.includes('gazpacho') || name.includes('alcachofa') ||
+             name.includes('pimiento') || name.includes('menestra');
     });
   }, [filteredCatalog]);
 
   const grainCatalog = useMemo(() => {
     return filteredCatalog.filter(p => {
-      const matchCat = p.category === 'desayunos';
-      const text = (p.name + ' ' + p.description).toLowerCase();
-      const matchWord = text.includes('avena') || text.includes('quinoa') || text.includes('arroz') || text.includes('copos') || text.includes('espelta') || text.includes('cebada');
-      return matchCat || matchWord;
+      const name = (p.name + ' ' + p.description).toLowerCase();
+      return p.category === 'desayunos' || name.includes('avena') || name.includes('arroz') || 
+             name.includes('quinoa') || name.includes('espelta') || name.includes('trigo') || 
+             name.includes('cereal') || name.includes('pasta') || name.includes('macarron');
     });
   }, [filteredCatalog]);
 
   const protCatalog = useMemo(() => {
     return filteredCatalog.filter(p => {
-      const matchCat = p.category === 'legumbres' || p.category === 'superfoods';
-      const text = (p.name + ' ' + p.description).toLowerCase();
-      const matchWord = text.includes('garbanzo') || text.includes('lenteja') || text.includes('alubia') || text.includes('protein') || text.includes('tofu') || text.includes('chia');
-      return matchCat || matchWord;
+      const name = (p.name + ' ' + p.description).toLowerCase();
+      return p.category === 'legumbres' || name.includes('garbanzo') || name.includes('lenteja') || 
+             name.includes('alubia') || name.includes('tofu') || name.includes('tempeh') || 
+             name.includes('huevo') || name.includes('bonito') || name.includes('atun') ||
+             name.includes('proteina') || name.includes('seitan');
     });
   }, [filteredCatalog]);
 
   const oilCatalog = useMemo(() => {
-    return filteredCatalog.filter(p => p.category === 'aceites' || p.name.toLowerCase().includes('aceite'));
+    return filteredCatalog.filter(p => {
+      const name = (p.name + ' ' + p.description).toLowerCase();
+      return p.category === 'aceites' || name.includes('aceite') || name.includes('oliva') || 
+             name.includes('aove') || name.includes('almendra') || name.includes('nuez') ||
+             name.includes('chia') || name.includes('aguacate');
+    });
   }, [filteredCatalog]);
 
-  // Plate Items in State con valores iniciales
-  const [plateItems, setPlateItems] = useState<PlateFoodItem[]>(() => {
-    const initVeg = vegCatalog.find(p => p.slug.includes('lentejas-con-verduras')) || vegCatalog[0] || allCatalogProducts[0];
-    const initGrain = grainCatalog.find(p => p.slug.includes('avena')) || grainCatalog[0] || allCatalogProducts[1];
-    const initProt = protCatalog.find(p => p.slug.includes('garbanzo')) || protCatalog[0] || allCatalogProducts[2];
-    const initOil = oilCatalog[0] || allCatalogProducts[3];
-
-    return [
-      {
-        id: 'init-veg',
-        category: 'vegetales',
-        product: initVeg,
-        grams: 1000,
-        iconLabel: 'HORTALIZA BIO',
-        displayName: cleanProductName(initVeg.name)
-      },
-      {
-        id: 'init-grain',
-        category: 'granos',
-        product: initGrain,
-        grams: 500,
-        iconLabel: 'AVENA BIO',
-        displayName: cleanProductName(initGrain.name)
-      },
-      {
-        id: 'init-prot',
-        category: 'proteinas',
-        product: initProt,
-        grams: 500,
-        iconLabel: 'LEGUMBRE BIO',
-        displayName: cleanProductName(initProt.name)
-      },
-      {
-        id: 'init-oil',
-        category: 'grasas',
-        product: initOil,
-        grams: 250,
-        iconLabel: 'AOVE BIO',
-        displayName: cleanProductName(initOil.name)
-      }
-    ];
-  });
-
-  // METAS SEGÚN HORIZONTE TEMPORAL SELECCIONADO
+  // Metas según horizonte temporal seleccionado
   const currentHorizonConfig = HORIZONS.find(h => h.id === selectedHorizon) || HORIZONS[0];
   const totalMealsTarget = currentHorizonConfig.mealsPerPerson * householdSize;
 
-  // Requerimientos recomendados según Harvard por persona por comida:
-  // - 250g vegetales/frutas
-  // - 125g granos integrales
-  // - 125g proteína limpia
-  // - ~20g aceite noble
   const targetVegGrams = Math.round(totalMealsTarget * 250);
   const targetGrainGrams = Math.round(totalMealsTarget * 125);
   const targetProtGrams = Math.round(totalMealsTarget * 125);
   const targetTotalGrams = targetVegGrams + targetGrainGrams + targetProtGrams;
 
   // Añadir alimento al plato
-  const addFoodToPlate = (product: CatalogProduct, category: 'vegetales' | 'granos' | 'proteinas' | 'grasas', grams = 500, iconLabel = 'ALIMENTO BIO') => {
+  const addFoodToPlate = (
+    product: CatalogProduct, 
+    category: 'vegetales' | 'granos' | 'proteinas' | 'grasas', 
+    grams = 500, 
+    iconLabel = 'ALIMENTO BIO',
+    emoji = '🥗',
+    subcategoryKey = ''
+  ) => {
     const newItem: PlateFoodItem = {
       id: `${product.slug}-${Date.now()}-${Math.random()}`,
       category,
+      subcategoryKey,
       product,
       grams,
       iconLabel,
-      displayName: cleanProductName(product.name)
+      displayName: cleanProductName(product.name),
+      emoji
     };
 
     setPlateItems(prev => [...prev, newItem]);
+    setLastAddedZone(category);
+    setTimeout(() => setLastAddedZone(null), 800);
 
     toast({
-      title: "✓ Añadido al planificador",
+      title: `${emoji} ¡Lanzado al plato!`,
       description: `${newItem.displayName} (+${grams >= 1000 ? `${(grams/1000).toFixed(1)}kg` : `${grams}g`}) sumado a tu despensa.`,
     });
   };
 
-  // Añadir alimento universal representativo
-  const addUniversalFood = (universal: UniversalFood) => {
+  // LANZAMIENTO GENÉRICO POR SUBCATEGORÍA (LA PERSONA NO TIENE QUE BUSCAR ENTRE 1.000 PRODUCTOS)
+  const addGenericSubcategoryToPlate = (sub: FoodSubcategory) => {
     let pool: CatalogProduct[] = [];
-    if (universal.category === 'vegetales') pool = vegCatalog;
-    else if (universal.category === 'granos') pool = grainCatalog;
-    else if (universal.category === 'proteinas') pool = protCatalog;
+    if (sub.category === 'vegetales') pool = vegCatalog;
+    else if (sub.category === 'granos') pool = grainCatalog;
+    else if (sub.category === 'proteinas') pool = protCatalog;
     else pool = oilCatalog;
 
     if (pool.length === 0) pool = filteredCatalog;
 
+    // Buscar coincidencia exacta por palabras clave
     let matched = pool.filter(p => {
       const txt = (p.name + ' ' + p.description).toLowerCase();
-      return universal.keywords.some(k => txt.includes(k));
+      return sub.keywords.some(k => txt.includes(k));
     });
 
     if (matched.length === 0) matched = pool;
+    // Seleccionar producto real representativo
     const selectedProduct = matched[Math.floor(Math.random() * matched.length)] || pool[0];
 
-    // Si el horizonte es de 1 mes o más, incrementamos la ración para abastecimiento real
-    const scaledGrams = currentHorizonConfig.days >= 30 ? universal.defaultGrams * 2 : universal.defaultGrams;
+    // Escalar ración si el horizonte es mayor de 1 mes
+    const scaledGrams = currentHorizonConfig.days >= 30 ? sub.defaultGrams * 2 : sub.defaultGrams;
 
-    addFoodToPlate(selectedProduct, universal.category, scaledGrams, universal.iconLabel);
+    addFoodToPlate(selectedProduct, sub.category, scaledGrams, sub.name.toUpperCase(), sub.emoji, sub.id);
   };
 
   const removePlateItem = (id: string) => {
@@ -289,8 +469,8 @@ export const HarvardPlateInteractive = ({ onGoToStore }: HarvardPlateProps) => {
   };
 
   // Manejo de Drag and Drop
-  const handleDragStart = (e: React.DragEvent, slug: string, category: string, iconLabel: string) => {
-    e.dataTransfer.setData('text/plain', JSON.stringify({ slug, category, iconLabel }));
+  const handleDragStart = (e: React.DragEvent, slug: string, category: string, iconLabel: string, emoji = '🥗') => {
+    e.dataTransfer.setData('text/plain', JSON.stringify({ slug, category, iconLabel, emoji }));
   };
 
   const handleDropOnZone = (e: React.DragEvent, targetCategory: 'vegetales' | 'granos' | 'proteinas' | 'grasas') => {
@@ -304,104 +484,30 @@ export const HarvardPlateInteractive = ({ onGoToStore }: HarvardPlateProps) => {
       const foundProduct = allCatalogProducts.find(p => p.slug === data.slug);
       if (foundProduct) {
         const grams = targetCategory === 'vegetales' ? 1000 : 500;
-        addFoodToPlate(foundProduct, targetCategory, grams, data.iconLabel || 'ALIMENTO');
+        addFoodToPlate(foundProduct, targetCategory, grams, data.iconLabel || 'ALIMENTO', data.emoji || '🥗');
       }
     } catch (err) {
       console.error('Error in drop handler', err);
     }
   };
 
-  // ==========================================
-  // CÁLCULOS NUTRICIONALES Y DE HORIZONTE
-  // ==========================================
+  // Cálculos nutricionales del plato
   const currentTotalGrams = plateItems.reduce((acc, it) => acc + it.grams, 0) || 1;
   const currentVegGrams = plateItems.filter(it => it.category === 'vegetales').reduce((acc, it) => acc + it.grams, 0);
   const currentGrainGrams = plateItems.filter(it => it.category === 'granos').reduce((acc, it) => acc + it.grams, 0);
   const currentProtGrams = plateItems.filter(it => it.category === 'proteinas').reduce((acc, it) => acc + it.grams, 0);
   const currentOilGrams = plateItems.filter(it => it.category === 'grasas').reduce((acc, it) => acc + it.grams, 0);
 
-  // Porcentajes de proporción interna del plato
-  const vegPercent = Math.round((currentVegGrams / currentTotalGrams) * 100);
-  const grainPercent = Math.round((currentGrainGrams / currentTotalGrams) * 100);
-  const protPercent = Math.round((currentProtGrams / currentTotalGrams) * 100);
+  // Porcentajes reales en el plato
+  const vegPct = Math.round((currentVegGrams / currentTotalGrams) * 100) || 0;
+  const grainPct = Math.round((currentGrainGrams / currentTotalGrams) * 100) || 0;
+  const protPct = Math.round((currentProtGrams / currentTotalGrams) * 100) || 0;
 
-  // Porcentaje de cumplimiento del OBJETIVO TEMPORAL (Barra de progreso hacia la meta)
-  const targetCoveragePercent = Math.min(100, Math.round((currentTotalGrams / targetTotalGrams) * 100));
-
-  // Estimación de nutrientes totales acumulados
-  const totalCalories = Math.round(
-    (currentVegGrams * 0.45) + 
-    (currentGrainGrams * 1.30) + 
-    (currentProtGrams * 1.40) + 
-    (currentOilGrams * 8.84)
-  );
-
-  const totalProteinGrams = Math.round(
-    (currentVegGrams * 0.02) + 
-    (currentGrainGrams * 0.045) + 
-    (currentProtGrams * 0.09)
-  );
-
-  const totalFiberGrams = Math.round(
-    (currentVegGrams * 0.035) + 
-    (currentGrainGrams * 0.04) + 
-    (currentProtGrams * 0.065)
-  );
-
-  const totalPrice = plateItems.reduce((acc, it) => acc + it.product.price, 0);
-
-  // Micronutrientes
-  const hasVitC = currentVegGrams >= 1000;
-  const hasIron = currentProtGrams >= 1000 || currentGrainGrams >= 1000;
-  const hasCalcium = currentProtGrams >= 1000 || currentVegGrams >= 1500;
-  const hasMagnesium = currentGrainGrams >= 1000;
-  const hasPolyphenols = currentOilGrams > 0;
-
-  // Feedback Inteligente Dinámico
-  let feedback = {
-    isOptimal: false,
-    title: 'Ajustando equilibrio...',
-    text: '',
-    color: 'bg-emerald-50/80 text-emerald-950 border-emerald-200'
-  };
-
-  if (targetCoveragePercent >= 90 && vegPercent >= 45 && vegPercent <= 55 && grainPercent >= 20 && grainPercent <= 30 && protPercent >= 20 && protPercent <= 30) {
-    feedback = {
-      isOptimal: true,
-      title: `¡Meta de ${currentHorizonConfig.label} 100% Alcanzada!`,
-      text: `Excelente planificación. Has cubierto las ${totalMealsTarget} comidas de tu hogar con la proporción exacta recomendada por la Escuela de Salud Pública de Harvard.`,
-      color: 'bg-emerald-100 text-emerald-950 border-emerald-300'
-    };
-  } else if (grainPercent > 32) {
-    feedback = {
-      isOptimal: false,
-      title: 'Proporción con exceso de granos/cereales',
-      text: '🥦 Ya tienes suficientes carbohidratos en tu plan; arroja hortalizas o verduras a tu plato para equilibrar la densidad nutricional.',
-      color: 'bg-amber-50 text-amber-950 border-amber-300'
-    };
-  } else if (vegPercent < 42) {
-    const diffKg = ((targetVegGrams - currentVegGrams) / 1000).toFixed(1);
-    feedback = {
-      isOptimal: false,
-      title: 'Faltan vegetales y hortalizas frescas',
-      text: `Tu objetivo de ${currentHorizonConfig.label} requiere más vegetales para llegar al 50%. Te sugerimos arrojar unos ${Math.max(1, parseFloat(diffKg))} kg de verduras bio.`,
-      color: 'bg-emerald-50 text-emerald-900 border-emerald-200'
-    };
-  } else if (protPercent < 20) {
-    feedback = {
-      isOptimal: false,
-      title: 'Aporte de proteína incompleto',
-      text: '💪 Te falta proteína limpia para el 25%; suma garbanzos, lentejas bio o semillas a tu planificador.',
-      color: 'bg-blue-50 text-blue-950 border-blue-200'
-    };
-  } else {
-    feedback = {
-      isOptimal: true,
-      title: `Plan en progreso (${targetCoveragePercent}% completado)`,
-      text: `Llevas ${(currentTotalGrams/1000).toFixed(1)} kg de alimentos biológicos de los ${(targetTotalGrams/1000).toFixed(1)} kg previstos para ${currentHorizonConfig.label}.`,
-      color: 'bg-teal-50 text-teal-950 border-teal-200'
-    };
-  }
+  // Precio total del lote
+  const totalPrice = plateItems.reduce((acc, it) => {
+    const factor = it.grams / 500;
+    return acc + (it.product.price * Math.max(1, factor));
+  }, 0);
 
   // Comprar todo el plan
   const handleAddPlateToCart = () => {
@@ -420,26 +526,7 @@ export const HarvardPlateInteractive = ({ onGoToStore }: HarvardPlateProps) => {
     });
   };
 
-  // Filtrado de búsquedas
-  const displayVeg = useMemo(() => {
-    if (!searchVeg.trim()) return vegCatalog.slice(0, 6);
-    const q = searchVeg.toLowerCase();
-    return vegCatalog.filter(p => (p.name + ' ' + p.brand + ' ' + p.description).toLowerCase().includes(q)).slice(0, 10);
-  }, [vegCatalog, searchVeg]);
-
-  const displayGrains = useMemo(() => {
-    if (!searchGrains.trim()) return grainCatalog.slice(0, 6);
-    const q = searchGrains.toLowerCase();
-    return grainCatalog.filter(p => (p.name + ' ' + p.brand + ' ' + p.description).toLowerCase().includes(q)).slice(0, 10);
-  }, [grainCatalog, searchGrains]);
-
-  const displayProt = useMemo(() => {
-    if (!searchProt.trim()) return protCatalog.slice(0, 6);
-    const q = searchProt.toLowerCase();
-    return protCatalog.filter(p => (p.name + ' ' + p.brand + ' ' + p.description).toLowerCase().includes(q)).slice(0, 10);
-  }, [protCatalog, searchProt]);
-
-  // Explorador General de productos
+  // Explorador General de productos (+1.000)
   const explorerProducts = useMemo(() => {
     let pool = filteredCatalog;
     if (explorerCategory === 'vegetales') pool = vegCatalog;
@@ -451,792 +538,675 @@ export const HarvardPlateInteractive = ({ onGoToStore }: HarvardPlateProps) => {
       const q = explorerSearch.toLowerCase();
       pool = pool.filter(p => (p.name + ' ' + p.brand + ' ' + p.description).toLowerCase().includes(q));
     }
-    return pool.slice(0, 36);
+    return pool.slice(0, 24);
   }, [filteredCatalog, explorerCategory, explorerSearch, vegCatalog, grainCatalog, protCatalog, oilCatalog]);
 
   return (
     <div className="space-y-8">
       
-      {/* 1. BANNER ELEGANTE DE PERFIL NUTRICIONAL (Sugerencia no intrusiva con beneficios) */}
-      {!hasCompletedTest ? (
-        <div className="bg-gradient-to-r from-emerald-900/90 via-teal-900/90 to-slate-900 text-white rounded-3xl p-6 border border-emerald-500/20 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <div className="space-y-1.5 max-w-2xl">
-            <div className="flex items-center gap-2">
-              <span className="text-xs uppercase font-extrabold tracking-widest text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
-                Experiencia Personalizada
-              </span>
-              <span className="text-xs text-emerald-200">Test opcional de 30 segundos</span>
-            </div>
-            <h3 className="text-lg md:text-xl font-display font-bold">
-              ¿Quieres adaptar las proporciones a tu dieta e intolerancias?
-            </h3>
-            <p className="text-xs text-slate-300 leading-relaxed">
-              Configura si tu hogar es vegano, celíaco o variado para que el plato solo ofrezca alimentos 100% compatibles, calcule raciones exactas y evite compras innecesarias.
-            </p>
-          </div>
-          <Button 
-            onClick={() => setIsTestModalOpen(true)}
-            className="bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-bold text-xs py-5 px-5 rounded-2xl shrink-0 shadow-sm gap-2"
-          >
-            <span>Configurar mi perfil</span>
-            <ArrowRight className="h-4 w-4" />
-          </Button>
-        </div>
-      ) : (
-        <div className="bg-white rounded-2xl p-3.5 border border-slate-200/80 shadow-2xs flex items-center justify-between text-xs">
-          <div className="flex items-center gap-2 text-slate-700">
-            <CheckCircle className="h-4 w-4 text-emerald-600" />
-            <span>Perfil activo: <strong>{dietType === 'vegano' ? 'Vegano Estricto' : dietType === 'celiaco' ? 'Sin Gluten / Celíaco' : 'Bio Variado'}</strong> ({householdSize} personas)</span>
-          </div>
-          <button 
-            onClick={() => setIsTestModalOpen(true)}
-            className="text-emerald-700 font-bold hover:underline text-[11px]"
-          >
-            Modificar perfil
-          </button>
-        </div>
-      )}
-
-      {/* Modal de Test (Se abre SOLO si el usuario pulsa en Configurar) */}
-      <AnimatePresence>
-        {isTestModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-            <motion.div 
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white rounded-3xl p-6 md:p-8 max-w-lg w-full shadow-2xl border space-y-6 relative"
-            >
-              <button 
-                onClick={() => setIsTestModalOpen(false)}
-                className="absolute top-5 right-5 text-slate-400 hover:text-slate-600"
-              >
-                <X className="h-5 w-5" />
-              </button>
-
-              <div className="space-y-1.5">
-                <span className="text-xs uppercase font-extrabold tracking-wider text-emerald-700">Ajuste Nutricional</span>
-                <h3 className="font-display text-2xl font-black text-slate-900">
-                  Perfil de Alimentación y Hogar
-                </h3>
-                <p className="text-xs text-slate-500">
-                  Adaptaremos los alimentos disponibles y los volúmenes del plato según tus necesidades.
-                </p>
-              </div>
-
-              <div className="space-y-4 text-xs">
-                <div>
-                  <label className="block font-bold text-slate-800 mb-2">1. ¿Qué pauta nutricional sigues?</label>
-                  <div className="grid grid-cols-3 gap-2">
-                    {[
-                      { id: 'vegano', label: '🌱 Vegana 100%' },
-                      { id: 'celiaco', label: '🌾 Sin Gluten' },
-                      { id: 'omnivoro', label: '✨ Bio Variada' },
-                    ].map(d => (
-                      <button
-                        key={d.id}
-                        type="button"
-                        onClick={() => setDietType(d.id)}
-                        className={`p-3 rounded-2xl border font-bold text-center transition-all ${
-                          dietType === d.id ? 'bg-emerald-900 text-white border-emerald-900 shadow-sm' : 'bg-slate-50 text-slate-700 hover:bg-slate-100'
-                        }`}
-                      >
-                        {d.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block font-bold text-slate-800 mb-2">2. ¿Para cuántas personas planificas la compra?</label>
-                  <div className="grid grid-cols-3 gap-2">
-                    {[
-                      { id: 1, label: '👤 1 persona' },
-                      { id: 2, label: '👥 2 personas' },
-                      { id: 4, label: '👨‍👩‍👧 Familia (4)' },
-                    ].map(h => (
-                      <button
-                        key={h.id}
-                        type="button"
-                        onClick={() => setHouseholdSize(h.id)}
-                        className={`p-3 rounded-2xl border font-bold text-center transition-all ${
-                          householdSize === h.id ? 'bg-emerald-900 text-white border-emerald-900 shadow-sm' : 'bg-slate-50 text-slate-700 hover:bg-slate-100'
-                        }`}
-                      >
-                        {h.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <Button 
-                onClick={saveQuickTest}
-                className="w-full bg-emerald-900 hover:bg-emerald-800 text-white font-bold py-6 text-sm rounded-2xl shadow-md gap-2"
-              >
-                <span>Guardar y aplicar a mi plato</span>
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-
-      {/* 2. SELECTOR DE HORIZONTE TEMPORAL (1 semana hasta 1 año) */}
-      <div className="bg-white rounded-3xl p-6 md:p-8 border shadow-xs space-y-4">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b pb-4">
+      {/* 1. SELECTOR DE HORIZONTE Y HOGAR */}
+      <div className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/90 shadow-2xs space-y-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
-              <Calendar className="h-5 w-5 text-emerald-700" />
-              <h3 className="font-display font-black text-slate-900 text-lg md:text-xl">
-                Objetivo Temporal de Abastecimiento Saludable
-              </h3>
+              <span className="text-[10px] uppercase font-black tracking-widest text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                Planificación Inteligente Harvard
+              </span>
+              <span className="text-xs text-slate-500">Sin contar calorías · Proporción real de alimentos</span>
             </div>
-            <p className="text-xs text-slate-500 mt-1">
-              Estimación de aprovisionamiento de Ecoland basada en las preferencias y cantidades configuradas por el usuario. La proporción visual 50% vegetales, 25% cereales y 25% proteínas sirve como guía de composición culinaria, no como prescripción médica individual.
+            <h2 className="text-xl sm:text-2xl font-black text-slate-900 mt-1">
+              Diseña tu Alimentación Equilibrada
+            </h2>
+            <p className="text-xs text-slate-500">
+              50% Vegetales y frutas, 25% granos integrales, 25% proteína saludable y grasas nobles.
             </p>
           </div>
 
-          <div className="flex items-center gap-1.5 bg-slate-50 p-1.5 rounded-2xl border text-xs font-bold text-slate-700 shrink-0">
-            <span>Comensales:</span>
-            {[1, 2, 4].map(n => (
-              <button
-                key={n}
-                onClick={() => setHouseholdSize(n)}
-                className={`px-2.5 py-1 rounded-xl transition-all ${householdSize === n ? 'bg-emerald-800 text-white shadow-2xs' : 'hover:bg-slate-200'}`}
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Personas en el hogar */}
+            <div className="flex items-center gap-2 bg-slate-50 border rounded-2xl px-3 py-2 text-xs">
+              <span className="text-slate-500 font-medium">Hogar:</span>
+              <div className="flex gap-1">
+                {[1, 2, 4].map(n => (
+                  <button
+                    key={n}
+                    onClick={() => setHouseholdSize(n)}
+                    className={`w-7 h-7 rounded-xl font-bold transition-all text-xs ${
+                      householdSize === n 
+                        ? 'bg-emerald-900 text-white shadow-2xs' 
+                        : 'bg-white text-slate-700 hover:bg-slate-200 border'
+                    }`}
+                  >
+                    {n}p
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Horizonte temporal */}
+            <div className="flex items-center gap-2 bg-slate-50 border rounded-2xl px-3 py-2 text-xs">
+              <Calendar className="w-4 h-4 text-emerald-700" />
+              <select
+                value={selectedHorizon}
+                onChange={e => setSelectedHorizon(e.target.value as TimeHorizon)}
+                className="bg-transparent font-bold text-slate-800 focus:outline-none cursor-pointer text-xs"
               >
-                {n} {n === 1 ? 'pers.' : 'pers.'}
-              </button>
-            ))}
+                {HORIZONS.map(h => (
+                  <option key={h.id} value={h.id}>{h.label} ({h.days} días)</option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
 
-        {/* Botones de horizonte temporal: 1 semana, 1 mes, 1.5 meses, 2 meses, 3 meses, 6 meses, 1 año */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2 pt-1 text-xs font-bold">
-          {HORIZONS.map(h => (
-            <button
-              key={h.id}
-              onClick={() => setSelectedHorizon(h.id)}
-              className={`p-3 rounded-2xl border text-center transition-all flex flex-col justify-center items-center gap-0.5 ${
-                selectedHorizon === h.id 
-                  ? 'bg-emerald-900 text-white border-emerald-900 shadow-sm ring-2 ring-emerald-500/30' 
-                  : 'bg-slate-50/70 text-slate-700 hover:bg-slate-100 border-slate-200/70'
-              }`}
-            >
-              <span className="font-bold">{h.label}</span>
-              <span className={`text-[10px] font-normal ${selectedHorizon === h.id ? 'text-emerald-300' : 'text-slate-400'}`}>
-                {h.days * householdSize * 2} comidas
-              </span>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* 3. BARRA DE CUMPLIMIENTO DEL OBJETIVO TEMPORAL */}
-      <div className={`p-6 rounded-3xl border shadow-xs transition-all ${feedback.color} space-y-4`}>
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-          <div>
-            <span className="text-[10px] uppercase font-black tracking-widest text-emerald-800 bg-white/70 px-2.5 py-1 rounded-full border border-emerald-300 inline-block mb-1.5">
-              🎯 Meta para {currentHorizonConfig.label} ({totalMealsTarget} comidas calculadas para {householdSize} {householdSize === 1 ? 'persona' : 'personas'})
+        {/* Barra de progreso de equilibrio Harvard */}
+        <div className="pt-2 border-t space-y-1.5">
+          <div className="flex items-center justify-between text-xs">
+            <span className="font-bold text-slate-700 flex items-center gap-1.5">
+              <Scale className="w-3.5 h-3.5 text-emerald-700" />
+              <span>Equilibrio de tu plato:</span>
             </span>
-            <h4 className="text-base md:text-lg font-black">{feedback.title}</h4>
-            <p className="text-xs leading-relaxed mt-0.5 max-w-3xl opacity-90">{feedback.text}</p>
-          </div>
-          
-          <div className="text-left md:text-right shrink-0 bg-white/80 p-3.5 rounded-2xl border border-emerald-200">
-            <span className="text-xs text-slate-500 block">Progreso hacia tu meta</span>
-            <strong className="text-2xl font-black font-display text-emerald-950">{targetCoveragePercent}%</strong>
-            <span className="block text-[11px] text-slate-500 font-mono">{(currentTotalGrams/1000).toFixed(1)} kg de {(targetTotalGrams/1000).toFixed(1)} kg</span>
-          </div>
-        </div>
-
-        {/* Barra de progreso global del periodo */}
-        <div className="space-y-1.5">
-          <div className="w-full bg-slate-200/80 rounded-full h-3.5 overflow-hidden p-0.5 border border-emerald-200">
-            <div 
-              className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-800 h-full rounded-full transition-all duration-500 shadow-inner" 
-              style={{ width: `${targetCoveragePercent}%` }} 
-            />
-          </div>
-          <div className="flex justify-between text-[11px] text-slate-500 font-mono">
-            <span>0 kg</span>
-            <span>Objetivo Despensa: {(targetTotalGrams/1000).toFixed(1)} kg</span>
-          </div>
-        </div>
-
-        {/* Desglose de proporciones Harvard alcanzadas */}
-        <div className="grid grid-cols-3 gap-3 pt-2 text-[11px] border-t border-emerald-200/60">
-          <div>
-            <div className="flex justify-between mb-1 font-bold text-slate-800">
-              <span>🥦 Vegetales: <strong>{vegPercent}%</strong></span>
-              <span className="text-slate-500">Meta: 50%</span>
-            </div>
-            <div className="w-full bg-slate-200/80 rounded-full h-2 overflow-hidden">
-              <div className="bg-emerald-600 h-full rounded-full transition-all duration-300" style={{ width: `${Math.min(100, (vegPercent / 50) * 100)}%` }} />
-            </div>
-          </div>
-
-          <div>
-            <div className="flex justify-between mb-1 font-bold text-slate-800">
-              <span>🌾 Granos: <strong>{grainPercent}%</strong></span>
-              <span className="text-slate-500">Meta: 25%</span>
-            </div>
-            <div className="w-full bg-slate-200/80 rounded-full h-2 overflow-hidden">
-              <div className="bg-amber-600 h-full rounded-full transition-all duration-300" style={{ width: `${Math.min(100, (grainPercent / 25) * 100)}%` }} />
-            </div>
-          </div>
-
-          <div>
-            <div className="flex justify-between mb-1 font-bold text-slate-800">
-              <span>🫘 Proteína: <strong>{protPercent}%</strong></span>
-              <span className="text-slate-500">Meta: 25%</span>
-            </div>
-            <div className="w-full bg-slate-200/80 rounded-full h-2 overflow-hidden">
-              <div className="bg-blue-600 h-full rounded-full transition-all duration-300" style={{ width: `${Math.min(100, (protPercent / 25) * 100)}%` }} />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 4. PANEL DE MICRONUTRIENTES Y VALORES GLOBALES */}
-      <div className="bg-slate-900 text-white rounded-3xl p-5 md:p-6 shadow-sm">
-        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4">
-          <div>
-            <span className="text-[10px] uppercase font-bold text-emerald-400 tracking-wider">Aporte Nutricional Completo</span>
-            <h4 className="text-lg font-bold flex items-center gap-2">
-              <Activity className="h-5 w-5 text-emerald-400" />
-              Nutrientes y Micronutrientes Esenciales
-            </h4>
-          </div>
-          <div className="flex items-center gap-4 text-xs font-mono">
-            <div>
-              <span className="text-slate-400 block text-[10px] uppercase font-sans">Energía Total</span>
-              <strong className="text-base text-white">{totalCalories} kcal</strong>
-            </div>
-            <div className="border-l border-slate-800 pl-4">
-              <span className="text-slate-400 block text-[10px] uppercase font-sans">Proteína Bio</span>
-              <strong className="text-base text-white">{totalProteinGrams}g</strong>
-            </div>
-            <div className="border-l border-slate-800 pl-4">
-              <span className="text-slate-400 block text-[10px] uppercase font-sans">Fibra Prebiótica</span>
-              <strong className="text-base text-white">{totalFiberGrams}g</strong>
-            </div>
-          </div>
-        </div>
-
-        {/* Badges de Micronutrientes estilo Ametller Origen (minimalistas con borde limpio) */}
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 pt-4 text-xs">
-          <div className={`p-2.5 rounded-2xl border transition-all ${hasVitC ? 'bg-emerald-950/70 border-emerald-500/40 text-emerald-200' : 'bg-slate-900/40 border-slate-800 text-slate-500'}`}>
-            <span className="text-xs font-bold block">VITAMINA C</span>
-            <span className="text-[10px] mt-0.5 block">{hasVitC ? '✓ Aporte Óptimo' : 'Faltan hortalizas'}</span>
-          </div>
-          <div className={`p-2.5 rounded-2xl border transition-all ${hasIron ? 'bg-emerald-950/70 border-emerald-500/40 text-emerald-200' : 'bg-slate-900/40 border-slate-800 text-slate-500'}`}>
-            <span className="text-xs font-bold block">HIERRO VEGETAL</span>
-            <span className="text-[10px] mt-0.5 block">{hasIron ? '✓ Cubierto (Legumbres)' : 'Faltan legumbres'}</span>
-          </div>
-          <div className={`p-2.5 rounded-2xl border transition-all ${hasCalcium ? 'bg-emerald-950/70 border-emerald-500/40 text-emerald-200' : 'bg-slate-900/40 border-slate-800 text-slate-500'}`}>
-            <span className="text-xs font-bold block">CALCIO BIODISPONIBLE</span>
-            <span className="text-[10px] mt-0.5 block">{hasCalcium ? '✓ Cubierto' : 'Bajo aporte'}</span>
-          </div>
-          <div className={`p-2.5 rounded-2xl border transition-all ${hasMagnesium ? 'bg-emerald-950/70 border-emerald-500/40 text-emerald-200' : 'bg-slate-900/40 border-slate-800 text-slate-500'}`}>
-            <span className="text-xs font-bold block">MAGNESIO Y POTASIO</span>
-            <span className="text-[10px] mt-0.5 block">{hasMagnesium ? '✓ Granos enteros' : 'Faltan cereales'}</span>
-          </div>
-          <div className={`p-2.5 rounded-2xl border transition-all ${hasPolyphenols ? 'bg-emerald-950/70 border-emerald-500/40 text-emerald-200' : 'bg-slate-900/40 border-slate-800 text-slate-500'}`}>
-            <span className="text-xs font-bold block">POLIFENOLES / AOVE</span>
-            <span className="text-[10px] mt-0.5 block">{hasPolyphenols ? '✓ Grasas Nobles' : 'Añadir AOVE'}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* 5. ÁREA INTERACTIVA: EL PLATO CENTRAL + PRODUCTOS ALREDEDOR */}
-      <div className="bg-white rounded-3xl p-6 md:p-8 border shadow-xs space-y-8">
-        
-        <div className="grid lg:grid-cols-12 gap-8 items-start">
-          
-          {/* COLUMNA IZQUIERDA: EL PLATO CIRCULAR INTERACTIVO (5 cols) */}
-          <div className="lg:col-span-5 flex flex-col items-center justify-center space-y-6">
-            
-            <div className="text-center">
-              <span className="text-[10px] uppercase font-black tracking-wider text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-                Plato Harvard Interactivo
+            <div className="flex items-center gap-3 text-[11px] font-mono">
+              <span className={vegPct >= 45 && vegPct <= 55 ? 'text-emerald-700 font-bold' : 'text-slate-500'}>
+                🥬 Veg: {vegPct}% (Meta 50%)
               </span>
-              <h3 className="font-display font-black text-slate-900 text-xl mt-1">
-                Tu Despensa Equilibrada
-              </h3>
-              <p className="text-xs text-slate-500">Arrastra alimentos o pulsa los botones de añadir para lanzarlos a su sección.</p>
+              <span className={grainPct >= 20 && grainPct <= 30 ? 'text-amber-700 font-bold' : 'text-slate-500'}>
+                🥣 Granos: {grainPct}% (Meta 25%)
+              </span>
+              <span className={protPct >= 20 && protPct <= 30 ? 'text-blue-700 font-bold' : 'text-slate-500'}>
+                🫘 Prot: {protPct}% (Meta 25%)
+              </span>
             </div>
+          </div>
 
-            {/* El Plato Circular Drop Zone */}
-            <div className="relative w-full max-w-[380px] aspect-square rounded-full p-3 bg-slate-100 border-[10px] border-slate-200 shadow-xl flex flex-col justify-between overflow-hidden">
-              
-              {/* Mitad Superior: 50% Vegetales y Frutas */}
-              <div 
-                onDragOver={(e) => { e.preventDefault(); setDragOverZone('vegetales'); }}
-                onDragLeave={() => setDragOverZone(null)}
-                onDrop={(e) => handleDropOnZone(e, 'vegetales')}
-                className={`h-1/2 w-full rounded-t-full p-3 flex flex-col justify-center items-center text-center relative transition-all ${
-                  dragOverZone === 'vegetales' ? 'bg-emerald-400/40 ring-4 ring-emerald-500' : 'bg-emerald-500/20 hover:bg-emerald-500/30'
-                } border-b-2 border-dashed border-emerald-600/40`}
-              >
-                <span className="text-[10px] font-black text-emerald-950 uppercase tracking-wider bg-emerald-100 px-2.5 py-0.5 rounded-full mb-1 shadow-2xs">
-                  50% Vegetales & Frutas ({(currentVegGrams/1000).toFixed(1)} kg)
+          <div className="h-2.5 w-full bg-slate-100 rounded-full overflow-hidden flex">
+            <div style={{ width: `${Math.min(100, vegPct)}%` }} className="bg-emerald-500 transition-all duration-300" title={`Vegetales: ${vegPct}%`} />
+            <div style={{ width: `${Math.min(100, grainPct)}%` }} className="bg-amber-400 transition-all duration-300" title={`Granos: ${grainPct}%`} />
+            <div style={{ width: `${Math.min(100, protPct)}%` }} className="bg-blue-500 transition-all duration-300" title={`Proteína: ${protPct}%`} />
+          </div>
+        </div>
+      </div>
+
+      {/* 2. ÁREA PRINCIPAL: PLATO FLOTANTE A LA IZQUIERDA + CATÁLOGO A LA DERECHA */}
+      <div className="grid lg:grid-cols-12 gap-8 items-start">
+        
+        {/* ============================================================== */}
+        {/* COLUMNA IZQUIERDA: EL PLATO DE HARVARD REALISTA (STICKY FLOTANTE) */}
+        {/* ============================================================== */}
+        <div className="lg:col-span-5 lg:sticky lg:top-20 self-start space-y-4">
+          
+          <div className="bg-white rounded-3xl p-5 border border-slate-200/90 shadow-sm space-y-4 text-center">
+            
+            <div className="flex items-center justify-between border-b pb-3">
+              <div className="text-left">
+                <span className="text-[10px] uppercase font-black tracking-wider text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                  Harvard Healthy Eating Plate
                 </span>
-                
-                <div className="flex flex-wrap gap-1 justify-center max-h-24 overflow-y-auto mt-1 p-1">
-                  {plateItems.filter(x => x.category === 'vegetales').map(it => (
-                    <span key={it.id} className="text-[10px] bg-white text-emerald-950 px-2 py-0.5 rounded-full border shadow-2xs flex items-center gap-1 font-bold">
-                      <span>{it.displayName}</span>
-                      <span className="text-emerald-700 font-mono text-[9px]">({it.grams >= 1000 ? `${(it.grams/1000).toFixed(1)}kg` : `${it.grams}g`})</span>
-                      <button onClick={() => removePlateItem(it.id)} className="text-red-500 hover:text-red-700 ml-0.5">×</button>
-                    </span>
-                  ))}
-                  {plateItems.filter(x => x.category === 'vegetales').length === 0 && (
-                    <span className="text-[10px] text-emerald-800/70 italic">Suelta aquí verduras u hortalizas</span>
-                  )}
-                </div>
+                <h3 className="text-base font-black text-slate-900 mt-0.5">
+                  Tu Plato Realista
+                </h3>
               </div>
 
-              {/* Mitad Inferior: 25% Granos Integrales + 25% Proteínas */}
-              <div className="h-1/2 w-full flex">
-                
-                {/* Cuadrante Inferior Izquierdo: 25% Granos */}
-                <div 
-                  onDragOver={(e) => { e.preventDefault(); setDragOverZone('granos'); }}
-                  onDragLeave={() => setDragOverZone(null)}
-                  onDrop={(e) => handleDropOnZone(e, 'granos')}
-                  className={`w-1/2 h-full rounded-bl-full p-2.5 flex flex-col justify-center items-center text-center transition-all border-r border-dashed border-amber-600/40 ${
-                    dragOverZone === 'granos' ? 'bg-amber-400/40 ring-4 ring-amber-500' : 'bg-amber-500/20 hover:bg-amber-500/30'
-                  }`}
-                >
-                  <span className="text-[9px] font-black text-amber-950 uppercase tracking-wider bg-amber-100 px-2 py-0.5 rounded-full mb-1">
-                    25% Granos ({(currentGrainGrams/1000).toFixed(1)} kg)
-                  </span>
-                  <div className="flex flex-wrap gap-1 justify-center max-h-20 overflow-y-auto mt-1 p-0.5">
-                    {plateItems.filter(x => x.category === 'granos').map(it => (
-                      <span key={it.id} className="text-[9px] bg-white text-amber-950 px-1.5 py-0.5 rounded-full border shadow-2xs flex items-center gap-1 font-bold">
-                        <span>{it.displayName}</span>
-                        <span className="text-amber-700 font-mono text-[8px]">({it.grams >= 1000 ? `${(it.grams/1000).toFixed(1)}kg` : `${it.grams}g`})</span>
-                        <button onClick={() => removePlateItem(it.id)} className="text-red-500 hover:text-red-700 ml-0.5">×</button>
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Cuadrante Inferior Derecho: 25% Proteínas */}
-                <div 
-                  onDragOver={(e) => { e.preventDefault(); setDragOverZone('proteinas'); }}
-                  onDragLeave={() => setDragOverZone(null)}
-                  onDrop={(e) => handleDropOnZone(e, 'proteinas')}
-                  className={`w-1/2 h-full rounded-br-full p-2.5 flex flex-col justify-center items-center text-center transition-all ${
-                    dragOverZone === 'proteinas' ? 'bg-blue-400/40 ring-4 ring-blue-500' : 'bg-blue-500/20 hover:bg-blue-500/30'
-                  }`}
-                >
-                  <span className="text-[9px] font-black text-blue-950 uppercase tracking-wider bg-blue-100 px-2 py-0.5 rounded-full mb-1">
-                    25% Proteína ({(currentProtGrams/1000).toFixed(1)} kg)
-                  </span>
-                  <div className="flex flex-wrap gap-1 justify-center max-h-20 overflow-y-auto mt-1 p-0.5">
-                    {plateItems.filter(x => x.category === 'proteinas').map(it => (
-                      <span key={it.id} className="text-[9px] bg-white text-blue-950 px-1.5 py-0.5 rounded-full border shadow-2xs flex items-center gap-1 font-bold">
-                        <span>{it.displayName}</span>
-                        <span className="text-blue-700 font-mono text-[8px]">({it.grams >= 1000 ? `${(it.grams/1000).toFixed(1)}kg` : `${it.grams}g`})</span>
-                        <button onClick={() => removePlateItem(it.id)} className="text-red-500 hover:text-red-700 ml-0.5">×</button>
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
+              {/* Acompañamiento oficial Harvard: Agua saludable */}
+              <div className="flex items-center gap-1.5 px-2.5 py-1 bg-cyan-50 border border-cyan-200 rounded-xl text-[10px] text-cyan-950 font-bold" title="Harvard: Prioriza agua mineral, infusiones o café sin azúcar">
+                <Droplet className="w-3.5 h-3.5 text-cyan-600 fill-cyan-500" />
+                <span>Agua pura</span>
               </div>
-
-              {/* Centro: Aceite Noble */}
-              <div 
-                onDragOver={(e) => { e.preventDefault(); setDragOverZone('grasas'); }}
-                onDragLeave={() => setDragOverZone(null)}
-                onDrop={(e) => handleDropOnZone(e, 'grasas')}
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full bg-amber-400 border-4 border-white shadow-lg flex flex-col items-center justify-center text-amber-950 text-center cursor-pointer hover:scale-105 transition-transform"
-                title="Grasas Nobles: Aceite de Oliva Virgen Extra (AOVE)"
-              >
-                <span className="text-[9px] font-black uppercase">AOVE</span>
-                <span className="text-[8px] font-mono">{(currentOilGrams/1000).toFixed(2)}L</span>
-              </div>
-
             </div>
 
-            {/* Total y Botón de Compra */}
-            <div className="w-full max-w-[380px] p-5 rounded-2xl bg-slate-50 border space-y-3">
-              <div className="flex justify-between items-center">
+            {/* PLATO CERÁMICO REALISTA 3D */}
+            <div className="relative p-2">
+              <motion.div 
+                animate={lastAddedZone ? { scale: [1, 1.025, 1] } : {}}
+                transition={{ duration: 0.3 }}
+                className="relative w-full max-w-[370px] aspect-square mx-auto rounded-full p-4 bg-gradient-to-br from-slate-100 via-white to-slate-200 border-[16px] md:border-[18px] border-white shadow-[0_20px_50px_rgba(0,0,0,0.16),0_6px_18px_rgba(0,0,0,0.08),inset_0_3px_6px_rgba(255,255,255,1),inset_0_-4px_8px_rgba(0,0,0,0.08)] ring-1 ring-slate-300/80 flex flex-col justify-between overflow-hidden"
+              >
+                
+                {/* Reflejo de brillo cerámico porcelana */}
+                <div className="pointer-events-none absolute -top-16 -left-16 w-52 h-52 rounded-full bg-white/40 blur-2xl z-20" />
+
+                {/* MITAD SUPERIOR: 50% VEGETALES Y FRUTAS (SUBDIVIDIDO EN VERDURAS + FRUTAS) */}
+                <div 
+                  onDragOver={(e) => { e.preventDefault(); setDragOverZone('vegetales'); }}
+                  onDragLeave={() => setDragOverZone(null)}
+                  onDrop={(e) => handleDropOnZone(e, 'vegetales')}
+                  className={`h-1/2 w-full rounded-t-full p-2.5 flex flex-col justify-between items-center text-center relative transition-all border-b-2 border-dashed border-emerald-600/30 ${
+                    dragOverZone === 'vegetales' 
+                      ? 'bg-emerald-300/40 ring-4 ring-emerald-500' 
+                      : 'bg-emerald-500/15 hover:bg-emerald-500/20'
+                  }`}
+                >
+                  <div className="w-full flex items-center justify-between px-3 pt-0.5">
+                    <span className="text-[9px] font-black text-emerald-950 uppercase tracking-wider bg-white/90 border border-emerald-200 px-2 py-0.5 rounded-full shadow-2xs">
+                      50% Vegetales & Frutas
+                    </span>
+                    <span className="text-[9px] font-mono font-bold text-emerald-800">
+                      {(currentVegGrams/1000).toFixed(1)} kg
+                    </span>
+                  </div>
+
+                  {/* Lista de alimentos lanzados en Vegetales */}
+                  <div className="flex flex-wrap gap-1 justify-center max-h-20 overflow-y-auto w-full p-1 scrollbar-none">
+                    {plateItems.filter(x => x.category === 'vegetales').map(it => (
+                      <span 
+                        key={it.id} 
+                        className="text-[9px] bg-white text-emerald-950 px-2 py-0.5 rounded-full border border-emerald-200 shadow-2xs flex items-center gap-1 font-bold group"
+                      >
+                        <span>{it.emoji}</span>
+                        <span className="truncate max-w-[90px]">{it.displayName}</span>
+                        <span className="text-emerald-700 font-mono text-[8px]">({it.grams >= 1000 ? `${(it.grams/1000).toFixed(1)}k` : `${it.grams}g`})</span>
+                        <button onClick={() => removePlateItem(it.id)} className="text-red-400 hover:text-red-700 ml-0.5">×</button>
+                      </span>
+                    ))}
+                    {plateItems.filter(x => x.category === 'vegetales').length === 0 && (
+                      <span className="text-[10px] text-emerald-800/60 italic self-center">
+                        🥬 Suelta o lanza hojas, huerta o frutas aquí
+                      </span>
+                    )}
+                  </div>
+
+                  <span className="text-[8px] text-emerald-800/80 font-medium pb-0.5">
+                    Mayor variedad y color · Hortalizas de huerta y fruta entera
+                  </span>
+                </div>
+
+                {/* MITAD INFERIOR: 25% GRANOS INTEGRALES + 25% PROTEÍNAS LIMPIAS */}
+                <div className="h-1/2 w-full flex">
+                  
+                  {/* CUADRANTE INFERIOR IZQUIERDO: 25% GRANOS INTEGRALES */}
+                  <div 
+                    onDragOver={(e) => { e.preventDefault(); setDragOverZone('granos'); }}
+                    onDragLeave={() => setDragOverZone(null)}
+                    onDrop={(e) => handleDropOnZone(e, 'granos')}
+                    className={`w-1/2 h-full rounded-bl-full p-2 flex flex-col justify-between items-center text-center transition-all border-r border-dashed border-amber-600/30 ${
+                      dragOverZone === 'granos' 
+                        ? 'bg-amber-300/40 ring-4 ring-amber-500' 
+                        : 'bg-amber-500/15 hover:bg-amber-500/20'
+                    }`}
+                  >
+                    <div className="pt-1">
+                      <span className="text-[8px] font-black text-amber-950 uppercase tracking-wider bg-white/90 border border-amber-200 px-1.5 py-0.5 rounded-full block">
+                        25% Granos
+                      </span>
+                      <span className="text-[8px] font-mono text-amber-900 font-bold">
+                        {(currentGrainGrams/1000).toFixed(1)} kg
+                      </span>
+                    </div>
+
+                    <div className="flex flex-wrap gap-1 justify-center max-h-16 overflow-y-auto w-full p-0.5">
+                      {plateItems.filter(x => x.category === 'granos').map(it => (
+                        <span 
+                          key={it.id} 
+                          className="text-[8px] bg-white text-amber-950 px-1.5 py-0.5 rounded-full border border-amber-200 shadow-2xs flex items-center gap-0.5 font-bold"
+                        >
+                          <span>{it.emoji}</span>
+                          <span className="truncate max-w-[65px]">{it.displayName}</span>
+                          <button onClick={() => removePlateItem(it.id)} className="text-red-400 hover:text-red-700">×</button>
+                        </span>
+                      ))}
+                      {plateItems.filter(x => x.category === 'granos').length === 0 && (
+                        <span className="text-[8px] text-amber-800/60 italic self-center">
+                          🥣 Avena, arroz, quinoa...
+                        </span>
+                      )}
+                    </div>
+
+                    <span className="text-[7px] text-amber-800/80 font-medium">100% integrales</span>
+                  </div>
+
+                  {/* CUADRANTE INFERIOR DERECHO: 25% PROTEÍNAS SALUDABLES */}
+                  <div 
+                    onDragOver={(e) => { e.preventDefault(); setDragOverZone('proteinas'); }}
+                    onDragLeave={() => setDragOverZone(null)}
+                    onDrop={(e) => handleDropOnZone(e, 'proteinas')}
+                    className={`w-1/2 h-full rounded-br-full p-2 flex flex-col justify-between items-center text-center transition-all ${
+                      dragOverZone === 'proteinas' 
+                        ? 'bg-blue-300/40 ring-4 ring-blue-500' 
+                        : 'bg-blue-500/15 hover:bg-blue-500/20'
+                    }`}
+                  >
+                    <div className="pt-1">
+                      <span className="text-[8px] font-black text-blue-950 uppercase tracking-wider bg-white/90 border border-blue-200 px-1.5 py-0.5 rounded-full block">
+                        25% Proteína
+                      </span>
+                      <span className="text-[8px] font-mono text-blue-900 font-bold">
+                        {(currentProtGrams/1000).toFixed(1)} kg
+                      </span>
+                    </div>
+
+                    <div className="flex flex-wrap gap-1 justify-center max-h-16 overflow-y-auto w-full p-0.5">
+                      {plateItems.filter(x => x.category === 'proteinas').map(it => (
+                        <span 
+                          key={it.id} 
+                          className="text-[8px] bg-white text-blue-950 px-1.5 py-0.5 rounded-full border border-blue-200 shadow-2xs flex items-center gap-0.5 font-bold"
+                        >
+                          <span>{it.emoji}</span>
+                          <span className="truncate max-w-[65px]">{it.displayName}</span>
+                          <button onClick={() => removePlateItem(it.id)} className="text-red-400 hover:text-red-700">×</button>
+                        </span>
+                      ))}
+                      {plateItems.filter(x => x.category === 'proteinas').length === 0 && (
+                        <span className="text-[8px] text-blue-800/60 italic self-center">
+                          🫘 Legumbres, tofu, pescado...
+                        </span>
+                      )}
+                    </div>
+
+                    <span className="text-[7px] text-blue-800/80 font-medium">Legumbres y limpias</span>
+                  </div>
+
+                </div>
+
+                {/* POCILLO CENTRAL DE PORCELANA: GRASAS SALUDABLES / AOVE */}
+                <div 
+                  onDragOver={(e) => { e.preventDefault(); setDragOverZone('grasas'); }}
+                  onDragLeave={() => setDragOverZone(null)}
+                  onDrop={(e) => handleDropOnZone(e, 'grasas')}
+                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full bg-gradient-to-br from-amber-300 via-amber-400 to-amber-500 border-4 border-white shadow-lg flex flex-col items-center justify-center text-amber-950 text-center cursor-pointer hover:scale-105 transition-transform z-10"
+                  title="Aceite de Oliva Virgen Extra (AOVE) y grasas nobles saludables"
+                >
+                  <span className="text-xs">🫒</span>
+                  <span className="text-[8px] font-black uppercase tracking-tight">AOVE</span>
+                  <span className="text-[7px] font-mono">{(currentOilGrams/1000).toFixed(2)}L</span>
+                </div>
+
+              </motion.div>
+            </div>
+
+            {/* Total acumulado y botón de añadir a la cesta */}
+            <div className="p-4 bg-slate-50 border rounded-2xl space-y-2.5 text-left">
+              <div className="flex justify-between items-baseline">
                 <span className="text-xs text-slate-500 font-medium">Total de tu plan ({currentHorizonConfig.label}):</span>
-                <strong className="text-2xl font-black font-mono text-slate-900">{totalPrice.toFixed(2)}€</strong>
+                <strong className="text-xl font-black font-mono text-emerald-950">{totalPrice.toFixed(2)} €</strong>
               </div>
+
               <Button 
                 onClick={handleAddPlateToCart}
-                className="w-full bg-emerald-900 hover:bg-emerald-800 text-white font-black py-6 rounded-2xl shadow-md gap-2"
+                className="w-full bg-emerald-900 hover:bg-emerald-800 text-white font-bold py-5 rounded-2xl shadow-md text-xs gap-2"
               >
-                <ShoppingBag className="h-5 w-5" />
-                <span>Añadir todo el plan a la cesta ({totalPrice.toFixed(2)}€)</span>
+                <ShoppingBag className="w-4 h-4" />
+                <span>Añadir todo el plan a la cesta ({totalPrice.toFixed(2)} €)</span>
               </Button>
-            </div>
 
-          </div>
-
-          {/* COLUMNA DERECHA: ALIMENTOS UNIVERSALES + SECCIONES CON BUSCADOR + ACCESO AL CATÁLOGO COMPLETO (7 cols) */}
-          <div className="lg:col-span-7 space-y-6">
-            
-            {/* BOTÓN DESTACADO PARA ABRIR TODO EL CATÁLOGO (+1.000 PRODUCTOS) */}
-            <div className="bg-emerald-50/70 border border-emerald-200 rounded-2xl p-4 flex items-center justify-between">
-              <div>
-                <strong className="text-xs font-bold text-emerald-950 block">¿Buscas un producto específico entre todo el catálogo?</strong>
-                <span className="text-[11px] text-emerald-800">Explora las más de 1.000 referencias biológicas de Ecoland y arrástralas al plato.</span>
-              </div>
-              <Button 
-                onClick={() => setIsCatalogExplorerOpen(prev => !prev)}
-                variant="outline"
-                size="sm"
-                className="bg-white border-emerald-300 text-emerald-900 font-bold text-xs shrink-0 gap-1.5"
-              >
-                <span>{isCatalogExplorerOpen ? 'Ocultar catálogo' : 'Abrir todo el catálogo (+1.000)'}</span>
-                <ChevronDown className={`h-3.5 w-3.5 transition-transform ${isCatalogExplorerOpen ? 'rotate-180' : ''}`} />
-              </Button>
-            </div>
-
-            {/* EXPLORADOR COMPLETO DESPLEGABLE */}
-            <AnimatePresence>
-              {isCatalogExplorerOpen && (
-                <motion.div 
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  className="overflow-hidden border border-emerald-200 rounded-3xl p-5 bg-white space-y-4 shadow-sm"
+              <div className="flex items-center justify-between text-[10px] text-slate-400 pt-1">
+                <span>{plateItems.length} alimentos en tu plato</span>
+                <button 
+                  onClick={() => setPlateItems([])}
+                  className="text-red-500 hover:underline flex items-center gap-1"
                 >
-                  <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-                    <div className="flex gap-1.5 flex-wrap text-xs">
-                      {[
-                        { id: 'todos', label: 'Todos' },
-                        { id: 'vegetales', label: 'Vegetales' },
-                        { id: 'granos', label: 'Granos/Cereales' },
-                        { id: 'proteinas', label: 'Legumbres/Proteína' },
-                        { id: 'aceites', label: 'Aceites Nobles' },
-                      ].map(cat => (
-                        <button
-                          key={cat.id}
-                          onClick={() => setExplorerCategory(cat.id as any)}
-                          className={`px-3 py-1 rounded-xl font-bold transition-all ${
-                            explorerCategory === cat.id ? 'bg-emerald-900 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                          }`}
-                        >
-                          {cat.label}
-                        </button>
-                      ))}
-                    </div>
-
-                    <div className="relative w-full sm:w-60">
-                      <Search className="h-3.5 w-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                      <Input 
-                        value={explorerSearch}
-                        onChange={(e) => setExplorerSearch(e.target.value)}
-                        placeholder="Buscar entre +1.000 productos..."
-                        className="h-8 pl-9 text-xs bg-slate-50 border-slate-200 rounded-xl"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 max-h-72 overflow-y-auto p-1">
-                    {explorerProducts.map(p => (
-                      <div
-                        key={p.slug}
-                        draggable
-                        onDragStart={(e) => handleDragStart(e, p.slug, p.category === 'desayunos' ? 'granos' : p.category === 'aceites' ? 'grasas' : p.category === 'legumbres' ? 'proteinas' : 'vegetales', 'BIO')}
-                        className="p-2 rounded-xl border bg-slate-50/60 hover:bg-white hover:border-emerald-300 transition-all text-left flex flex-col justify-between cursor-grab active:cursor-grabbing shadow-2xs group"
-                      >
-                        <div className="flex items-center gap-2">
-                          <img src={p.image} alt={p.name} className="w-8 h-8 object-contain rounded bg-white p-0.5 border shrink-0" />
-                          <div className="truncate flex-1">
-                            <span className="block text-[10px] font-bold text-slate-900 truncate">{cleanProductName(p.name)}</span>
-                            <span className="block text-[8px] text-slate-400">{p.brand}</span>
-                          </div>
-                        </div>
-                        <div className="flex items-center justify-between text-[9px] pt-1.5 mt-1 border-t border-slate-100">
-                          <strong className="text-emerald-800 font-mono">{p.price.toFixed(2)}€</strong>
-                          <button
-                            onClick={() => {
-                              const targetCat = p.category === 'desayunos' ? 'granos' : p.category === 'aceites' ? 'grasas' : p.category === 'legumbres' ? 'proteinas' : 'vegetales';
-                              addFoodToPlate(p, targetCat, 500, 'BIO');
-                            }}
-                            className="px-2 py-0.5 rounded bg-emerald-800 text-white font-bold hover:bg-emerald-700"
-                          >
-                            +Lanzar
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* SECCIÓN 1: VEGETALES Y HORTALIZAS (50%) */}
-            <div className="space-y-3 p-4 rounded-3xl bg-emerald-50/40 border border-emerald-100">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full bg-emerald-200 text-emerald-900 font-black text-xs flex items-center justify-center">50%</div>
-                  <div>
-                    <h4 className="font-bold text-emerald-950 text-sm">Vegetales, Frutas y Hortalizas</h4>
-                    <p className="text-[11px] text-emerald-800">50% del volumen del plato (Fibra viva y antioxidantes)</p>
-                  </div>
-                </div>
-                
-                <div className="relative w-full sm:w-48">
-                  <Search className="h-3.5 w-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
-                  <Input 
-                    value={searchVeg}
-                    onChange={(e) => setSearchVeg(e.target.value)}
-                    placeholder="Buscar verdura o fruta..."
-                    className="h-8 pl-8 text-xs bg-white border-emerald-200 rounded-xl"
-                  />
-                </div>
-              </div>
-
-              {/* Opciones Universales Minimalistas */}
-              <div>
-                <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider block mb-1.5">
-                  ✨ Opciones representativas (Pulsa para lanzar):
-                </span>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  {UNIVERSAL_FOODS.filter(u => u.category === 'vegetales').map(u => (
-                    <button
-                      key={u.id}
-                      onClick={() => addUniversalFood(u)}
-                      className="p-2 rounded-xl bg-white hover:bg-emerald-100/70 border border-emerald-200 text-left transition-all hover:scale-[1.02] shadow-2xs flex items-center justify-between"
-                    >
-                      <div className="truncate">
-                        <span className="block text-[10px] font-bold text-slate-800 truncate">{u.label}</span>
-                        <span className="text-[9px] text-emerald-700 font-mono">+{u.defaultGrams >= 1000 ? `${(u.defaultGrams/1000).toFixed(1)}kg` : `${u.defaultGrams}g`}</span>
-                      </div>
-                      <Plus className="h-3.5 w-3.5 text-emerald-700 shrink-0" />
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Productos reales coincidentes */}
-              <div className="grid sm:grid-cols-2 gap-2 pt-1">
-                {displayVeg.map(p => (
-                  <div 
-                    key={p.slug}
-                    draggable
-                    onDragStart={(e) => handleDragStart(e, p.slug, 'vegetales', 'HORTALIZA')}
-                    className="p-2.5 rounded-2xl bg-white border border-emerald-100 hover:border-emerald-300 transition-all cursor-grab active:cursor-grabbing text-left space-y-1.5 shadow-2xs group"
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-10 h-10 rounded-xl bg-slate-50 p-1 border mx-auto shrink-0">
-                        <img src={p.image} alt={p.name} className="w-full h-full object-contain" />
-                      </div>
-                      <div className="truncate flex-1">
-                        <span className="block text-[11px] font-bold text-slate-900 truncate">{cleanProductName(p.name)}</span>
-                        <span className="block text-[9px] text-slate-400 font-medium">{p.brand}</span>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between text-[10px] pt-1 border-t border-slate-100">
-                      <strong className="text-emerald-800 font-mono text-xs">{p.price.toFixed(2)}€</strong>
-                      <div className="flex gap-1">
-                        <button 
-                          onClick={() => addFoodToPlate(p, 'vegetales', 500, 'HORTALIZA')}
-                          className="px-2 py-0.5 rounded bg-emerald-700 text-white font-bold hover:bg-emerald-600 transition-colors"
-                          title="Añadir 500g"
-                        >
-                          +½k
-                        </button>
-                        <button 
-                          onClick={() => addFoodToPlate(p, 'vegetales', 1000, 'HORTALIZA')}
-                          className="px-2 py-0.5 rounded bg-emerald-900 text-white font-bold hover:bg-emerald-800 transition-colors"
-                          title="Añadir 1kg"
-                        >
-                          +1k
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* SECCIÓN 2: GRANOS INTEGRALES (25%) */}
-            <div className="space-y-3 p-4 rounded-3xl bg-amber-50/40 border border-amber-100">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full bg-amber-200 text-amber-900 font-black text-xs flex items-center justify-center">25%</div>
-                  <div>
-                    <h4 className="font-bold text-amber-950 text-sm">Granos y Cereales Integrales</h4>
-                    <p className="text-[11px] text-amber-800">25% del plato (Energía lenta y magnesio)</p>
-                  </div>
-                </div>
-                
-                <div className="relative w-full sm:w-48">
-                  <Search className="h-3.5 w-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
-                  <Input 
-                    value={searchGrains}
-                    onChange={(e) => setSearchGrains(e.target.value)}
-                    placeholder="Buscar avena, quinoa..."
-                    className="h-8 pl-8 text-xs bg-white border-amber-200 rounded-xl"
-                  />
-                </div>
-              </div>
-
-              {/* Opciones Universales */}
-              <div>
-                <span className="text-[10px] font-bold text-amber-800 uppercase tracking-wider block mb-1.5">
-                  ✨ Opciones representativas:
-                </span>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                  {UNIVERSAL_FOODS.filter(u => u.category === 'granos').map(u => (
-                    <button
-                      key={u.id}
-                      onClick={() => addUniversalFood(u)}
-                      className="p-2 rounded-xl bg-white hover:bg-amber-100/70 border border-amber-200 text-left transition-all hover:scale-[1.02] shadow-2xs flex items-center justify-between"
-                    >
-                      <div className="truncate">
-                        <span className="block text-[10px] font-bold text-slate-800 truncate">{u.label}</span>
-                        <span className="text-[9px] text-amber-700 font-mono">+{u.defaultGrams >= 1000 ? `${(u.defaultGrams/1000).toFixed(1)}kg` : `${u.defaultGrams}g`}</span>
-                      </div>
-                      <Plus className="h-3.5 w-3.5 text-amber-700 shrink-0" />
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Productos reales coincidentes */}
-              <div className="grid sm:grid-cols-2 gap-2 pt-1">
-                {displayGrains.map(p => (
-                  <div 
-                    key={p.slug}
-                    draggable
-                    onDragStart={(e) => handleDragStart(e, p.slug, 'granos', 'CEREAL')}
-                    className="p-2.5 rounded-2xl bg-white border border-amber-100 hover:border-amber-300 transition-all cursor-grab active:cursor-grabbing text-left space-y-1.5 shadow-2xs group"
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-10 h-10 rounded-xl bg-slate-50 p-1 border mx-auto shrink-0">
-                        <img src={p.image} alt={p.name} className="w-full h-full object-contain" />
-                      </div>
-                      <div className="truncate flex-1">
-                        <span className="block text-[11px] font-bold text-slate-900 truncate">{cleanProductName(p.name)}</span>
-                        <span className="block text-[9px] text-slate-400 font-medium">{p.brand}</span>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between text-[10px] pt-1 border-t border-slate-100">
-                      <strong className="text-amber-800 font-mono text-xs">{p.price.toFixed(2)}€</strong>
-                      <div className="flex gap-1">
-                        <button 
-                          onClick={() => addFoodToPlate(p, 'granos', 500, 'CEREAL')}
-                          className="px-2 py-0.5 rounded bg-amber-700 text-white font-bold hover:bg-amber-600 transition-colors"
-                          title="Añadir 500g"
-                        >
-                          +½k
-                        </button>
-                        <button 
-                          onClick={() => addFoodToPlate(p, 'granos', 1000, 'CEREAL')}
-                          className="px-2 py-0.5 rounded bg-amber-900 text-white font-bold hover:bg-amber-800 transition-colors"
-                          title="Añadir 1kg"
-                        >
-                          +1k
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* SECCIÓN 3: PROTEÍNAS SALUDABLES (25%) */}
-            <div className="space-y-3 p-4 rounded-3xl bg-blue-50/40 border border-blue-100">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full bg-blue-200 text-blue-900 font-black text-xs flex items-center justify-center">25%</div>
-                  <div>
-                    <h4 className="font-bold text-blue-950 text-sm">Proteínas Limpias y Saludables</h4>
-                    <p className="text-[11px] text-blue-800">25% del plato (Legumbres, semillas y aminoácidos)</p>
-                  </div>
-                </div>
-                
-                <div className="relative w-full sm:w-48">
-                  <Search className="h-3.5 w-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
-                  <Input 
-                    value={searchProt}
-                    onChange={(e) => setSearchProt(e.target.value)}
-                    placeholder="Buscar garbanzo, tofu..."
-                    className="h-8 pl-8 text-xs bg-white border-blue-200 rounded-xl"
-                  />
-                </div>
-              </div>
-
-              {/* Opciones Universales */}
-              <div>
-                <span className="text-[10px] font-bold text-blue-800 uppercase tracking-wider block mb-1.5">
-                  ✨ Opciones representativas:
-                </span>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  {UNIVERSAL_FOODS.filter(u => u.category === 'proteinas').map(u => (
-                    <button
-                      key={u.id}
-                      onClick={() => addUniversalFood(u)}
-                      className="p-2 rounded-xl bg-white hover:bg-blue-100/70 border border-blue-200 text-left transition-all hover:scale-[1.02] shadow-2xs flex items-center justify-between"
-                    >
-                      <div className="truncate">
-                        <span className="block text-[10px] font-bold text-slate-800 truncate">{u.label}</span>
-                        <span className="text-[9px] text-blue-700 font-mono">+{u.defaultGrams >= 1000 ? `${(u.defaultGrams/1000).toFixed(1)}kg` : `${u.defaultGrams}g`}</span>
-                      </div>
-                      <Plus className="h-3.5 w-3.5 text-blue-700 shrink-0" />
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Productos reales coincidentes */}
-              <div className="grid sm:grid-cols-2 gap-2 pt-1">
-                {displayProt.map(p => (
-                  <div 
-                    key={p.slug}
-                    draggable
-                    onDragStart={(e) => handleDragStart(e, p.slug, 'proteinas', 'PROTEÍNA')}
-                    className="p-2.5 rounded-2xl bg-white border border-blue-100 hover:border-blue-300 transition-all cursor-grab active:cursor-grabbing text-left space-y-1.5 shadow-2xs group"
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-10 h-10 rounded-xl bg-slate-50 p-1 border mx-auto shrink-0">
-                        <img src={p.image} alt={p.name} className="w-full h-full object-contain" />
-                      </div>
-                      <div className="truncate flex-1">
-                        <span className="block text-[11px] font-bold text-slate-900 truncate">{cleanProductName(p.name)}</span>
-                        <span className="block text-[9px] text-slate-400 font-medium">{p.brand}</span>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between text-[10px] pt-1 border-t border-slate-100">
-                      <strong className="text-blue-800 font-mono text-xs">{p.price.toFixed(2)}€</strong>
-                      <div className="flex gap-1">
-                        <button 
-                          onClick={() => addFoodToPlate(p, 'proteinas', 500, 'PROTEÍNA')}
-                          className="px-2 py-0.5 rounded bg-blue-700 text-white font-bold hover:bg-blue-600 transition-colors"
-                          title="Añadir 500g"
-                        >
-                          +½k
-                        </button>
-                        <button 
-                          onClick={() => addFoodToPlate(p, 'proteinas', 1000, 'PROTEÍNA')}
-                          className="px-2 py-0.5 rounded bg-blue-900 text-white font-bold hover:bg-blue-800 transition-colors"
-                          title="Añadir 1kg"
-                        >
-                          +1k
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                  <RotateCcw className="w-3 h-3" />
+                  <span>Vaciar plato</span>
+                </button>
               </div>
             </div>
 
           </div>
 
         </div>
+
+        {/* ============================================================== */}
+        {/* COLUMNA DERECHA: LAS 4 CATEGORÍAS CON SUS 16 SUBCATEGORÍAS */}
+        {/* ============================================================== */}
+        <div className="lg:col-span-7 space-y-8">
+          
+          {/* BOTÓN EXPLORADOR DEL CATÁLOGO COMPLETO (+1.000 PRODUCTOS) */}
+          <div className="bg-emerald-50/80 border border-emerald-200 rounded-2xl p-4 flex items-center justify-between shadow-2xs">
+            <div>
+              <strong className="text-xs font-bold text-emerald-950 block">¿Buscas un producto específico entre todo el catálogo?</strong>
+              <span className="text-[11px] text-emerald-800">Explora las más de 1.000 referencias biológicas de Ecoland o lanza los iconos genéricos rápidos.</span>
+            </div>
+            <Button 
+              onClick={() => setIsCatalogExplorerOpen(prev => !prev)}
+              variant="outline"
+              size="sm"
+              className="bg-white border-emerald-300 text-emerald-900 font-bold text-xs shrink-0 gap-1.5 shadow-2xs"
+            >
+              <span>{isCatalogExplorerOpen ? 'Ocultar catálogo' : 'Abrir catálogo (+1.000)'}</span>
+              <ChevronDown className={`h-3.5 w-3.5 transition-transform ${isCatalogExplorerOpen ? 'rotate-180' : ''}`} />
+            </Button>
+          </div>
+
+          {/* DESPLEGABLE EXPLORADOR COMPLETO */}
+          <AnimatePresence>
+            {isCatalogExplorerOpen && (
+              <motion.div 
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                className="overflow-hidden border border-emerald-200 rounded-3xl p-5 bg-white space-y-4 shadow-sm"
+              >
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+                  <div className="flex gap-1.5 flex-wrap text-xs">
+                    {[
+                      { id: 'todos', label: 'Todos' },
+                      { id: 'vegetales', label: 'Vegetales' },
+                      { id: 'granos', label: 'Granos/Cereales' },
+                      { id: 'proteinas', label: 'Legumbres/Proteína' },
+                      { id: 'aceites', label: 'Aceites Nobles' },
+                    ].map(cat => (
+                      <button
+                        key={cat.id}
+                        onClick={() => setExplorerCategory(cat.id as any)}
+                        className={`px-3 py-1 rounded-xl font-bold transition-all ${
+                          explorerCategory === cat.id ? 'bg-emerald-900 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                        }`}
+                      >
+                        {cat.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="relative w-full sm:w-60">
+                    <Search className="h-3.5 w-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <Input 
+                      value={explorerSearch}
+                      onChange={(e) => setExplorerSearch(e.target.value)}
+                      placeholder="Buscar entre +1.000 productos..."
+                      className="h-8 pl-9 text-xs bg-slate-50 border-slate-200 rounded-xl"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 max-h-72 overflow-y-auto p-1">
+                  {explorerProducts.map(p => (
+                    <div
+                      key={p.slug}
+                      draggable
+                      onDragStart={(e) => handleDragStart(e, p.slug, p.category === 'desayunos' ? 'granos' : p.category === 'aceites' ? 'grasas' : p.category === 'legumbres' ? 'proteinas' : 'vegetales', 'BIO')}
+                      className="p-2.5 rounded-xl border bg-slate-50/60 hover:bg-white hover:border-emerald-300 transition-all text-left flex flex-col justify-between cursor-grab active:cursor-grabbing shadow-2xs group"
+                    >
+                      <div className="flex items-center gap-2">
+                        <img src={p.image} alt={p.name} className="w-9 h-9 object-contain rounded bg-white p-0.5 border shrink-0" />
+                        <div className="truncate flex-1">
+                          <span className="block text-[10px] font-bold text-slate-900 truncate">{cleanProductName(p.name)}</span>
+                          <span className="block text-[8px] text-slate-400">{p.brand}</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between text-[9px] pt-1.5 mt-1 border-t border-slate-100">
+                        <strong className="text-emerald-800 font-mono font-bold">{p.price.toFixed(2)} €</strong>
+                        <button
+                          onClick={() => {
+                            const targetCat = p.category === 'desayunos' ? 'granos' : p.category === 'aceites' ? 'grasas' : p.category === 'legumbres' ? 'proteinas' : 'vegetales';
+                            addFoodToPlate(p, targetCat, 500, 'BIO');
+                          }}
+                          className="px-2 py-0.5 rounded-lg bg-emerald-800 text-white font-bold hover:bg-emerald-700"
+                        >
+                          +Lanzar
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* ============================================================== */}
+          {/* CATEGORÍA 1: VEGETALES, HORTALIZAS Y FRUTAS (50% DEL PLATO) */}
+          {/* ============================================================== */}
+          <div className="bg-white rounded-3xl p-5 sm:p-6 border border-emerald-100 shadow-2xs space-y-4">
+            <div className="flex items-center justify-between border-b pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-900 font-black text-xs">
+                  50%
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-slate-900 flex items-center gap-1.5">
+                    <span>Vegetales, Hortalizas & Frutas Frescas</span>
+                    <Badge variant="outline" className="text-[10px] bg-emerald-50 text-emerald-800 border-emerald-200">
+                      50% del plato
+                    </Badge>
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Harvard: Color y variedad. Elige entre hojas verdes, raíces, huerta y fruta entera.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* LAS 4 SUBCATEGORÍAS GENÉRICAS DE VEGETALES */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {HARVARD_SUBCATEGORIES.filter(s => s.category === 'vegetales').map(sub => (
+                <div
+                  key={sub.id}
+                  onClick={() => addGenericSubcategoryToPlate(sub)}
+                  className="p-3.5 rounded-2xl border border-emerald-100 bg-emerald-50/40 hover:bg-emerald-50 hover:border-emerald-300 transition-all cursor-pointer shadow-2xs flex flex-col justify-between space-y-2 group"
+                >
+                  <div className="flex items-start gap-2.5">
+                    <span className="text-2xl p-2 bg-white rounded-xl shadow-2xs border border-emerald-100 group-hover:scale-110 transition-transform">
+                      {sub.emoji}
+                    </span>
+                    <div className="space-y-0.5">
+                      <strong className="text-xs font-bold text-slate-900 block group-hover:text-emerald-950">
+                        {sub.name}
+                      </strong>
+                      <p className="text-[10px] text-slate-500 line-clamp-1">
+                        {sub.subtitle}
+                      </p>
+                      <span className="text-[9px] text-emerald-700 italic block">
+                        {sub.harvardRecommendation}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-1 border-t border-emerald-100/60">
+                    <Badge variant="secondary" className="text-[9px] bg-white text-emerald-800 font-mono font-bold">
+                      +{sub.defaultGrams}g ración
+                    </Badge>
+                    <Button 
+                      size="sm" 
+                      className="bg-emerald-800 group-hover:bg-emerald-700 text-white font-bold text-[11px] h-7 px-3 rounded-xl gap-1"
+                    >
+                      <Plus className="w-3 h-3" />
+                      <span>Lanzar al plato</span>
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* ============================================================== */}
+          {/* CATEGORÍA 2: GRANOS Y CEREALES INTEGRALES (25% DEL PLATO) */}
+          {/* ============================================================== */}
+          <div className="bg-white rounded-3xl p-5 sm:p-6 border border-amber-100 shadow-2xs space-y-4">
+            <div className="flex items-center justify-between border-b pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-amber-100 flex items-center justify-center text-amber-900 font-black text-xs">
+                  25%
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-slate-900 flex items-center gap-1.5">
+                    <span>Granos & Cereales 100% Integrales</span>
+                    <Badge variant="outline" className="text-[10px] bg-amber-50 text-amber-900 border-amber-200">
+                      25% del plato
+                    </Badge>
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Harvard: Granos enteros intactos (avena, arroz integral, quinoa, espelta).
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* LAS 4 SUBCATEGORÍAS GENÉRICAS DE GRANOS */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {HARVARD_SUBCATEGORIES.filter(s => s.category === 'granos').map(sub => (
+                <div
+                  key={sub.id}
+                  onClick={() => addGenericSubcategoryToPlate(sub)}
+                  className="p-3.5 rounded-2xl border border-amber-100 bg-amber-50/40 hover:bg-amber-50 hover:border-amber-300 transition-all cursor-pointer shadow-2xs flex flex-col justify-between space-y-2 group"
+                >
+                  <div className="flex items-start gap-2.5">
+                    <span className="text-2xl p-2 bg-white rounded-xl shadow-2xs border border-amber-100 group-hover:scale-110 transition-transform">
+                      {sub.emoji}
+                    </span>
+                    <div className="space-y-0.5">
+                      <strong className="text-xs font-bold text-slate-900 block group-hover:text-amber-950">
+                        {sub.name}
+                      </strong>
+                      <p className="text-[10px] text-slate-500 line-clamp-1">
+                        {sub.subtitle}
+                      </p>
+                      <span className="text-[9px] text-amber-800 italic block">
+                        {sub.harvardRecommendation}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-1 border-t border-amber-100/60">
+                    <Badge variant="secondary" className="text-[9px] bg-white text-amber-900 font-mono font-bold">
+                      +{sub.defaultGrams}g ración
+                    </Badge>
+                    <Button 
+                      size="sm" 
+                      className="bg-amber-800 group-hover:bg-amber-700 text-white font-bold text-[11px] h-7 px-3 rounded-xl gap-1"
+                    >
+                      <Plus className="w-3 h-3" />
+                      <span>Lanzar al plato</span>
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* ============================================================== */}
+          {/* CATEGORÍA 3: PROTEÍNAS SALUDABLES (25% DEL PLATO) */}
+          {/* ============================================================== */}
+          <div className="bg-white rounded-3xl p-5 sm:p-6 border border-blue-100 shadow-2xs space-y-4">
+            <div className="flex items-center justify-between border-b pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-blue-100 flex items-center justify-center text-blue-900 font-black text-xs">
+                  25%
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-slate-900 flex items-center gap-1.5">
+                    <span>Proteínas Limpias & Saludables</span>
+                    <Badge variant="outline" className="text-[10px] bg-blue-50 text-blue-900 border-blue-200">
+                      25% del plato
+                    </Badge>
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Harvard: Legumbres castellanas, tofu, pescados azules, huevos camperos.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* LAS 4 SUBCATEGORÍAS GENÉRICAS DE PROTEÍNA */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {HARVARD_SUBCATEGORIES.filter(s => s.category === 'proteinas').map(sub => (
+                <div
+                  key={sub.id}
+                  onClick={() => addGenericSubcategoryToPlate(sub)}
+                  className="p-3.5 rounded-2xl border border-blue-100 bg-blue-50/40 hover:bg-blue-50 hover:border-blue-300 transition-all cursor-pointer shadow-2xs flex flex-col justify-between space-y-2 group"
+                >
+                  <div className="flex items-start gap-2.5">
+                    <span className="text-2xl p-2 bg-white rounded-xl shadow-2xs border border-blue-100 group-hover:scale-110 transition-transform">
+                      {sub.emoji}
+                    </span>
+                    <div className="space-y-0.5">
+                      <strong className="text-xs font-bold text-slate-900 block group-hover:text-blue-950">
+                        {sub.name}
+                      </strong>
+                      <p className="text-[10px] text-slate-500 line-clamp-1">
+                        {sub.subtitle}
+                      </p>
+                      <span className="text-[9px] text-blue-800 italic block">
+                        {sub.harvardRecommendation}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-1 border-t border-blue-100/60">
+                    <Badge variant="secondary" className="text-[9px] bg-white text-blue-900 font-mono font-bold">
+                      +{sub.defaultGrams}g ración
+                    </Badge>
+                    <Button 
+                      size="sm" 
+                      className="bg-blue-800 group-hover:bg-blue-700 text-white font-bold text-[11px] h-7 px-3 rounded-xl gap-1"
+                    >
+                      <Plus className="w-3 h-3" />
+                      <span>Lanzar al plato</span>
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* ============================================================== */}
+          {/* CATEGORÍA 4: GRASAS SALUDABLES & ADEREZOS NOBLES (CENTRO) */}
+          {/* ============================================================== */}
+          <div className="bg-white rounded-3xl p-5 sm:p-6 border border-amber-200/90 shadow-2xs space-y-4">
+            <div className="flex items-center justify-between border-b pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-amber-200 flex items-center justify-center text-amber-950 font-black text-xs">
+                  🫒
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-slate-900 flex items-center gap-1.5">
+                    <span>Grasas Saludables & Aderezos Nobles</span>
+                    <Badge variant="outline" className="text-[10px] bg-amber-50 text-amber-900 border-amber-300">
+                      Toque de Oro
+                    </Badge>
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Harvard: Aceite de oliva virgen extra, frutos secos, semillas y aguacate.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* LAS 4 SUBCATEGORÍAS GENÉRICAS DE GRASAS */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {HARVARD_SUBCATEGORIES.filter(s => s.category === 'grasas').map(sub => (
+                <div
+                  key={sub.id}
+                  onClick={() => addGenericSubcategoryToPlate(sub)}
+                  className="p-3.5 rounded-2xl border border-amber-200 bg-amber-50/40 hover:bg-amber-100/60 transition-all cursor-pointer shadow-2xs flex flex-col justify-between space-y-2 group"
+                >
+                  <div className="flex items-start gap-2.5">
+                    <span className="text-2xl p-2 bg-white rounded-xl shadow-2xs border border-amber-200 group-hover:scale-110 transition-transform">
+                      {sub.emoji}
+                    </span>
+                    <div className="space-y-0.5">
+                      <strong className="text-xs font-bold text-slate-900 block group-hover:text-amber-950">
+                        {sub.name}
+                      </strong>
+                      <p className="text-[10px] text-slate-500 line-clamp-1">
+                        {sub.subtitle}
+                      </p>
+                      <span className="text-[9px] text-amber-900 italic block">
+                        {sub.harvardRecommendation}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-1 border-t border-amber-200/60">
+                    <Badge variant="secondary" className="text-[9px] bg-white text-amber-950 font-mono font-bold">
+                      +{sub.defaultGrams}g ración
+                    </Badge>
+                    <Button 
+                      size="sm" 
+                      className="bg-amber-900 group-hover:bg-amber-800 text-white font-bold text-[11px] h-7 px-3 rounded-xl gap-1"
+                    >
+                      <Plus className="w-3 h-3" />
+                      <span>Lanzar al plato</span>
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+        </div>
+
       </div>
 
     </div>
   );
 };
+
+export default HarvardPlateInteractive;
