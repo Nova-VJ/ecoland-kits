@@ -446,13 +446,20 @@ export const AiFridgeRecipeGenerator = () => {
 
                 <div className="grid sm:grid-cols-2 gap-2 text-xs">
                   {currentRecipe.missingProducts.map(p => (
-                    <div key={p.slug} className="p-2.5 rounded-xl bg-emerald-900/60 border border-emerald-800 flex items-center gap-2.5">
-                      <img src={p.image} alt={p.name} className="w-9 h-9 object-contain rounded-lg bg-white p-0.5" />
+                    <a 
+                      key={p.slug} 
+                      href={`/tienda/producto/${p.slug}`}
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      title={`Ver ficha completa de ${p.name}`}
+                      className="p-2.5 rounded-xl bg-emerald-900/60 border border-emerald-800 flex items-center gap-2.5 hover:bg-emerald-800/80 transition-colors group cursor-pointer"
+                    >
+                      <img src={p.image} alt={p.name} className="w-9 h-9 object-contain rounded-lg bg-white p-0.5 shrink-0" />
                       <div className="truncate flex-1">
-                        <span className="block font-bold text-white truncate text-[11px]">{p.name.split('–')[0]}</span>
+                        <span className="block font-bold text-white truncate text-[11px] group-hover:text-emerald-300">{p.name.split('–')[0]}</span>
                         <span className="block text-xs text-emerald-300 tabular-nums">{formatPrice(p.price)}</span>
                       </div>
-                    </div>
+                    </a>
                   ))}
                 </div>
 

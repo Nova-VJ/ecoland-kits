@@ -87,7 +87,7 @@ const App = () => {
                   <Route path="/organizarme" element={<SectionHub id="organizarme" />} />
                   <Route path="/cuidarme" element={<SectionHub id="cuidarme" />} />
                   <Route path="/checkout" element={<Checkout />} />
-                  <Route path="/tienda/:slug" element={<ProductDetail />} />
+                  <Route path="/tienda/:slug" element={<CatalogProductDetail />} />
                   <Route path="/tienda/producto/:slug" element={<CatalogProductDetail />} />
                   <Route path="/tienda/pack/:slug" element={<CatalogPackDetail />} />
                   <Route path="/donde-estamos" element={<DondeEstamos />} />
