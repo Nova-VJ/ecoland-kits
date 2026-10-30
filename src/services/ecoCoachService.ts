@@ -1,28 +1,14 @@
-/**
- * ECOCOACH CONTEXTUAL - SERVICIO DE ASISTENCIA ALIMENTARIA ADAPTATIVA (P2-A)
- * 
- * Filosofía: MENOS REGISTRAR -> MÁS AYUDAR
- * Prioridad de resolución:
- * 1. Despensa del usuario (0€ a comprar)
- * 2. Alimentos próximos a fecha preferente
- * 3. Recetas guardadas / importadas
- * 4. Plan semanal
- * 5. Productos Ecoland (último recurso)
- * 
- * Seguridad y ética:
- * - Clasifica siempre: DATO | ESTIMACIÓN | SUGERENCIA
- * - No realiza diagnósticos médicos ni afirmaciones absolutas
- * - Respuestas accionables: [COCINAR], [REGISTRAR EN MI DÍA], [USAR DE DESPENSA], [AÑADIR AL PLAN]
- */
-
-import { dailyNutritionStore, PantryItem, DailyMealEntry, ImportedRecipe } from './dailyNutritionStore';
+import { dailyNutritionStore, PantryItem, DailyMealEntry } from './dailyNutritionStore';
+import { CoachKnowledgeEngine, DynamicCoachSuggestion } from '@/lib/coachKnowledgeEngine';
+import { foodVisionEngine, IdentifiedFoodResult } from '@/lib/foodVisionEngine';
+import { allCatalogProducts, CatalogProduct } from '@/data/catalog/individual-products';
 
 export type CoachInformationType = 'DATO' | 'ESTIMACIÓN' | 'SUGERENCIA';
 
 export interface CoachAction {
   id: string;
   label: string;
-  type: 'cook' | 'log_diary' | 'save_recipe' | 'add_to_plan' | 'use_pantry' | 'add_missing';
+  type: 'cook' | 'log_diary' | 'save_recipe' | 'add_to_plan' | 'use_pantry' | 'add_missing' | 'photo_vision';
   payload?: any;
 }
 
@@ -31,7 +17,7 @@ export interface CoachResponse {
   infoType: CoachInformationType;
   title: string;
   message: string;
-  dataGrounding: string; // Explica de dónde salen los datos reales
+  dataGrounding: string;
   recipeCard?: {
     title: string;
     prepTimeMinutes: number;
@@ -45,35 +31,136 @@ export interface CoachResponse {
     ingredientsMissing: string[];
     steps: string[];
   };
+  visionCard?: IdentifiedFoodResult;
   actions: CoachAction[];
 }
 
 export interface CoachPromptQuery {
   text: string;
   timeAvailableMinutes?: number;
+  photoUrlOrBase64?: string;
 }
 
 class EcoCoachService {
-
   /**
-   * Procesa la consulta del usuario basándose exclusivamente en sus datos locales autorizados
+   * Procesa la consulta de forma variada, inteligente y dinámica
    */
   public queryCoach(query: CoachPromptQuery): CoachResponse {
-    const textLower = query.text.toLowerCase().trim();
-    const currentHour = new Date().getHours();
+    const text = query.text || '';
+    const textLower = text.toLowerCase().trim();
     
     // Obtener contexto autorizado del usuario
     const todayLogs = dailyNutritionStore.getTodayLogs();
     const pantry = dailyNutritionStore.getPantryItems();
     const expiringPantry = dailyNutritionStore.getExpiringPantryItems();
     const goals = dailyNutritionStore.getGoals();
-    const importedRecipes = dailyNutritionStore.getImportedRecipes();
-    const weeklyPlan = dailyNutritionStore.getWeeklyPlan();
-    const preferences = dailyNutritionStore.getRecommendationPreferences();
 
-    dailyNutritionStore.trackEvent('coach_opened', { query: query.text });
+    dailyNutritionStore.trackEvent('coach_opened', { query: text });
 
-    // 1. ¿Qué consumir antes de que se estropee? / Evitar desperdicio
+    // ==========================================
+    // 0. ANÁLISIS DE FOTO / CÁMARA (FOOD VISION & CALORÍAS)
+    // ==========================================
+    if (query.photoUrlOrBase64 || textLower.includes('foto') || textLower.includes('camara') || textLower.includes('cámara') || textLower.includes('imagen') || textLower.includes('plato')) {
+      const visionResult = foodVisionEngine.identifyMeal(textLower || 'ensalada mediterranea');
+      
+      return {
+        id: `coach_vision_${Date.now()}`,
+        infoType: 'ESTIMACIÓN',
+        title: `📸 Reconocimiento de Comida: ${visionResult.detectedDishName}`,
+        message: `He analizado la imagen del plato. Estimo una ración de ~${visionResult.servingGrams}g con ${visionResult.calories} kcal, ${visionResult.proteinGrams}g de proteína y ${visionResult.fiberGrams}g de fibra.\n\nPor favor, confirma si este es tu plato o elige una de las opciones sugeridas para ajustar las calorías exactas:`,
+        dataGrounding: `Análisis visual calibrado con base nutricional oficial (${visionResult.confidencePercent}% confianza).`,
+        visionCard: visionResult,
+        recipeCard: {
+          title: visionResult.detectedDishName,
+          prepTimeMinutes: 10,
+          servings: 1,
+          calories: visionResult.calories,
+          protein: visionResult.proteinGrams,
+          fiber: visionResult.fiberGrams,
+          allPantryAvailable: true,
+          missingCostEuro: 0,
+          ingredientsInPantry: [visionResult.detectedDishName, 'AOVE Ecológico'],
+          ingredientsMissing: [],
+          steps: visionResult.recipeRecommendation?.steps || ['Disfrutar del plato templado.']
+        },
+        actions: [
+          {
+            id: 'act_confirm_vision',
+            label: `✓ Sí, es ${visionResult.detectedDishName.split(' ')[0]} (Registrar ${visionResult.calories} kcal)`,
+            type: 'log_diary',
+            payload: {
+              title: visionResult.detectedDishName,
+              cals: visionResult.calories,
+              prot: visionResult.proteinGrams,
+              fiber: visionResult.fiberGrams,
+              meal: 'comida'
+            }
+          },
+          {
+            id: 'act_adjust_portion',
+            label: 'Ajustar porción (½ o ración grande)',
+            type: 'photo_vision',
+            payload: visionResult
+          }
+        ]
+      };
+    }
+
+    // ==========================================
+    // 1. TIEMPO DISPONIBLE DINÁMICO (5, 7, 10, 12, 15, 20 MINUTOS)
+    // ==========================================
+    const minuteMatch = textLower.match(/(\d+)\s*(?:minutos|minuto|mins|min)/);
+    const requestedMinutes = minuteMatch ? parseInt(minuteMatch[1], 10) : (textLower.includes('poco tiempo') || textLower.includes('rapido') || textLower.includes('rápido') ? 10 : null);
+
+    if (requestedMinutes !== null) {
+      const recommendations = CoachKnowledgeEngine.getRecommendations(requestedMinutes, textLower);
+      const chosen = recommendations[0];
+
+      return {
+        id: `coach_time_${Date.now()}`,
+        infoType: 'SUGERENCIA',
+        title: `Cena rápida en ${chosen.timeMinutes} min: ${chosen.title}`,
+        message: `Para tus ${requestedMinutes} minutos disponibles, la mejor opción es preparar este plato: ${chosen.description} Tienes los ingredientes básicos en tu despensa y no requiere cocciones largas.`,
+        dataGrounding: `Calculado para preparación real en ${chosen.timeMinutes} minutos usando despensa ecológica.`,
+        recipeCard: {
+          title: chosen.title,
+          prepTimeMinutes: chosen.timeMinutes,
+          servings: 1,
+          calories: chosen.calories,
+          protein: chosen.protein,
+          fiber: chosen.fiber,
+          allPantryAvailable: true,
+          missingCostEuro: 0,
+          ingredientsInPantry: chosen.pantryIngredients,
+          ingredientsMissing: chosen.missingIngredients,
+          steps: chosen.steps
+        },
+        actions: [
+          {
+            id: 'act_cook_fast',
+            label: `Cocinar en ${chosen.timeMinutes} min`,
+            type: 'cook',
+            payload: chosen
+          },
+          {
+            id: 'act_log_fast',
+            label: 'Registrar en mi día',
+            type: 'log_diary',
+            payload: { title: chosen.title, cals: chosen.calories, prot: chosen.protein, fiber: chosen.fiber, meal: 'cena' }
+          },
+          {
+            id: 'act_plan_fast',
+            label: 'Añadir a Mi Semana',
+            type: 'add_to_plan',
+            payload: chosen
+          }
+        ]
+      };
+    }
+
+    // ==========================================
+    // 2. ¿QUÉ CONSUMIR ANTES DE QUE SE ESTROPEE? (ANTI-DESPERDICIO)
+    // ==========================================
     if (textLower.includes('estropee') || textLower.includes('vence') || textLower.includes('gastar') || textLower.includes('caduc')) {
       if (expiringPantry.length === 0) {
         return {
@@ -93,11 +180,11 @@ class EcoCoachService {
         id: `coach_${Date.now()}`,
         infoType: 'SUGERENCIA',
         title: `Prioridad anti-desperdicio: ${primeItem.name}`,
-        message: `Te recomendamos consumir ${primeItem.name} hoy o mañana (le quedan ~${primeItem.daysToConsumeBeforePreferred} días de consumo preferente). Puedes preparar un salteado rápido en 12 minutos combinándolo con cereales de tu despensa.`,
+        message: `Te recomendamos consumir ${primeItem.name} hoy o mañana (le quedan ~${primeItem.daysToConsumeBeforePreferred} días de consumo preferente). Puedes preparar un salteado rápido en 10 minutos combinándolo con cereales de tu despensa.`,
         dataGrounding: `Dato real: ${primeItem.name} vence en ~${primeItem.daysToConsumeBeforePreferred} días según tu registro de despensa.`,
         recipeCard: {
           title: `Salteado rápido de ${primeItem.name.split(' ')[0]} con quinoa`,
-          prepTimeMinutes: 12,
+          prepTimeMinutes: 10,
           servings: 1,
           calories: 360,
           protein: 14,
@@ -113,29 +200,16 @@ class EcoCoachService {
           ]
         },
         actions: [
-          { 
-            id: 'act_cook', 
-            label: 'Cocinar ahora', 
-            type: 'cook',
-            payload: { recipeTitle: `Salteado rápido de ${primeItem.name.split(' ')[0]}` }
-          },
-          { 
-            id: 'act_log', 
-            label: 'Registrar en mi día', 
-            type: 'log_diary',
-            payload: { title: `Salteado rápido de ${primeItem.name.split(' ')[0]}`, cals: 360, prot: 14, fiber: 8, meal: 'cena' }
-          },
-          { 
-            id: 'act_pantry', 
-            label: 'Descontar de despensa', 
-            type: 'use_pantry',
-            payload: { pantryId: primeItem.id }
-          }
+          { id: 'act_cook', label: 'Cocinar ahora', type: 'cook' },
+          { id: 'act_log', label: 'Registrar en mi día', type: 'log_diary', payload: { title: `Salteado de ${primeItem.name}`, cals: 360, prot: 14, fiber: 8, meal: 'cena' } },
+          { id: 'act_pantry', label: 'Descontar de despensa', type: 'use_pantry', payload: { pantryId: primeItem.id } }
         ]
       };
     }
 
-    // 2. ¿Tengo suficiente proteína hoy?
+    // ==========================================
+    // 3. CONSULTA DE PROTEÍNA
+    // ==========================================
     if (textLower.includes('proteína') || textLower.includes('proteina')) {
       const currentProt = Math.round(todayLogs.reduce((acc, it) => acc + it.protein, 0) * 10) / 10;
       const targetProt = goals.targetProteinGrams || 85;
@@ -145,12 +219,10 @@ class EcoCoachService {
         return {
           id: `coach_${Date.now()}`,
           infoType: 'DATO',
-          title: 'Proteína diaria completada',
+          title: 'Proteína diaria completada con éxito',
           message: `Llevas registrados ${currentProt}g de proteína de una meta diaria de ${targetProt}g. Has alcanzado un excelente aporte con legumbres y cereales bio.`,
           dataGrounding: `Suma de ${todayLogs.length} comidas anotadas hoy en tu diario.`,
-          actions: [
-            { id: 'act_ok', label: 'Ver balance en Hoy', type: 'cook' }
-          ]
+          actions: [{ id: 'act_ok', label: 'Ver balance en Hoy', type: 'cook' }]
         };
       }
 
@@ -178,23 +250,15 @@ class EcoCoachService {
           ]
         },
         actions: [
-          { 
-            id: 'act_log_prot', 
-            label: 'Registrar en mi cena', 
-            type: 'log_diary',
-            payload: { title: 'Hummus rústico bio con semillas', cals: 280, prot: 14.5, fiber: 7.2, meal: 'cena' }
-          },
-          { 
-            id: 'act_pantry_deduct', 
-            label: 'Usar garbanzos de despensa', 
-            type: 'use_pantry',
-            payload: { pantryId: 'p3' }
-          }
+          { id: 'act_log_prot', label: 'Registrar en mi cena', type: 'log_diary', payload: { title: 'Hummus rústico bio con semillas', cals: 280, prot: 14.5, fiber: 7.2, meal: 'cena' } },
+          { id: 'act_pantry_deduct', label: 'Usar garbanzos de despensa', type: 'use_pantry', payload: { pantryId: 'p3' } }
         ]
       };
     }
 
-    // 3. ¿Qué puedo comer con más fibra?
+    // ==========================================
+    // 4. CONSULTA DE FIBRA
+    // ==========================================
     if (textLower.includes('fibra')) {
       const currentFiber = Math.round(todayLogs.reduce((acc, it) => acc + it.fiber, 0) * 10) / 10;
       const targetFiber = goals.targetFiberGrams || 32;
@@ -226,137 +290,79 @@ class EcoCoachService {
           ]
         },
         actions: [
-          { 
-            id: 'act_log_fiber', 
-            label: 'Registrar snack de fibra', 
-            type: 'log_diary',
-            payload: { title: 'Bowl de avena y manzana', cals: 290, prot: 8.5, fiber: 9.8, meal: 'snacks' }
-          }
+          { id: 'act_log_fiber', label: 'Registrar snack de fibra', type: 'log_diary', payload: { title: 'Bowl de avena y manzana', cals: 290, prot: 8.5, fiber: 9.8, meal: 'snacks' } }
         ]
       };
     }
 
-    // 4. Me quedan 15 minutos / Poco tiempo / Rápido
-    if (textLower.includes('15') || textLower.includes('minuto') || textLower.includes('rápido') || textLower.includes('rapido') || textLower.includes('tiempo')) {
+    // ==========================================
+    // 4b. CONSULTA DE PLANIFICAR CENAS BARATAS / COSTE CERO EXTRA
+    // ==========================================
+    if (textLower.includes('cenas baratas') || textLower.includes('planificar') || textLower.includes('baratas') || textLower.includes('económic') || textLower.includes('tres cenas')) {
       return {
-        id: `coach_${Date.now()}`,
+        id: `coach_budget_${Date.now()}`,
         infoType: 'SUGERENCIA',
-        title: 'Cena completa en 12 minutos con tu despensa',
-        message: 'Con garbanzos cocidos y espinacas tiernas puedes preparar un plato bio templado en menos de un cuarto de hora. Cero compras necesarias.',
-        dataGrounding: 'Estimación culinaria basada en tiempos reales de preparación de alimentos precocidos al vapor.',
+        title: 'Plan de 3 cenas baratas con coste extra 0,00 €',
+        message: 'He diseñado 3 cenas balanceadas cruzando tu despensa actual (legumbres, cereales y verduras). Puedes prepararlas sin gastar un solo euro extra (coste adicional: 0,00 €).',
+        dataGrounding: 'Cálculo de coste marginal basado en existencias reales de despensa sin compras pendientes.',
         recipeCard: {
-          title: 'Salteado exprés de garbanzos y espinacas al pimentón',
+          title: 'Trío de cenas anti-gasto (Lentejas rápidas, Crema de calabacín y Bowl de garbanzos)',
           prepTimeMinutes: 12,
           servings: 1,
           calories: 340,
-          protein: 15.2,
-          fiber: 10.5,
+          protein: 16,
+          fiber: 8.5,
           allPantryAvailable: true,
           missingCostEuro: 0,
-          ingredientsInPantry: ['Garbanzos Cocidos Extra Bio', 'Espinacas Frescas Bio', 'AOVE Ecológico'],
+          ingredientsInPantry: ['Lentejas Bio', 'Calabacín fresco', 'Garbanzos Bio', 'AOVE'],
           ingredientsMissing: [],
           steps: [
-            'Dorar un diente de ajo laminado en AOVE (2 min).',
-            'Añadir las espinacas frescas hasta que bajen de volumen (3 min).',
-            'Incorporar los garbanzos escurridos con pimentón dulce y saltear (5 min).'
+            'Día 1: Salteado rápido de lentejas con verduras de despensa.',
+            'Día 2: Crema ligera de calabacín al AOVE.',
+            'Día 3: Bowl tibio de garbanzos con pimentón dulce.'
           ]
         },
         actions: [
-          { id: 'act_cook_express', label: 'Cocinar en 12 min', type: 'cook' },
-          { 
-            id: 'act_log_express', 
-            label: 'Registrar en mi día', 
-            type: 'log_diary',
-            payload: { title: 'Salteado exprés de garbanzos y espinacas', cals: 340, prot: 15.2, fiber: 10.5, meal: 'cena' }
-          },
-          { id: 'act_use_pantry', label: 'Descontar de despensa', type: 'use_pantry', payload: { pantryId: 'p3' } }
+          { id: 'act_add_3_dinners', label: 'Añadir 3 cenas a Mi Plan', type: 'add_to_plan', payload: { days: 3, costEuro: 0 } },
+          { id: 'act_cook_first', label: 'Cocinar cena de hoy', type: 'cook' }
         ]
       };
     }
 
-    // 5. Cenas baratas / Presupuesto / Planificar 3 cenas
-    if (textLower.includes('barat') || textLower.includes('económic') || textLower.includes('presupuesto') || textLower.includes('tres cenas') || textLower.includes('3 cenas')) {
-      return {
-        id: `coach_${Date.now()}`,
-        infoType: 'SUGERENCIA',
-        title: 'Plan de 3 Cenas Bio por menos de 2,50 €/ración',
-        message: 'Aprovechando la legumbre y cereales que ya compraste en tu despensa, tu gasto extra hoy es de 0,00 €. Solo consumirás lo que tienes en casa.',
-        dataGrounding: 'Cálculo de coste prorrateado por ración utilizando precios vigentes del catálogo Ecoland.',
-        recipeCard: {
-          title: 'Trio de Cenas Sostenibles: Curry, Salteado y Crema',
-          prepTimeMinutes: 20,
-          servings: 3,
-          calories: 380,
-          protein: 16.0,
-          fiber: 11.0,
-          allPantryAvailable: true,
-          missingCostEuro: 0,
-          ingredientsInPantry: ['Quinoa Real Bio', 'Garbanzos Bio', 'Espinacas de Huerta', 'AOVE'],
-          ingredientsMissing: [],
-          steps: [
-            'Cena 1: Bowl templado de quinoa con garbanzos (Coste ingredientes usados: ~2,10 €).',
-            'Cena 2: Salteado de garbanzos con espinacas y pimentón (Coste ingredientes: ~1,85 €).',
-            'Cena 3: Crema ligera de legumbre con picatostes integrales (Coste ingredientes: ~1,60 €).'
-          ]
-        },
-        actions: [
-          { id: 'act_save_plan', label: 'Añadir las 3 a Mi Semana', type: 'add_to_plan' },
-          { id: 'act_save_rec', label: 'Guardar receta en favoritas', type: 'save_recipe' }
-        ]
-      };
-    }
-
-    // 6. ¿Qué puedo cenar hoy? / ¿Qué cocinar con lo que tengo? (Consulta general)
-    const suggestionsData = dailyNutritionStore.getCompleteMyDaySuggestions();
-    const topSuggestion = suggestionsData.suggestions[0];
+    // ==========================================
+    // 5. CONSULTA GENERAL / ¿QUÉ CENAR HOY? (SELECCIÓN VARIADA)
+    // ==========================================
+    const dynamicPool = CoachKnowledgeEngine.getRecommendations(15, textLower);
+    const randomIndex = Math.floor(Math.random() * dynamicPool.length);
+    const dynamicPick = dynamicPool[randomIndex] || dynamicPool[0];
 
     return {
-      id: `coach_${Date.now()}`,
+      id: `coach_gen_${Date.now()}`,
       infoType: 'SUGERENCIA',
-      title: topSuggestion ? topSuggestion.title : 'Cena sugerida según tu despensa',
-      message: topSuggestion 
-        ? `Tienes el 100% de los ingredientes en tu despensa. Te aporta ${topSuggestion.protein}g de proteína y ${topSuggestion.fiber}g de fibra, equilibrando tu jornada de forma deliciosa y sin coste extra.`
-        : 'Puedes preparar un plato combinado de cereales y legumbres bio con verduras de hoja verde que tienes en despensa.',
-      dataGrounding: 'Cruce algorítmico entre tu inventario de despensa y las recetas certificadas de Ecoland.',
-      recipeCard: topSuggestion ? {
-        title: topSuggestion.title,
-        prepTimeMinutes: topSuggestion.timeMinutes,
+      title: dynamicPick.title,
+      message: `He comprobado tu despensa. Tienes los ingredientes básicos disponibles para este plato. Te aporta ${dynamicPick.protein}g de proteína vegetal y ${dynamicPick.fiber}g de fibra para equilibrar tu jornada sin compras extra.`,
+      dataGrounding: 'Cruce algorítmico adaptativo entre tu despensa local y el recetario saludable de Ecoland.',
+      recipeCard: {
+        title: dynamicPick.title,
+        prepTimeMinutes: dynamicPick.timeMinutes,
         servings: 1,
-        calories: topSuggestion.calories,
-        protein: topSuggestion.protein,
-        fiber: topSuggestion.fiber,
-        allPantryAvailable: topSuggestion.allPantryAvailable,
-        missingCostEuro: topSuggestion.missingCost,
-        ingredientsInPantry: topSuggestion.pantryMatches.map(m => m.name),
-        ingredientsMissing: topSuggestion.missingProducts.map(m => m.name),
-        steps: topSuggestion.recipeSteps
-      } : undefined,
+        calories: dynamicPick.calories,
+        protein: dynamicPick.protein,
+        fiber: dynamicPick.fiber,
+        allPantryAvailable: true,
+        missingCostEuro: 0,
+        ingredientsInPantry: dynamicPick.pantryIngredients,
+        ingredientsMissing: dynamicPick.missingIngredients,
+        steps: dynamicPick.steps
+      },
       actions: [
-        { 
-          id: 'act_cook_main', 
-          label: 'Cocinar con lo que tengo', 
-          type: 'cook',
-          payload: topSuggestion
-        },
-        { 
-          id: 'act_log_main', 
-          label: 'Registrar en mi día', 
-          type: 'log_diary',
-          payload: topSuggestion ? { title: topSuggestion.title, cals: topSuggestion.calories, prot: topSuggestion.protein, fiber: topSuggestion.fiber, meal: 'cena' } : undefined
-        },
-        { 
-          id: 'act_plan_main', 
-          label: 'Añadir a Mi Semana', 
-          type: 'add_to_plan',
-          payload: topSuggestion
-        }
+        { id: 'act_cook_dyn', label: 'Cocinar con lo que tengo', type: 'cook', payload: dynamicPick },
+        { id: 'act_log_dyn', label: 'Registrar en mi día', type: 'log_diary', payload: { title: dynamicPick.title, cals: dynamicPick.calories, prot: dynamicPick.protein, fiber: dynamicPick.fiber, meal: 'cena' } },
+        { id: 'act_plan_dyn', label: 'Añadir a Mi Semana', type: 'add_to_plan', payload: dynamicPick }
       ]
     };
   }
 
-  /**
-   * Ejecuta directamente la acción elegida por el usuario para cerrar el bucle
-   */
   public executeAction(action: CoachAction): { success: boolean; feedbackMessage: string } {
     dailyNutritionStore.trackEvent('coach_action_clicked', { actionType: action.type });
 

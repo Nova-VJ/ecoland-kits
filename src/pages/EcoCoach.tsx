@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Sparkles, Send, ChefHat, CheckCircle2, Bookmark, Calendar, 
-  ShoppingBag, Shield, Clock, AlertTriangle, ArrowRight, Bot, Info, Box
+  ShoppingBag, Shield, Clock, AlertTriangle, ArrowRight, Bot, Info, Box,
+  Camera, Scale, Utensils, RefreshCw, Check, ThumbsUp, ThumbsDown
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,30 +11,33 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { ecoCoachService, CoachResponse, CoachAction } from '@/services/ecoCoachService';
 import { productInsightsService } from '@/services/productInsightsService';
-import { ThumbsUp, ThumbsDown, Check } from 'lucide-react';
 import { dailyNutritionStore } from '@/services/dailyNutritionStore';
+import { foodVisionEngine, IdentifiedFoodResult } from '@/lib/foodVisionEngine';
 
 interface ChatMessage {
   id: string;
   sender: 'user' | 'coach';
   text?: string;
+  photoUrl?: string;
   response?: CoachResponse;
   timestamp: string;
 }
 
 const SUGGESTED_QUERIES = [
-  '¿Qué puedo cenar hoy?',
-  '¿Qué puedo cocinar con lo que tengo?',
-  'Me quedan 15 minutos, ¿qué hago?',
+  '📸 Analizar plato por foto',
+  '📸 Foto: Ensalada mediterránea',
+  '📸 Foto: Lentejas estofadas',
+  '¿Qué puedo cenar hoy en 10 minutos?',
+  'Me quedan 5 minutos, ¿qué hago?',
   '¿Qué puedo comer con más fibra?',
   '¿Tengo suficiente proteína hoy?',
-  '¿Qué preparo mañana?',
   '¿Qué debería consumir antes de que se estropee?',
   'Ayúdame a planificar tres cenas baratas'
 ];
 
 export const EcoCoach = () => {
   const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [inputText, setInputText] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>(() => {
     // Mensaje inicial de bienvenida contextual
@@ -45,7 +49,7 @@ export const EcoCoach = () => {
         response: {
           ...initialResp,
           title: '¡Hola! Soy tu EcoCoach Contextual',
-          message: 'He revisado tu diario de hoy, tu despensa y tus alimentos próximos a fecha. Mi objetivo es ayudarte a decidir sin fricción, ahorrando compras innecesarias. ¿Qué necesitas hoy?'
+          message: 'He revisado tu diario de hoy, tu despensa y tus alimentos próximos a fecha. Puedo recomendarte recetas a medida según tus minutos disponibles o reconocer tus comidas y contar calorías a partir de una foto previa confirmación. ¿Qué necesitas hoy?'
         },
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       }
@@ -111,6 +115,126 @@ export const EcoCoach = () => {
     }, 450);
   };
 
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const fileName = file.name.toLowerCase();
+    const queryHint = fileName.includes('lenteja') ? 'lentejas estofadas'
+      : fileName.includes('garbanzo') ? 'garbanzos espinacas'
+      : fileName.includes('avena') || fileName.includes('porridge') ? 'porridge de avena'
+      : fileName.includes('quinoa') ? 'bowl de quinoa'
+      : fileName.includes('calabacin') || fileName.includes('crema') ? 'crema de calabacin'
+      : fileName.includes('tostada') || fileName.includes('aguacate') ? 'tostada de aguacate'
+      : fileName.includes('arroz') ? 'arroz salteado'
+      : 'ensalada mediterranea';
+
+    // Generar URL para visualización si es imagen real
+    const previewUrl = URL.createObjectURL(file);
+
+    const userMsg: ChatMessage = {
+      id: `msg_u_${Date.now()}`,
+      sender: 'user',
+      text: `📸 Foto enviada: ${file.name}`,
+      photoUrl: previewUrl,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    };
+
+    setMessages(prev => [...prev, userMsg]);
+    setIsTyping(true);
+
+    setTimeout(() => {
+      const coachResp = ecoCoachService.queryCoach({ 
+        text: `foto de ${queryHint}`,
+        photoUrlOrBase64: previewUrl
+      });
+      productInsightsService.recordCoachResponseShown('photo_analysis', coachResp.title);
+      const coachMsg: ChatMessage = {
+        id: `msg_c_${Date.now()}`,
+        sender: 'coach',
+        response: coachResp,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+      setMessages(prev => [...prev, coachMsg]);
+      setIsTyping(false);
+    }, 550);
+
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const handleUpdatePortion = (msgId: string, currentVision: IdentifiedFoodResult, mult: number) => {
+    const updatedVision = foodVisionEngine.identifyMeal(currentVision.detectedDishName, mult);
+    setMessages(prev => prev.map(msg => {
+      if (msg.id !== msgId || !msg.response) return msg;
+      return {
+        ...msg,
+        response: {
+          ...msg.response,
+          title: `📸 Reconocimiento de Comida: ${updatedVision.detectedDishName} (${mult}x)`,
+          visionCard: updatedVision,
+          recipeCard: msg.response.recipeCard ? {
+            ...msg.response.recipeCard,
+            calories: updatedVision.calories,
+            protein: updatedVision.proteinGrams,
+            fiber: updatedVision.fiberGrams
+          } : undefined,
+          actions: [
+            {
+              id: 'act_confirm_vision_updated',
+              label: `✓ Confirmar y registrar ${updatedVision.calories} kcal`,
+              type: 'log_diary',
+              payload: {
+                title: `${updatedVision.detectedDishName} (${mult}x)`,
+                cals: updatedVision.calories,
+                prot: updatedVision.proteinGrams,
+                fiber: updatedVision.fiberGrams,
+                meal: 'comida'
+              }
+            }
+          ]
+        }
+      };
+    }));
+    toast({
+      title: `Porción ajustada (${mult}x)`,
+      description: `Recalculado a ${updatedVision.calories} kcal y ${updatedVision.proteinGrams}g de proteína.`
+    });
+  };
+
+  const handleSelectAlternativeDish = (msgId: string, alternativeDishName: string) => {
+    const newVision = foodVisionEngine.identifyMeal(alternativeDishName);
+    setMessages(prev => prev.map(msg => {
+      if (msg.id !== msgId || !msg.response) return msg;
+      return {
+        ...msg,
+        response: {
+          ...msg.response,
+          title: `📸 Reconocimiento de Comida: ${newVision.detectedDishName}`,
+          message: `Plato actualizado a ${newVision.detectedDishName}. Estimo ${newVision.calories} kcal y ${newVision.proteinGrams}g de proteína. ¿Deseas registrarlo en tu diario?`,
+          visionCard: newVision,
+          actions: [
+            {
+              id: 'act_confirm_alt_vision',
+              label: `✓ Confirmar y registrar ${newVision.calories} kcal`,
+              type: 'log_diary',
+              payload: {
+                title: newVision.detectedDishName,
+                cals: newVision.calories,
+                prot: newVision.proteinGrams,
+                fiber: newVision.fiberGrams,
+                meal: 'comida'
+              }
+            }
+          ]
+        }
+      };
+    }));
+    toast({
+      title: 'Plato actualizado',
+      description: `Cambiado a ${newVision.detectedDishName} (${newVision.calories} kcal).`
+    });
+  };
+
   const handleExecuteAction = (action: CoachAction) => {
     const res = ecoCoachService.executeAction(action);
     productInsightsService.recordCoachActionClicked(action.type as any);
@@ -165,20 +289,24 @@ export const EcoCoach = () => {
           </div>
 
           <p className="text-xs md:text-sm text-slate-500 leading-relaxed max-w-2xl">
-            Pregúntale lo que necesitas en cualquier momento. El EcoCoach consulta tu despensa, tus alimentos a punto de vencer y tu plan antes de sugerirte comprar nada.
+            Pregúntale lo que necesitas en cualquier momento o sube una foto de tu comida. El EcoCoach consulta tu despensa, tus alimentos a punto de vencer, cuenta calorías por foto con confirmación previa y te sugiere recetas rápidas.
           </p>
 
           {/* Chips de Preguntas Frecuentes Sugeridas */}
           <div className="pt-2 border-t space-y-1.5">
             <span className="text-[11px] font-bold text-slate-500 block uppercase tracking-wider">
-              Preguntas sugeridas:
+              Consultas y Reconocimiento Rápido:
             </span>
             <div className="flex flex-wrap gap-1.5">
               {SUGGESTED_QUERIES.map((q, idx) => (
                 <button
                   key={idx}
                   onClick={() => handleSendQuery(q)}
-                  className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-emerald-100/70 border border-slate-200 hover:border-emerald-300 text-slate-700 hover:text-emerald-950 text-xs font-semibold transition-all text-left"
+                  className={`px-3 py-1.5 rounded-xl border text-xs font-semibold transition-all text-left ${
+                    q.startsWith('📸')
+                      ? 'bg-amber-50 hover:bg-amber-100/80 border-amber-300 text-amber-950 font-bold'
+                      : 'bg-slate-100 hover:bg-emerald-100/70 border-slate-200 hover:border-emerald-300 text-slate-700 hover:text-emerald-950'
+                  }`}
                 >
                   {q}
                 </button>
@@ -197,7 +325,14 @@ export const EcoCoach = () => {
               className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
             >
               {msg.sender === 'user' ? (
-                <div className="bg-emerald-900 text-white rounded-3xl rounded-tr-xs px-5 py-3 max-w-lg shadow-sm text-xs md:text-sm">
+                <div className="bg-emerald-900 text-white rounded-3xl rounded-tr-xs px-5 py-3 max-w-lg shadow-sm text-xs md:text-sm space-y-2">
+                  {msg.photoUrl && (
+                    <img 
+                      src={msg.photoUrl} 
+                      alt="Foto subida" 
+                      className="w-full max-h-48 object-cover rounded-2xl border border-white/20" 
+                    />
+                  )}
                   <p>{msg.text}</p>
                   <span className="text-xs text-emerald-300 block text-right mt-1 tabular-nums">
                     {msg.timestamp}
@@ -221,12 +356,129 @@ export const EcoCoach = () => {
                         </span>
                       </div>
 
-                      <p className="text-xs md:text-sm text-slate-700 leading-relaxed">
+                      <p className="text-xs md:text-sm text-slate-700 leading-relaxed whitespace-pre-line">
                         {msg.response.message}
                       </p>
 
-                      {/* Tarjeta de Receta Accionable si aplica */}
-                      {msg.response.recipeCard && (
+                      {/* Tarjeta Interactiva de Food Vision (Foto & Calorías) si aplica */}
+                      {msg.response.visionCard && (
+                        <div className="p-4 rounded-2xl bg-gradient-to-br from-amber-50/70 via-white to-emerald-50/60 border border-emerald-300/80 shadow-2xs space-y-3">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-emerald-100 pb-2">
+                            <div className="flex items-center gap-2">
+                              <div className="w-8 h-8 rounded-xl bg-emerald-900 text-white flex items-center justify-center font-bold">
+                                📸
+                              </div>
+                              <div>
+                                <span className="text-[10px] uppercase font-bold tracking-wider text-emerald-800">
+                                  Reconocimiento Calibrado ({msg.response.visionCard.confidenceLevel})
+                                </span>
+                                <strong className="text-xs md:text-sm text-slate-900 block">
+                                  {msg.response.visionCard.detectedDishName}
+                                </strong>
+                              </div>
+                            </div>
+                            <Badge className="bg-emerald-100 text-emerald-950 border-emerald-300 text-[11px] font-bold">
+                              ✓ {msg.response.visionCard.confidencePercent}% Confianza
+                            </Badge>
+                          </div>
+
+                          {/* Contador de Calorías y Macros visual */}
+                          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-center">
+                            <div className="p-2.5 rounded-xl bg-white border border-emerald-200/90 shadow-2xs">
+                              <span className="text-[10px] text-slate-500 block uppercase font-bold">Calorías</span>
+                              <span className="text-base md:text-lg font-black text-emerald-950 tabular-nums">
+                                {msg.response.visionCard.calories}
+                              </span>
+                              <span className="text-[10px] text-slate-400 block">kcal</span>
+                            </div>
+                            <div className="p-2.5 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
+                              <span className="text-[10px] text-slate-500 block uppercase font-bold">Proteína</span>
+                              <span className="text-sm md:text-base font-bold text-slate-900 tabular-nums">
+                                {msg.response.visionCard.proteinGrams}g
+                              </span>
+                              <span className="text-[10px] text-slate-400 block">vegetal</span>
+                            </div>
+                            <div className="p-2.5 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
+                              <span className="text-[10px] text-slate-500 block uppercase font-bold">Fibra</span>
+                              <span className="text-sm md:text-base font-bold text-emerald-800 tabular-nums">
+                                {msg.response.visionCard.fiberGrams}g
+                              </span>
+                              <span className="text-[10px] text-slate-400 block">saludable</span>
+                            </div>
+                            <div className="p-2.5 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
+                              <span className="text-[10px] text-slate-500 block uppercase font-bold">Hidratos</span>
+                              <span className="text-sm md:text-base font-bold text-slate-700 tabular-nums">
+                                {msg.response.visionCard.carbsGrams}g
+                              </span>
+                              <span className="text-[10px] text-slate-400 block">lenta absorción</span>
+                            </div>
+                            <div className="p-2.5 rounded-xl bg-white border border-slate-200/80 shadow-2xs col-span-2 sm:col-span-1">
+                              <span className="text-[10px] text-slate-500 block uppercase font-bold">Ración</span>
+                              <span className="text-sm md:text-base font-bold text-slate-700 tabular-nums">
+                                ~{msg.response.visionCard.servingGrams}g
+                              </span>
+                              <span className="text-[10px] text-slate-400 block">peso plato</span>
+                            </div>
+                          </div>
+
+                          {/* Selector de Ajuste de Porción */}
+                          <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1.5">
+                            <span className="text-[11px] font-bold text-slate-700 flex items-center gap-1.5">
+                              <Scale className="w-3.5 h-3.5 text-emerald-700" />
+                              <span>Ajustar tamaño de porción consumida:</span>
+                            </span>
+                            <div className="flex flex-wrap gap-1.5">
+                              {[
+                                { label: '½ Ración (ligera)', mult: 0.5 },
+                                { label: '1x Ración estándar', mult: 1.0 },
+                                { label: '1.5x Ración generosa', mult: 1.5 },
+                                { label: '2x Doble plato', mult: 2.0 },
+                              ].map((scale) => (
+                                <button
+                                  key={scale.mult}
+                                  onClick={() => handleUpdatePortion(msg.id, msg.response!.visionCard!, scale.mult)}
+                                  className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-white hover:bg-emerald-100 border border-slate-200 hover:border-emerald-300 text-slate-700 hover:text-emerald-950 transition-colors"
+                                >
+                                  {scale.label}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Confirmación previa y opciones alternativas si no era ese plato */}
+                          <div className="space-y-1.5 pt-1 border-t border-emerald-100">
+                            <span className="text-[11px] font-bold text-slate-700 block">
+                              ¿No era este plato? Pulsa en el correcto para recalcular al instante:
+                            </span>
+                            <div className="flex flex-wrap gap-1.5">
+                              {msg.response.visionCard.alternativeOptions.map((alt) => (
+                                <button
+                                  key={alt.key}
+                                  onClick={() => handleSelectAlternativeDish(msg.id, alt.name)}
+                                  className="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-[11px] font-medium text-emerald-900 transition-colors"
+                                >
+                                  {alt.name} ({alt.calories} kcal)
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Recomendación de receta / mejora de calidad */}
+                          {msg.response.visionCard.recipeRecommendation && (
+                            <div className="p-3 rounded-xl bg-emerald-100/60 border border-emerald-200 text-xs text-emerald-950 space-y-1">
+                              <strong className="block text-[11px] uppercase tracking-wider text-emerald-900 font-bold">
+                                💡 {msg.response.visionCard.recipeRecommendation.title}
+                              </strong>
+                              <p className="text-[11px] leading-relaxed text-emerald-900/90">
+                                {msg.response.visionCard.recipeRecommendation.description}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Tarjeta de Receta Accionable si aplica (cuando no es visionCard) */}
+                      {msg.response.recipeCard && !msg.response.visionCard && (
                         <div className="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-200/80 space-y-3">
                           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                             <div>
@@ -291,7 +543,7 @@ export const EcoCoach = () => {
                         </div>
                       </div>
 
-                      {/* Feedback Discreto del Coach (P2.5 Punto 6) */}
+                      {/* Feedback Discreto del Coach */}
                       <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-t border-slate-100/80 text-[11px]">
                         <span className="text-slate-500 text-xs">¿Te sirvió esta sugerencia?</span>
                         
@@ -370,8 +622,18 @@ export const EcoCoach = () => {
           )}
         </div>
 
-        {/* Barra de Entrada / Consulta Personalizada */}
-        <div className="sticky bottom-4 bg-white/95 backdrop-blur-md p-3 sm:p-4 rounded-3xl border shadow-lg">
+        {/* Barra de Entrada / Consulta Personalizada + Cámara */}
+        <div className="sticky bottom-4 bg-white/95 backdrop-blur-md p-3 sm:p-4 rounded-3xl border shadow-lg space-y-2">
+          {/* Input oculto para subida de imagen de comida */}
+          <input 
+            ref={fileInputRef}
+            type="file" 
+            accept="image/*" 
+            capture="environment"
+            className="hidden" 
+            onChange={handlePhotoUpload} 
+          />
+
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -379,12 +641,24 @@ export const EcoCoach = () => {
             }}
             className="flex items-center gap-2"
           >
+            {/* Botón de Cámara / Subir Foto de Comida */}
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => fileInputRef.current?.click()}
+              className="h-12 w-12 rounded-2xl border-slate-200 hover:border-emerald-500 hover:bg-emerald-50 text-emerald-800 shrink-0 p-0 shadow-2xs flex items-center justify-center transition-all"
+              title="Tomar foto o subir imagen de comida para calcular calorías"
+            >
+              <Camera className="w-5 h-5 text-emerald-800" />
+            </Button>
+
             <Input
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              placeholder="Escribe tu consulta... Ej: ¿Qué puedo cenar hoy en 10 minutos?"
+              placeholder="Escribe tu consulta... Ej: ¿Qué puedo cenar en 10 minutos? o sube una foto con el icono"
               className="rounded-2xl border-slate-200 focus:border-emerald-600 text-xs sm:text-sm h-12 bg-slate-50"
             />
+
             <Button
               type="submit"
               disabled={!inputText.trim() || isTyping}

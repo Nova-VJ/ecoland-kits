@@ -50,4 +50,24 @@ describe('EcoCoach Contextual Service (P2-A)', () => {
     expect(res.message).toContain('0,00 €');
     expect(res.actions.some(a => a.type === 'add_to_plan')).toBe(true);
   });
+
+  it('6. Food Vision: reconoce comida por foto y calcula calorías con confirmación previa y alternativas', () => {
+    const res = ecoCoachService.queryCoach({ text: 'Analizar foto de mi plato de lentejas' });
+    expect(res.infoType).toBe('ESTIMACIÓN');
+    expect(res.visionCard).toBeDefined();
+    expect(res.visionCard?.calories).toBeGreaterThan(0);
+    expect(res.visionCard?.confidencePercent).toBeGreaterThanOrEqual(80);
+    expect(res.visionCard?.alternativeOptions.length).toBeGreaterThan(0);
+    expect(res.actions.some(a => a.type === 'log_diary')).toBe(true);
+  });
+
+  it('7. Adapta dinámicamente el plato según tiempo disponible (10 min vs 5 min)', () => {
+    const res10 = ecoCoachService.queryCoach({ text: '¿Qué puedo cenar en 10 minutos?' });
+    expect(res10.recipeCard).toBeDefined();
+    expect(res10.recipeCard?.prepTimeMinutes).toBeLessThanOrEqual(10);
+
+    const res5 = ecoCoachService.queryCoach({ text: 'Solo tengo 5 minutos para comer' });
+    expect(res5.recipeCard).toBeDefined();
+    expect(res5.recipeCard?.prepTimeMinutes).toBeLessThanOrEqual(5);
+  });
 });
