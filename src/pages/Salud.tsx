@@ -63,6 +63,23 @@ const Salud = () => {
           </p>
         </header>
 
+                {/* Acceso Rápido al Plato de Harvard y Calculadora TDEE */}
+        <div className="bg-emerald-900 text-white p-6 rounded-3xl shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-800 text-emerald-200">
+              Herramienta de Nutrición
+            </span>
+            <h2 className="font-display text-xl md:text-2xl font-bold">Plato Saludable de Harvard y Calculadora</h2>
+            <p className="text-emerald-100 text-sm max-w-xl">
+              Diseña tus comidas equilibradas (50% vegetales, 25% granos integrales, 25% proteína saludable) y calcula tu gasto calórico diario.
+            </p>
+          </div>
+          <Link to="/ecohealth" className="inline-flex items-center gap-2 bg-white text-emerald-950 font-bold px-5 py-2.5 rounded-2xl hover:bg-emerald-50 transition-colors shrink-0">
+            Abrir Plato de Harvard
+            <span aria-hidden="true">&rarr;</span>
+          </Link>
+        </div>
+
         {/* Paso 1: qué quieres cuidar */}
         <section aria-labelledby="paso-1" className="space-y-5">
           <div className="flex flex-wrap items-end justify-between gap-3">

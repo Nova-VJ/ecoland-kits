@@ -10,6 +10,7 @@ import { HealthProfileProvider } from "@/context/HealthProfileContext";
 import { Layout } from "@/components/layout/Layout";
 import { IntroSplash } from "@/components/IntroSplash";
 import { CookieConsent } from "@/components/CookieConsent";
+import { WelcomeOnboardingModal } from "@/components/common/WelcomeOnboardingModal";
 import Index from "./pages/Index";
 import Packs from "./pages/Packs";
 import PackDetail from "./pages/PackDetail";
@@ -104,6 +105,7 @@ const App = () => {
                 </Routes>
               </Layout>
               <CookieConsent />
+              <WelcomeOnboardingModal />
             </HealthProfileProvider>
             </CartProvider>
           </CatalogProvider>
