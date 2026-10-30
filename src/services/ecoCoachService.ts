@@ -8,7 +8,7 @@ export type CoachInformationType = 'DATO' | 'ESTIMACIÓN' | 'SUGERENCIA';
 export interface CoachAction {
   id: string;
   label: string;
-  type: 'cook' | 'log_diary' | 'save_recipe' | 'add_to_plan' | 'use_pantry' | 'add_missing' | 'photo_vision';
+  type: 'cook' | 'log_diary' | 'save_recipe' | 'add_to_plan' | 'use_pantry' | 'add_missing' | 'photo_vision' | 'add_to_cart';
   payload?: any;
 }
 
@@ -32,6 +32,7 @@ export interface CoachResponse {
     steps: string[];
   };
   visionCard?: IdentifiedFoodResult;
+  recommendedProduct?: CatalogProduct;
   actions: CoachAction[];
 }
 
@@ -39,6 +40,7 @@ export interface CoachPromptQuery {
   text: string;
   timeAvailableMinutes?: number;
   photoUrlOrBase64?: string;
+  avoidAllergens?: string[];
 }
 
 class EcoCoachService {
@@ -113,7 +115,7 @@ class EcoCoachService {
     const requestedMinutes = minuteMatch ? parseInt(minuteMatch[1], 10) : (textLower.includes('poco tiempo') || textLower.includes('rapido') || textLower.includes('rápido') ? 10 : null);
 
     if (requestedMinutes !== null) {
-      const recommendations = CoachKnowledgeEngine.getRecommendations(requestedMinutes, textLower);
+      const recommendations = CoachKnowledgeEngine.getRecommendations(requestedMinutes, textLower, query.avoidAllergens || []);
       const chosen = recommendations[0];
 
       return {
@@ -122,6 +124,7 @@ class EcoCoachService {
         title: `Cena rápida en ${chosen.timeMinutes} min: ${chosen.title}`,
         message: `Para tus ${requestedMinutes} minutos disponibles, la mejor opción es preparar este plato: ${chosen.description} Tienes los ingredientes básicos en tu despensa y no requiere cocciones largas.`,
         dataGrounding: `Calculado para preparación real en ${chosen.timeMinutes} minutos usando despensa ecológica.`,
+        recommendedProduct: chosen.associatedProduct,
         recipeCard: {
           title: chosen.title,
           prepTimeMinutes: chosen.timeMinutes,
@@ -332,7 +335,7 @@ class EcoCoachService {
     // ==========================================
     // 5. CONSULTA GENERAL / ¿QUÉ CENAR HOY? (SELECCIÓN VARIADA)
     // ==========================================
-    const dynamicPool = CoachKnowledgeEngine.getRecommendations(15, textLower);
+    const dynamicPool = CoachKnowledgeEngine.getRecommendations(15, textLower, query.avoidAllergens || []);
     const randomIndex = Math.floor(Math.random() * dynamicPool.length);
     const dynamicPick = dynamicPool[randomIndex] || dynamicPool[0];
 
@@ -342,6 +345,7 @@ class EcoCoachService {
       title: dynamicPick.title,
       message: `He comprobado tu despensa. Tienes los ingredientes básicos disponibles para este plato. Te aporta ${dynamicPick.protein}g de proteína vegetal y ${dynamicPick.fiber}g de fibra para equilibrar tu jornada sin compras extra.`,
       dataGrounding: 'Cruce algorítmico adaptativo entre tu despensa local y el recetario saludable de Ecoland.',
+      recommendedProduct: dynamicPick.associatedProduct,
       recipeCard: {
         title: dynamicPick.title,
         prepTimeMinutes: dynamicPick.timeMinutes,

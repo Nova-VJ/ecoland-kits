@@ -35,7 +35,7 @@ export const SmartFoodLoggerModal = ({
 }: SmartFoodLoggerModalProps) => {
   const { toast } = useToast();
 
-  const [activeTab, setActiveTab] = useState<'habitual' | 'eat_out' | 'photo' | 'ean' | 'menuscan' | 'text'>('habitual');
+  const [activeTab, setActiveTab] = useState<'habitual' | 'eat_out' | 'photo' | 'voice' | 'menuscan' | 'text'>('habitual');
   const [selectedMeal, setSelectedMeal] = useState<MealType>(defaultMeal);
 
   // 1. Photo mode states
@@ -43,6 +43,10 @@ export const SmartFoodLoggerModal = ({
   const [photoAnalysis, setPhotoAnalysis] = useState<PhotoAnalysisResult | null>(null);
   const [portionMultiplier, setPortionMultiplier] = useState(1.0);
 
+  // 2. Voice mode states
+  const [isVoiceRecording, setIsVoiceRecording] = useState(false);
+  const [voiceTranscript, setVoiceTranscript] = useState('');
+  const [voiceParsedMeal, setVoiceParsedMeal] = useState<{ name: string; calories: number; protein: number; fiber: number } | null>(null);
   // 2. EAN mode states
   const [barcodeInput, setBarcodeInput] = useState('843700000001');
   const [eanProduct, setEanProduct] = useState<UniversalEanProduct | null>(null);
@@ -67,6 +71,62 @@ export const SmartFoodLoggerModal = ({
   }, [isOpen]);
 
   if (!isOpen) return null;
+
+  const handleToggleVoiceModal = () => {
+    if (isVoiceRecording) {
+      setIsVoiceRecording(false);
+      return;
+    }
+
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      toast({
+        title: 'Micrófono no disponible',
+        description: 'Tu navegador no soporta reconocimiento por voz nativo.',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'es-ES';
+      recognition.continuous = false;
+      recognition.interimResults = false;
+
+      recognition.onstart = () => {
+        setIsVoiceRecording(true);
+        toast({ title: '🎙️ Escuchando...', description: 'Di qué has comido (ej: "Lentejas estofadas con ensalada").' });
+      };
+
+      recognition.onresult = (event: any) => {
+        const text = event.results[0][0].transcript;
+        setVoiceTranscript(text);
+        setIsVoiceRecording(false);
+        
+        // Estimación rápida
+        const clean = text.toLowerCase();
+        let cals = 380, prot = 15, fib = 7;
+        if (clean.includes('ensalada')) { cals = 220; prot = 6; fib = 5; }
+        else if (clean.includes('lenteja') || clean.includes('garbanzo')) { cals = 390; prot = 18; fib = 10; }
+        else if (clean.includes('avena') || clean.includes('desayuno')) { cals = 310; prot = 10; fib = 8; }
+        else if (clean.includes('huevo') || clean.includes('tortilla')) { cals = 280; prot = 16; fib = 2; }
+        
+        setVoiceParsedMeal({
+          name: text.charAt(0).toUpperCase() + text.slice(1),
+          calories: cals,
+          protein: prot,
+          fiber: fib
+        });
+      };
+
+      recognition.onerror = () => setIsVoiceRecording(false);
+      recognition.onend = () => setIsVoiceRecording(false);
+      recognition.start();
+    } catch {
+      setIsVoiceRecording(false);
+    }
+  };
 
   // Handler for Photo analysis
   const handleAnalyzePhoto = () => {
@@ -132,6 +192,13 @@ export const SmartFoodLoggerModal = ({
         fiber = 4;
         smartFoodLoggerService.saveRestaurantMeal(menuScanResult.restaurantName || 'Restaurante', dish.name, dish.estimatedCalories, dish.estimatedProtein);
       }
+    } else if (activeTab === 'voice' && voiceParsedMeal) {
+      name = voiceParsedMeal.name;
+      calories = voiceParsedMeal.calories;
+      protein = voiceParsedMeal.protein;
+      carbs = Math.round(calories * 0.45 / 4);
+      fat = Math.round(calories * 0.25 / 9);
+      fiber = voiceParsedMeal.fiber;
     } else if (activeTab === 'eat_out') {
       name = 'Menú del día equilibrado (Comí fuera)';
       calories = 580;
@@ -253,13 +320,13 @@ export const SmartFoodLoggerModal = ({
             </button>
 
             <button
-              onClick={() => setActiveTab('ean')}
+              onClick={() => setActiveTab('voice')}
               className={`px-3 py-1.5 rounded-xl font-bold flex items-center gap-1.5 whitespace-nowrap transition-all ${
-                activeTab === 'ean' ? 'bg-emerald-800 text-white' : 'text-slate-600 hover:bg-slate-200/60'
+                activeTab === 'voice' ? 'bg-emerald-800 text-white' : 'text-slate-600 hover:bg-slate-200/60'
               }`}
             >
-              <Barcode className="w-3.5 h-3.5" />
-              <span>Código EAN</span>
+              <Mic className="w-3.5 h-3.5" />
+              <span>Dictado por Voz</span>
             </button>
 
             <button
@@ -416,79 +483,62 @@ export const SmartFoodLoggerModal = ({
               </div>
             )}
 
-            {/* 4. MODO CÓDIGO EAN UNIVERSAL */}
-            {activeTab === 'ean' && (
+            {/* 4. MODO DICTADO POR VOZ (SPEECH-TO-TEXT) */}
+            {activeTab === 'voice' && (
               <div className="space-y-4 text-xs">
-                <div className="p-3 bg-slate-50 rounded-2xl border space-y-2">
-                  <span className="font-bold text-slate-700 block">Introduce o escanea un código de barras:</span>
-                  <div className="flex gap-2">
-                    <Input
-                      value={barcodeInput}
-                      onChange={(e) => setBarcodeInput(e.target.value)}
-                      placeholder="843700000001"
-                      className="text-xs tabular-nums rounded-xl bg-white"
-                    />
-                    <Button size="sm" onClick={handleScanBarcode} className="bg-emerald-800 text-white rounded-xl px-3 font-bold">
-                      Buscar
-                    </Button>
+                <div className="p-5 bg-gradient-to-br from-emerald-50 via-white to-slate-50 rounded-2xl border border-emerald-200 text-center space-y-3">
+                  <div className="flex flex-col items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={handleToggleVoiceModal}
+                      className={`w-16 h-16 rounded-3xl flex items-center justify-center transition-all shadow-md ${
+                        isVoiceRecording
+                          ? 'bg-red-500 text-white animate-pulse scale-110 shadow-red-200'
+                          : 'bg-emerald-900 hover:bg-emerald-800 text-white hover:scale-105'
+                      }`}
+                      title={isVoiceRecording ? 'Detener dictado' : 'Pulsar para hablar'}
+                    >
+                      <Mic className="w-8 h-8" />
+                    </button>
+                    <div>
+                      <strong className="text-sm font-bold text-slate-900 block">
+                        {isVoiceRecording ? 'Escuchando tu voz...' : 'Pulsa el micrófono y di lo que has comido'}
+                      </strong>
+                      <span className="text-xs text-slate-500">
+                        {isVoiceRecording ? 'Habla con naturalidad...' : 'Ejemplo: "Un plato de lentejas y una manzana fresca"'}
+                      </span>
+                    </div>
                   </div>
+
+                  {voiceTranscript && (
+                    <div className="p-3 bg-white rounded-xl border border-emerald-200 text-left space-y-1">
+                      <span className="text-[10px] font-bold text-emerald-800 uppercase block">Transcripción detectada:</span>
+                      <p className="text-xs text-slate-800 italic">"{voiceTranscript}"</p>
+                    </div>
+                  )}
                 </div>
 
-                {eanProduct && (
-                  <div className="p-4 bg-white border rounded-2xl space-y-3">
-                    <div className="flex items-start justify-between gap-2">
-                      <div>
-                        <strong className="text-sm font-bold text-slate-900 block">{eanProduct.productName}</strong>
-                        <span className="text-[11px] text-slate-500">{eanProduct.brand} · Ración: {eanProduct.servingSize}</span>
-                      </div>
-                      <Badge className="bg-slate-900 text-white tabular-nums text-xs">
-                        Fuente: {eanProduct.provenance.source === 'ECOLAND_VERIFIED' ? 'VERIFIED_BY_ECOLAND' : eanProduct.provenance.source}
+                {voiceParsedMeal && (
+                  <div className="p-4 bg-white border border-emerald-300 rounded-2xl space-y-3 shadow-2xs">
+                    <div className="flex items-center justify-between">
+                      <strong className="text-sm font-bold text-slate-900 block">{voiceParsedMeal.name}</strong>
+                      <Badge className="bg-emerald-100 text-emerald-900 border-emerald-300 text-xs font-bold">
+                        Voz Procesada
                       </Badge>
                     </div>
 
-                    {/* Food Fingerprint Compatibility Badge */}
-                    <div className={`p-2.5 rounded-xl border flex items-center gap-2 ${
-                      eanProduct.compatibility.status === 'COMPATIBLE' 
-                        ? 'bg-emerald-50 border-emerald-300 text-emerald-950'
-                        : eanProduct.compatibility.status === 'NO_COMPATIBLE'
-                        ? 'bg-rose-50 border-rose-300 text-rose-950'
-                        : 'bg-amber-50 border-amber-300 text-amber-950'
-                    }`}>
-                      {eanProduct.compatibility.status === 'COMPATIBLE' ? (
-                        <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
-                      ) : (
-                        <AlertTriangle className="w-4 h-4 text-amber-700 shrink-0" />
-                      )}
-                      <div className="text-[11px] leading-tight">
-                        <strong className="block mb-0.5">
-                          {eanProduct.compatibility.badgeText || (
-                            eanProduct.compatibility.status === 'COMPATIBLE'
-                              ? '✅ Compatible según datos disponibles · Verifica siempre la etiqueta'
-                              : eanProduct.compatibility.status === 'NO_COMPATIBLE'
-                              ? '⛔ No compatible según tu configuración · Verifica siempre la etiqueta'
-                              : '⚠ Revisar · Verifica siempre la etiqueta'
-                          )}
-                        </strong>
-                        <p className="text-xs text-slate-600">{eanProduct.compatibility.reason}</p>
+                    <div className="grid grid-cols-3 gap-2 text-center tabular-nums">
+                      <div className="p-2 rounded-xl bg-slate-50 border">
+                        <span className="text-[10px] text-slate-500 block uppercase font-bold">Calorías</span>
+                        <strong className="text-sm font-black text-emerald-950">{voiceParsedMeal.calories} kcal</strong>
                       </div>
-                    </div>
-
-                    <div className="grid grid-cols-4 gap-1 text-center tabular-nums text-[11px] pt-1 border-t">
-                      <div className="p-1 bg-slate-50 rounded-lg">
-                        <span className="text-xs text-slate-500 block">Kcal</span>
-                        <strong>{eanProduct.caloriesPer100g}</strong>
+                      <div className="p-2 rounded-xl bg-slate-50 border">
+                        <span className="text-[10px] text-slate-500 block uppercase font-bold">Proteína</span>
+                        <strong className="text-sm font-black text-slate-900">{voiceParsedMeal.protein}g</strong>
                       </div>
-                      <div className="p-1 bg-slate-50 rounded-lg">
-                        <span className="text-xs text-slate-500 block">Proteína</span>
-                        <strong>{eanProduct.proteinPer100g}g</strong>
-                      </div>
-                      <div className="p-1 bg-slate-50 rounded-lg">
-                        <span className="text-xs text-slate-500 block">Carbos</span>
-                        <strong>{eanProduct.carbsPer100g}g</strong>
-                      </div>
-                      <div className="p-1 bg-slate-50 rounded-lg">
-                        <span className="text-xs text-slate-500 block">Fibra</span>
-                        <strong>{eanProduct.fiberPer100g}g</strong>
+                      <div className="p-2 rounded-xl bg-slate-50 border">
+                        <span className="text-[10px] text-slate-500 block uppercase font-bold">Fibra</span>
+                        <strong className="text-sm font-black text-emerald-800">{voiceParsedMeal.fiber}g</strong>
                       </div>
                     </div>
                   </div>

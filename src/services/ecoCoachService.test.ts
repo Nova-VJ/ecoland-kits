@@ -70,4 +70,21 @@ describe('EcoCoach Contextual Service (P2-A)', () => {
     expect(res5.recipeCard).toBeDefined();
     expect(res5.recipeCard?.prepTimeMinutes).toBeLessThanOrEqual(5);
   });
+
+  it('8. Filtra y respeta alérgenos declarados (ej: gluten)', () => {
+    const resGlutenFree = ecoCoachService.queryCoach({ 
+      text: '¿Qué puedo cenar rápido?',
+      avoidAllergens: ['gluten']
+    });
+    expect(resGlutenFree.recipeCard).toBeDefined();
+    expect(resGlutenFree.recipeCard?.title.toLowerCase()).not.toContain('tostada');
+    expect(resGlutenFree.recipeCard?.title.toLowerCase()).not.toContain('pan');
+  });
+
+  it('9. Asocia producto bio del catálogo de Ecoland para compra en 1 clic', () => {
+    const res = ecoCoachService.queryCoach({ text: '¿Qué puedo cenar en 10 minutos?' });
+    expect(res.recommendedProduct).toBeDefined();
+    expect(res.recommendedProduct?.name).toBeDefined();
+    expect(res.recommendedProduct?.price).toBeGreaterThan(0);
+  });
 });

@@ -3,16 +3,20 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Sparkles, Send, ChefHat, CheckCircle2, Bookmark, Calendar, 
   ShoppingBag, Shield, Clock, AlertTriangle, ArrowRight, Bot, Info, Box,
-  Camera, Scale, Utensils, RefreshCw, Check, ThumbsUp, ThumbsDown
+  Camera, Scale, Utensils, RefreshCw, Check, ThumbsUp, ThumbsDown,
+  Mic, MicOff, Volume2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
+import { useCart } from '@/context/CartContext';
+import { useHealthProfile } from '@/context/HealthProfileContext';
 import { ecoCoachService, CoachResponse, CoachAction } from '@/services/ecoCoachService';
 import { productInsightsService } from '@/services/productInsightsService';
 import { dailyNutritionStore } from '@/services/dailyNutritionStore';
 import { foodVisionEngine, IdentifiedFoodResult } from '@/lib/foodVisionEngine';
+import { CatalogProduct } from '@/data/catalog/individual-products';
 
 interface ChatMessage {
   id: string;
@@ -24,9 +28,8 @@ interface ChatMessage {
 }
 
 const SUGGESTED_QUERIES = [
+  '🎙️ Dictar comida por voz',
   '📸 Analizar plato por foto',
-  '📸 Foto: Ensalada mediterránea',
-  '📸 Foto: Lentejas estofadas',
   '¿Qué puedo cenar hoy en 10 minutos?',
   'Me quedan 5 minutos, ¿qué hago?',
   '¿Qué puedo comer con más fibra?',
@@ -37,11 +40,20 @@ const SUGGESTED_QUERIES = [
 
 export const EcoCoach = () => {
   const { toast } = useToast();
+  const { addCatalogProduct, setIsOpen } = useCart();
+  const { profile } = useHealthProfile();
+
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const recognitionRef = useRef<any>(null);
+
   const [inputText, setInputText] = useState('');
+  const [isListening, setIsListening] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>(() => {
-    // Mensaje inicial de bienvenida contextual
-    const initialResp = ecoCoachService.queryCoach({ text: '¿Qué puedo cenar hoy?' });
+    // Mensaje inicial de bienvenida contextual adaptado al perfil
+    const initialResp = ecoCoachService.queryCoach({ 
+      text: '¿Qué puedo cenar hoy?',
+      avoidAllergens: profile.avoidAllergens 
+    });
     return [
       {
         id: 'msg_welcome',
@@ -49,7 +61,7 @@ export const EcoCoach = () => {
         response: {
           ...initialResp,
           title: '¡Hola! Soy tu EcoCoach Contextual',
-          message: 'He revisado tu diario de hoy, tu despensa y tus alimentos próximos a fecha. Puedo recomendarte recetas a medida según tus minutos disponibles o reconocer tus comidas y contar calorías a partir de una foto previa confirmación. ¿Qué necesitas hoy?'
+          message: `He revisado tu diario de hoy, tu despensa y tus preferencias${profile.avoidAllergens.length > 0 ? ` (evitando: ${profile.avoidAllergens.join(', ')})` : ''}. Puedes dictarme comidas por voz con el micrófono 🎙️, subir fotos de platos para contar calorías o pedirme recetas rápidas sin compras innecesarias. ¿Qué necesitas hoy?`
         },
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       }
@@ -102,7 +114,10 @@ export const EcoCoach = () => {
     setIsTyping(true);
 
     setTimeout(() => {
-      const coachResp = ecoCoachService.queryCoach({ text: query });
+      const coachResp = ecoCoachService.queryCoach({ 
+        text: query,
+        avoidAllergens: profile.avoidAllergens 
+      });
       productInsightsService.recordCoachResponseShown(query, coachResp.title);
       const coachMsg: ChatMessage = {
         id: `msg_c_${Date.now()}`,
@@ -113,6 +128,60 @@ export const EcoCoach = () => {
       setMessages(prev => [...prev, coachMsg]);
       setIsTyping(false);
     }, 450);
+  };
+
+  const handleToggleVoice = () => {
+    if (isListening) {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+      setIsListening(false);
+      return;
+    }
+
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      toast({
+        title: 'Dictado no soportado',
+        description: 'Tu navegador no tiene activado el reconocimiento por voz nativo. Puedes escribir tu consulta en el recuadro.',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'es-ES';
+      recognition.continuous = false;
+      recognition.interimResults = false;
+
+      recognition.onstart = () => {
+        setIsListening(true);
+        toast({
+          title: '🎙️ Escuchando...',
+          description: 'Di lo que has comido o tu consulta (ej: "He comido ensalada con garbanzos").'
+        });
+      };
+
+      recognition.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript;
+        setIsListening(false);
+        handleSendQuery(transcript);
+      };
+
+      recognition.onerror = () => {
+        setIsListening(false);
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognitionRef.current = recognition;
+      recognition.start();
+    } catch {
+      setIsListening(false);
+    }
   };
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -129,7 +198,6 @@ export const EcoCoach = () => {
       : fileName.includes('arroz') ? 'arroz salteado'
       : 'ensalada mediterranea';
 
-    // Generar URL para visualización si es imagen real
     const previewUrl = URL.createObjectURL(file);
 
     const userMsg: ChatMessage = {
@@ -146,7 +214,8 @@ export const EcoCoach = () => {
     setTimeout(() => {
       const coachResp = ecoCoachService.queryCoach({ 
         text: `foto de ${queryHint}`,
-        photoUrlOrBase64: previewUrl
+        photoUrlOrBase64: previewUrl,
+        avoidAllergens: profile.avoidAllergens
       });
       productInsightsService.recordCoachResponseShown('photo_analysis', coachResp.title);
       const coachMsg: ChatMessage = {
@@ -235,7 +304,21 @@ export const EcoCoach = () => {
     });
   };
 
+  const handleAddToCart = (product: CatalogProduct) => {
+    addCatalogProduct(product);
+    setIsOpen(true);
+    toast({
+      title: 'Añadido a tu cesta',
+      description: `${product.name} listo en tu pedido.`
+    });
+  };
+
   const handleExecuteAction = (action: CoachAction) => {
+    if (action.type === 'add_to_cart' && action.payload) {
+      handleAddToCart(action.payload);
+      return;
+    }
+
     const res = ecoCoachService.executeAction(action);
     productInsightsService.recordCoachActionClicked(action.type as any);
     productInsightsService.recordMeaningfulAction('coach_action_executed');
@@ -282,17 +365,22 @@ export const EcoCoach = () => {
               <Badge variant="outline" className="text-[11px] font-medium border-emerald-300 text-emerald-900 bg-emerald-50/50">
                 🌱 Despensa Primero (0€ gasto)
               </Badge>
+              {profile.avoidAllergens.length > 0 && (
+                <Badge variant="outline" className="text-[11px] font-medium border-amber-300 text-amber-900 bg-amber-50">
+                  🛡️ Sin: {profile.avoidAllergens.join(', ')}
+                </Badge>
+              )}
               <Badge variant="outline" className="text-[11px] font-medium border-slate-300 text-slate-600">
-                🔒 Datos 100% Privados
+                🔒 100% Privado
               </Badge>
             </div>
           </div>
 
           <p className="text-xs md:text-sm text-slate-500 leading-relaxed max-w-2xl">
-            Pregúntale lo que necesitas en cualquier momento o sube una foto de tu comida. El EcoCoach consulta tu despensa, tus alimentos a punto de vencer, cuenta calorías por foto con confirmación previa y te sugiere recetas rápidas.
+            Pregúntale lo que necesitas en cualquier momento, dicta por voz 🎙️ o sube una foto de tu comida. El EcoCoach consulta tu despensa, respeta tus alergias, cuenta calorías por foto con confirmación previa y te sugiere recetas rápidas.
           </p>
 
-          {/* Chips de Preguntas Frecuentes Sugeridas */}
+          {/* Chips de Consultas Rápidas */}
           <div className="pt-2 border-t space-y-1.5">
             <span className="text-[11px] font-bold text-slate-500 block uppercase tracking-wider">
               Consultas y Reconocimiento Rápido:
@@ -301,9 +389,14 @@ export const EcoCoach = () => {
               {SUGGESTED_QUERIES.map((q, idx) => (
                 <button
                   key={idx}
-                  onClick={() => handleSendQuery(q)}
+                  onClick={() => {
+                    if (q.includes('Dictar')) handleToggleVoice();
+                    else handleSendQuery(q);
+                  }}
                   className={`px-3 py-1.5 rounded-xl border text-xs font-semibold transition-all text-left ${
-                    q.startsWith('📸')
+                    q.startsWith('🎙️')
+                      ? 'bg-emerald-100/80 hover:bg-emerald-200/80 border-emerald-400 text-emerald-950 font-bold'
+                      : q.startsWith('📸')
                       ? 'bg-amber-50 hover:bg-amber-100/80 border-amber-300 text-amber-950 font-bold'
                       : 'bg-slate-100 hover:bg-emerald-100/70 border-slate-200 hover:border-emerald-300 text-slate-700 hover:text-emerald-950'
                   }`}
@@ -509,6 +602,38 @@ export const EcoCoach = () => {
                         </div>
                       )}
 
+                      {/* Tarjeta de Producto Ecológico Recomendado (1-Tap Add to Cart) */}
+                      {msg.response.recommendedProduct && (
+                        <div className="p-3.5 rounded-2xl bg-emerald-50/90 border border-emerald-300 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-3">
+                          <div className="flex items-center gap-3 w-full sm:w-auto">
+                            <img
+                              src={msg.response.recommendedProduct.image}
+                              alt={msg.response.recommendedProduct.name}
+                              className="w-12 h-12 object-contain rounded-xl bg-white p-1 border border-emerald-200 shrink-0"
+                            />
+                            <div>
+                              <span className="text-[10px] uppercase font-bold text-emerald-800 tracking-wider block">
+                                Ingrediente Bio Recomendado
+                              </span>
+                              <strong className="text-xs md:text-sm text-slate-900 line-clamp-1 block">
+                                {msg.response.recommendedProduct.name}
+                              </strong>
+                              <span className="text-xs font-black text-emerald-950">
+                                {msg.response.recommendedProduct.price.toFixed(2)} €
+                              </span>
+                            </div>
+                          </div>
+                          <Button
+                            onClick={() => handleAddToCart(msg.response!.recommendedProduct!)}
+                            size="sm"
+                            className="bg-emerald-900 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl h-9 px-4 gap-1.5 shrink-0 shadow-xs w-full sm:w-auto"
+                          >
+                            <ShoppingBag className="w-3.5 h-3.5" />
+                            <span>Añadir a mi cesta</span>
+                          </Button>
+                        </div>
+                      )}
+
                       {/* Botones de Acción Directa (Cerrar el Bucle) */}
                       {msg.response.actions.length > 0 && (
                         <div className="flex flex-wrap items-center gap-2 pt-2 border-t">
@@ -536,6 +661,9 @@ export const EcoCoach = () => {
                           <span className="flex items-center gap-1 text-emerald-800 font-medium">✓ Tu despensa</span>
                           <span className="flex items-center gap-1 text-emerald-800 font-medium">✓ Tu diario de hoy</span>
                           <span className="flex items-center gap-1 text-emerald-800 font-medium">✓ Tu plan semanal</span>
+                          {profile.avoidAllergens.length > 0 && (
+                            <span className="flex items-center gap-1 text-amber-800 font-medium">✓ Alergias filtradas</span>
+                          )}
                         </div>
                         <div className="pl-5 flex items-center gap-1 text-xs text-slate-500">
                           <Info className="w-3 h-3 text-slate-500 shrink-0" />
@@ -622,8 +750,16 @@ export const EcoCoach = () => {
           )}
         </div>
 
-        {/* Barra de Entrada / Consulta Personalizada + Cámara */}
+        {/* Barra de Entrada / Consulta Personalizada + Voz + Cámara */}
         <div className="sticky bottom-4 bg-white/95 backdrop-blur-md p-3 sm:p-4 rounded-3xl border shadow-lg space-y-2">
+          {isListening && (
+            <div className="p-2 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700 flex items-center gap-2 animate-pulse">
+              <span className="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping" />
+              <strong className="font-bold">Escuchando en vivo:</strong>
+              <span>Habla con naturalidad sobre lo que has comido o tu consulta culinaria...</span>
+            </div>
+          )}
+
           {/* Input oculto para subida de imagen de comida */}
           <input 
             ref={fileInputRef}
@@ -641,6 +777,21 @@ export const EcoCoach = () => {
             }}
             className="flex items-center gap-2"
           >
+            {/* Botón de Dictado por Voz */}
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleToggleVoice}
+              className={`h-12 w-12 rounded-2xl border shrink-0 p-0 shadow-2xs flex items-center justify-center transition-all ${
+                isListening
+                  ? 'bg-red-500 border-red-600 text-white animate-pulse'
+                  : 'border-slate-200 hover:border-emerald-500 hover:bg-emerald-50 text-emerald-800'
+              }`}
+              title={isListening ? 'Detener dictado' : 'Hablar por micrófono con el EcoCoach'}
+            >
+              {isListening ? <MicOff className="w-5 h-5 text-white" /> : <Mic className="w-5 h-5 text-emerald-800" />}
+            </Button>
+
             {/* Botón de Cámara / Subir Foto de Comida */}
             <Button
               type="button"
@@ -655,7 +806,7 @@ export const EcoCoach = () => {
             <Input
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              placeholder="Escribe tu consulta... Ej: ¿Qué puedo cenar en 10 minutos? o sube una foto con el icono"
+              placeholder={isListening ? "Escuchando tu voz..." : "Escribe o usa el micrófono 🎙️... Ej: ¿Qué ceno en 10 min?"}
               className="rounded-2xl border-slate-200 focus:border-emerald-600 text-xs sm:text-sm h-12 bg-slate-50"
             />
 

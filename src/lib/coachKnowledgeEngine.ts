@@ -139,16 +139,33 @@ export class CoachKnowledgeEngine {
     }
   ];
 
-  public static getRecommendations(timeRequestedMinutes: number, userPreference = ''): DynamicCoachSuggestion[] {
+  public static getRecommendations(timeRequestedMinutes: number, userPreference = '', avoidAllergens: string[] = []): DynamicCoachSuggestion[] {
     const pref = userPreference.toLowerCase();
     
+    // Filtro estricto de alérgenos declarados por el usuario
+    let pool = this.RECIPES_CATALOG;
+    if (avoidAllergens.includes('gluten')) {
+      pool = pool.filter(r => !r.title.toLowerCase().includes('pan') && !r.title.toLowerCase().includes('tostada') && !r.pantryIngredients.some(i => i.toLowerCase().includes('trigo') || i.toLowerCase().includes('pan')));
+    }
+    if (avoidAllergens.includes('huevos') || avoidAllergens.includes('huevo')) {
+      pool = pool.filter(r => !r.title.toLowerCase().includes('tortilla') && !r.pantryIngredients.some(i => i.toLowerCase().includes('huevo')));
+    }
+    if (avoidAllergens.includes('lacteos') || avoidAllergens.includes('leche')) {
+      pool = pool.filter(r => !r.pantryIngredients.some(i => i.toLowerCase().includes('queso') || i.toLowerCase().includes('leche') || i.toLowerCase().includes('yogur')));
+    }
+
+    // Si todos los platos se filtraran, mantenemos los seguros
+    if (pool.length === 0) {
+      pool = this.RECIPES_CATALOG.filter(r => r.title.toLowerCase().includes('garbanzos') || r.title.toLowerCase().includes('quinoa'));
+    }
+
     // Filtro por tiempo disponible real (priorizar recetas que no superen el tiempo)
-    let strictMatches = this.RECIPES_CATALOG.filter(r => r.timeMinutes <= timeRequestedMinutes);
+    let strictMatches = pool.filter(r => r.timeMinutes <= timeRequestedMinutes);
     let matches = strictMatches.length > 0 
       ? strictMatches 
-      : this.RECIPES_CATALOG.filter(r => r.timeMinutes <= timeRequestedMinutes + 2);
+      : pool.filter(r => r.timeMinutes <= timeRequestedMinutes + 2);
     if (matches.length === 0) {
-      matches = this.RECIPES_CATALOG;
+      matches = pool;
     }
 
     if (pref.includes('dulce') || pref.includes('avena')) {

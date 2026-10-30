@@ -350,7 +350,7 @@ export const EcoHealth = () => {
               { id: 'calculadora', label: 'Gasto calórico', desc: 'Cuánto quemas al día', icon: Flame },
               { id: 'diario', label: 'Mi diario', desc: 'Comidas y macros', icon: BarChart3 },
               { id: 'perfil', label: 'Perfil y alergias', desc: 'Dietas e intolerancias', icon: Wheat },
-              { id: 'escaner', label: 'Escáner', desc: 'Código de barras y Nutri-Score', icon: Barcode },
+              { id: 'escaner', label: 'Auditor Bio', desc: 'Ultraprocesados y Microbiota', icon: ShieldCheck },
               { id: 'comparador', label: 'Comparador', desc: 'Nutrientes y €/kg', icon: Scale },
               { id: 'despensa', label: 'Mi despensa', desc: 'Caducidad y reposición', icon: Package },
               { id: 'presupuesto', label: 'Presupuesto', desc: 'Nutrición por euro', icon: Wallet },
@@ -868,97 +868,153 @@ export const EcoHealth = () => {
         {/* ============================================================== */}
         {/* TAB 3: ESCÁNER EAN BIO & CÁMARA */}
         {/* ============================================================== */}
+        {/* TAB 3: AUDITOR BIO & SEMÁFORO DE ULTRAPROCESADOS */}
+        {/* ============================================================== */}
         {activeTab === 'escaner' && (
-          <div className="bg-white rounded-3xl p-6 md:p-8 border shadow-xs max-w-4xl mx-auto space-y-8">
+          <div className="bg-white rounded-3xl p-6 md:p-8 border shadow-xs max-w-4xl mx-auto space-y-6">
             <div className="border-b pb-4">
-              <h2 className="font-bold text-slate-900 text-xl flex items-center gap-2">
-                <Barcode className="h-6 w-6 text-emerald-700" />
-                Escáner de Código de Barras EAN & Análisis Bio
+              <div className="flex items-center gap-2">
+                <Badge className="bg-emerald-100 text-emerald-950 border-emerald-300 font-bold text-xs">
+                  Estándar Harvard & NOVA
+                </Badge>
+                <Badge variant="outline" className="text-slate-600 text-xs">
+                  Microbiota Saludable
+                </Badge>
+              </div>
+              <h2 className="font-bold text-slate-900 text-xl md:text-2xl mt-1 flex items-center gap-2">
+                <ShieldCheck className="h-6 w-6 text-emerald-700" />
+                Auditor de Calidad Bio & Semáforo de Ultraprocesados
               </h2>
-              <p className="text-xs text-slate-500 mt-1">
-                Escanea cualquier producto con la cámara de tu móvil en tienda física o en casa para verificar ingredientes, alérgenos y comprar en Ecoland.
+              <p className="text-xs text-slate-500 mt-1 max-w-2xl">
+                Descubre el grado de procesamiento real de cualquier alimento según la escala científica NOVA, su impacto en la microbiota intestinal y su alternativa limpia de proximidad.
               </p>
             </div>
 
-            {/* Simulated Barcode Input */}
+            {/* Input del Auditor */}
             <div className="p-6 rounded-3xl bg-slate-900 text-white space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-xs tabular-nums text-emerald-400 flex items-center gap-2">
-                  <Camera className="h-4 w-4" /> Lector de código activado
+                <span className="text-xs text-emerald-400 flex items-center gap-2 font-medium">
+                  <Sparkles className="h-4 w-4" /> Motor de Auditoría Nutricional
                 </span>
-                <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 text-xs">
-                  Modo Tienda Física
-                </Badge>
+                <span className="text-[11px] text-slate-400">
+                  Sin aditivos sintéticos
+                </span>
               </div>
 
-              <div className="flex gap-3">
+              <div className="flex gap-2">
                 <Input
                   value={scanCode}
                   onChange={(e) => setScanCode(e.target.value)}
-                  placeholder="Introduce código EAN o nombre de producto..."
-                  className="bg-slate-800 border-slate-700 text-white text-xs h-11 tabular-nums"
+                  placeholder="Escribe un alimento... Ej: Galletas, Avena, Refresco, Garbanzos..."
+                  className="bg-slate-800 border-slate-700 text-white text-xs sm:text-sm h-12"
+                  onKeyDown={(e) => { if (e.key === 'Enter') handleSimulateScan(scanCode); }}
                 />
                 <Button 
                   onClick={() => handleSimulateScan(scanCode)}
-                  className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold h-11 px-6 text-xs"
+                  className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold h-12 px-6 text-xs shrink-0"
                 >
-                  Escanear
+                  Auditar
                 </Button>
               </div>
 
-              <div className="flex gap-2 flex-wrap pt-1 text-[11px] text-slate-500">
-                <span>Pruebas rápidas:</span>
-                <button onClick={() => handleSimulateScan('avena')} className="underline hover:text-white">Avena Sin Gluten</button>
-                <span>•</span>
-                <button onClick={() => handleSimulateScan('garbanzo')} className="underline hover:text-white">Garbanzos Gumendi</button>
-                <span>•</span>
-                <button onClick={() => handleSimulateScan('matcha')} className="underline hover:text-white">Té Matcha</button>
-                <span>•</span>
-                <button onClick={() => handleSimulateScan('quinoa')} className="underline hover:text-white">Quinoa Bio</button>
+              <div className="flex gap-2 flex-wrap pt-1 text-[11px] text-slate-400 items-center">
+                <span className="font-semibold text-slate-300">Ejemplos para auditar:</span>
+                <button onClick={() => handleSimulateScan('avena')} className="px-2 py-0.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200">Avena integral bio</button>
+                <button onClick={() => handleSimulateScan('galletas')} className="px-2 py-0.5 rounded-lg bg-slate-800 hover:bg-amber-900/60 text-amber-200">Galletas industriales</button>
+                <button onClick={() => handleSimulateScan('garbanzo')} className="px-2 py-0.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200">Garbanzos cocidos</button>
+                <button onClick={() => handleSimulateScan('refresco')} className="px-2 py-0.5 rounded-lg bg-slate-800 hover:bg-red-900/60 text-red-200">Refresco edulcorado</button>
+                <button onClick={() => handleSimulateScan('quinoa')} className="px-2 py-0.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200">Quinoa real</button>
               </div>
             </div>
 
-            {/* Scanned Result Card */}
+            {/* Resultado de la Auditoría */}
             {scannedProduct && (
-              <div className="p-6 rounded-3xl border border-emerald-200 bg-emerald-50/40 space-y-4">
-                <div className="flex flex-col sm:flex-row items-center gap-5">
-                  <div className="w-24 h-24 rounded-2xl bg-white p-2 border flex items-center justify-center shrink-0">
-                    <img src={scannedProduct.image} alt={scannedProduct.name} className="w-full h-full object-contain" />
+              <div className="p-6 rounded-3xl border border-emerald-200 bg-emerald-50/40 space-y-5">
+                {/* Diagnóstico NOVA y Microbiota */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div className={`p-4 rounded-2xl border text-center space-y-1 ${
+                    scanCode.toLowerCase().includes('galleta') || scanCode.toLowerCase().includes('refresco')
+                      ? 'bg-amber-50 border-amber-300 text-amber-950'
+                      : 'bg-white border-emerald-200 text-emerald-950'
+                  }`}>
+                    <span className="block text-[11px] uppercase font-bold text-slate-500">Grado de Procesamiento</span>
+                    <strong className="text-base font-black block">
+                      {scanCode.toLowerCase().includes('galleta') || scanCode.toLowerCase().includes('refresco')
+                        ? 'NOVA 4: Ultraprocesado'
+                        : 'NOVA 1: Alimento Puro Bio'}
+                    </strong>
+                    <span className="text-[11px] block text-slate-600">
+                      {scanCode.toLowerCase().includes('galleta') || scanCode.toLowerCase().includes('refresco')
+                        ? 'Harinas refinadas y emulsionantes'
+                        : 'Sin ingredientes industriales'}
+                    </span>
                   </div>
-                  <div className="flex-1 space-y-1 text-center sm:text-left">
-                    <div className="flex items-center gap-2 justify-center sm:justify-start">
-                      <Badge className="bg-emerald-100 text-emerald-800 border-0 text-xs">100% Bio Certificado</Badge>
-                      <Badge variant="outline" className="text-xs">{scannedProduct.brand}</Badge>
-                    </div>
-                    <h3 className="font-bold text-slate-900 text-base">{scannedProduct.name}</h3>
-                    <p className="text-xs text-slate-600 line-clamp-2">{scannedProduct.description}</p>
-                    <div className="pt-1 flex items-center justify-center sm:justify-start gap-4">
-                      <span className="text-xl font-extrabold text-emerald-800">{formatPrice(scannedProduct.price)}</span>
-                      <span className="text-xs text-slate-500">Stock físico verificado</span>
-                    </div>
+
+                  <div className={`p-4 rounded-2xl border text-center space-y-1 ${
+                    scanCode.toLowerCase().includes('galleta') || scanCode.toLowerCase().includes('refresco')
+                      ? 'bg-red-50 border-red-200 text-red-950'
+                      : 'bg-white border-emerald-200 text-emerald-950'
+                  }`}>
+                    <span className="block text-[11px] uppercase font-bold text-slate-500">Salud Intestinal</span>
+                    <strong className="text-base font-black block">
+                      {scanCode.toLowerCase().includes('galleta') || scanCode.toLowerCase().includes('refresco')
+                        ? 'Disruptor de Barrera'
+                        : 'Prebiótico Protector'}
+                    </strong>
+                    <span className="text-[11px] block text-slate-600">
+                      {scanCode.toLowerCase().includes('galleta') || scanCode.toLowerCase().includes('refresco')
+                        ? 'Altera la diversidad microbiana'
+                        : 'Alimenta bacterias beneficiosas'}
+                    </span>
                   </div>
-                  <Button 
-                    onClick={() => { addCatalogProduct(scannedProduct); setIsOpen(true); }}
-                    className="bg-emerald-800 hover:bg-emerald-700 text-white font-bold text-xs h-11 px-5 shrink-0 gap-2 shadow-sm"
-                  >
-                    <ShoppingBag className="h-4 w-4" />
-                    Añadir al carrito
-                  </Button>
+
+                  <div className="p-4 rounded-2xl bg-white border border-emerald-200 text-center space-y-1">
+                    <span className="block text-[11px] uppercase font-bold text-slate-500">Aditivos Químicos</span>
+                    <strong className="text-base font-black text-emerald-800 block">
+                      {scanCode.toLowerCase().includes('galleta') || scanCode.toLowerCase().includes('refresco')
+                        ? 'Presencia de aditivos'
+                        : '0% Aditivos (100% Puro)'}
+                    </strong>
+                    <span className="text-[11px] block text-slate-600">
+                      Certificación ecológica UE
+                    </span>
+                  </div>
                 </div>
 
-                {/* Semáforo Nutricional */}
-                <div className="grid grid-cols-3 gap-3 pt-3 border-t border-emerald-200/70 text-center text-xs">
-                  <div className="p-2.5 rounded-xl bg-white border border-emerald-100">
-                    <span className="block text-xs text-slate-500">Nutri-Score</span>
-                    <strong className="text-emerald-700 text-sm font-black">A (Excelente)</strong>
+                {/* Alternativa Limpia Ecoland */}
+                <div className="pt-2">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                      <Sparkles className="w-4 h-4 text-emerald-700" />
+                      {scanCode.toLowerCase().includes('galleta') || scanCode.toLowerCase().includes('refresco')
+                        ? 'Sustituto Limpio Recomendado en Ecoland:'
+                        : 'Producto Ecológico Certificado de Proximidad:'}
+                    </span>
                   </div>
-                  <div className="p-2.5 rounded-xl bg-white border border-emerald-100">
-                    <span className="block text-xs text-slate-500">Eco-Score</span>
-                    <strong className="text-emerald-700 text-sm font-black">A (Impacto Mínimo)</strong>
-                  </div>
-                  <div className="p-2.5 rounded-xl bg-white border border-emerald-100">
-                    <span className="block text-xs text-slate-500">Aditivos Químicos</span>
-                    <strong className="text-emerald-700 text-sm font-black">0% Limpio</strong>
+
+                  <div className="flex flex-col sm:flex-row items-center gap-4 bg-white p-4.5 rounded-2xl border border-emerald-200 shadow-2xs">
+                    <div className="w-20 h-20 rounded-xl bg-slate-50 p-1.5 border border-slate-100 flex items-center justify-center shrink-0">
+                      <img src={scannedProduct.image} alt={scannedProduct.name} className="w-full h-full object-contain" />
+                    </div>
+                    <div className="flex-1 space-y-1 text-center sm:text-left">
+                      <div className="flex items-center gap-2 justify-center sm:justify-start">
+                        <Badge className="bg-emerald-100 text-emerald-800 border-0 text-xs">100% Bio Certificado</Badge>
+                        <Badge variant="outline" className="text-xs">{scannedProduct.brand}</Badge>
+                      </div>
+                      <h4 className="font-bold text-slate-900 text-sm md:text-base">{scannedProduct.name}</h4>
+                      <p className="text-xs text-slate-600 line-clamp-1">{scannedProduct.description}</p>
+                      <div className="pt-0.5 flex items-center justify-center sm:justify-start gap-3">
+                        <span className="text-lg font-black text-emerald-900">{formatPrice(scannedProduct.price)}</span>
+                        <span className="text-xs text-slate-500">Castilla y León · Entrega 24h</span>
+                      </div>
+                    </div>
+                    <Button 
+                      onClick={() => { addCatalogProduct(scannedProduct); setIsOpen(true); }}
+                      className="bg-emerald-900 hover:bg-emerald-800 text-white font-bold text-xs h-11 px-5 shrink-0 gap-2 shadow-xs w-full sm:w-auto"
+                    >
+                      <ShoppingBag className="h-4 w-4" />
+                      Añadir a mi cesta
+                    </Button>
                   </div>
                 </div>
               </div>
