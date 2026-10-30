@@ -7,7 +7,7 @@ export const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Brand */}
           <div className="space-y-4">
-            <img alt="Ecoland" className="h-16 w-auto brightness-110" src="/lovable-uploads/b139a0b4-df8f-4943-9f9e-13a41f2dc4e9.png" />
+            <img alt="Ecoland" className="h-14 w-auto rounded-xl object-contain bg-white/10 p-1" src={logoEcoland} />
             <p className="text-primary-foreground/80 text-sm leading-relaxed">
               Productos ecológicos seleccionados para tu bienestar y el del planeta. 
               Packs listos para cada objetivo.
